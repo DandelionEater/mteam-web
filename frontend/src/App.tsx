@@ -1,19 +1,18 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './components/Navbar'; // Įsitikinkite, kad teisingai nurodote kelią
-import Home from './pages/Home'; // Puslapis, kur bus rodomas pagrindinis turinys
-import About from './pages/About'; // Kitas puslapis
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import About from './pages/About';
+import Designs from './pages/Designs';
 
 function App() {
   return (
     <Router>
-      {/* Globaliai rodomas Navbar */}
       <Navbar />
-      
-      {/* React Router pagalba rodomi puslapiai */}
+      {/* React Router Routes */}
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/designs" element={<Designs />}/>
         <Route path="/about" element={<About />} />
-        {/* Kiti puslapiai */}
       </Routes>
     </Router>
   );
