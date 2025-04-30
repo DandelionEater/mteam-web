@@ -1,9 +1,12 @@
 import React from 'react';
 import backgroundImage from '../assets/fph-image.jpg';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { WrenchScrewdriverIcon, Cog6ToothIcon, LightBulbIcon, PuzzlePieceIcon, PencilIcon, CubeIcon } from '@heroicons/react/24/solid';
 
 const Home: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <>
       {/* Full-Page Hero Section */}
@@ -15,16 +18,16 @@ const Home: React.FC = () => {
       >
         <div className="bg-gray-300 bg-opacity-90 p-7 max-w-2x1">
           <h1 className="text-4xl md:text-6xl font-bold text-black mb-4">
-            Welcome to MTEAM
+            {t('home.heroTitle')}
           </h1>
           <p className="text-lg md:text-xl text-black mb-8">
-            Innovative solutions. Professional results.
+            {t('home.heroSubtitle')}
           </p>
           <Link
             to="/designs"
             className="inline-block bg-gray-900 text-white px-6 py-3 text-sm hover:bg-gray-500 transition"
           >
-            Our Designs
+            {t('home.viewDesigns')}
           </Link>
         </div>
       </section>
@@ -33,10 +36,10 @@ const Home: React.FC = () => {
       <section id="about" className="w-full bg-white py-16 px-6">
       <div className="max-w-6xl mx-auto text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-semibold text-black mb-4">
-          What We Do
+          {t('home.whatWeDo')}
         </h2>
         <p className="text-black text-lg">
-          MTEAM blends precision and craftsmanship to shape the future of metalwork — one part, weld or prototype at a time.
+          {t('home.introText')}
         </p>
       </div>
 
@@ -45,10 +48,10 @@ const Home: React.FC = () => {
         <div className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition">
           <div className="flex items-center gap-2 mb-2">
             <WrenchScrewdriverIcon className="h-6 w-6 text-black p-1" />
-            <h3 className="text-xl font-semibold text-black text-center">CNC Machining</h3>
+            <h3 className="text-xl font-semibold text-black text-center">{t('home.card1Title')}</h3>
           </div>
           <p className="text-black">
-            High-precision CNC milling and turning for custom metal parts with industrial accuracy.
+            {t('home.card1Description')}
           </p>
         </div>
 
@@ -56,10 +59,10 @@ const Home: React.FC = () => {
         <div className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition">
           <div className="flex items-center gap-2 mb-2">
             <Cog6ToothIcon className="h-6 w-6 text-black p-1" />
-            <h3 className="text-xl font-semibold text-black">Welding Services</h3>
+            <h3 className="text-xl font-semibold text-black">{t('home.card2Title')}</h3>
           </div>
           <p className="text-black">
-            Structural and detailed welding using modern techniques to ensure durability and clean aesthetics.
+            {t('home.card2Description')}
           </p>
         </div>
 
@@ -67,10 +70,10 @@ const Home: React.FC = () => {
         <div className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition">
           <div className="flex items-center gap-2 mb-2">
             <LightBulbIcon className="h-6 w-6 text-black p-1" />
-            <h3 className="text-xl font-semibold text-black">Prototyping</h3>
+            <h3 className="text-xl font-semibold text-black">{t('home.card3Title')}</h3>
           </div>
           <p className="text-black">
-            Got a weird idea? We'll bring it to life in metal, no matter how odd it sounds.
+            {t('home.card3Description')}
           </p>
         </div>
 
@@ -78,10 +81,10 @@ const Home: React.FC = () => {
         <div className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition">
           <div className="flex items-center gap-2 mb-2">
             <PuzzlePieceIcon className="h-6 w-6 text-black p-1" />
-            <h3 className="text-xl font-semibold text-black">Small Batch Production</h3>
+            <h3 className="text-xl font-semibold text-black">{t('home.card4Title')}</h3>
           </div>
           <p className="text-black">
-            Need 5 parts, not 5,000? We've got you covered with flexible production runs.
+            {t('home.card4Description')}
           </p>
         </div>
 
@@ -89,10 +92,10 @@ const Home: React.FC = () => {
         <div className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition">
           <div className="flex items-center gap-2 mb-2">
             <PencilIcon className="h-6 w-6 text-black p-1" />
-            <h3 className="text-xl font-semibold text-black">Design Consultation</h3>
+            <h3 className="text-xl font-semibold text-black">{t('home.card5Title')}</h3>
           </div>
           <p className="text-black">
-            We'll help you refine your concept before it hits the machines.
+            {t('home.card5Description')}
           </p>
         </div>
 
@@ -100,10 +103,10 @@ const Home: React.FC = () => {
         <div className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition">
           <div className="flex items-center gap-2 mb-2">
             <CubeIcon className="h-6 w-6 text-black p-1 " />
-            <h3 className="text-xl font-semibold text-black">Custom Fabrication</h3>
+            <h3 className="text-xl font-semibold text-black">{t('home.card6Title')}</h3>
           </div>
           <p className="text-black">
-            Whether it's an art piece or an industrial frame, we'll build it from scratch.
+            {t('home.card6Description')}
           </p>
         </div>
       </div>

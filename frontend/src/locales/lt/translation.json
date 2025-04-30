@@ -1,0 +1,102 @@
+{
+    "nav": {
+        "home": "Pagrindinis",
+        "designs": "Dizainai",
+        "about": "Apie mus",
+        "contacts": "Kontaktai",
+        "languageToggle": "EN"
+    },
+
+    "home": {
+        "heroTitle": "Sveiki atvykę į MTEAM",
+        "heroSubtitle": "Inovatyvūs sprendimai. Profesionalūs rezultatai.",
+        "viewDesigns": "Mūsų dizainai",
+        "whatWeDo": "Ką mes darome",
+        "introText": "MTEAM derina tikslumą ir meistriškumą, formuodama metalo darbų ateitį — vieną dalį, suvirinimą ar prototipą.",
+        "card1Title": "CNC apdirbimas",
+        "card1Description": "Didelio tikslumo CNC frezavimas ir sukimas pagal užsakymą pagamintoms metalinėms dalims su pramoniniu tikslumu.",
+        "card2Title": "Suvirinimo paslaugos",
+        "card2Description": "Struktūrinis ir detalus suvirinimas naudojant modernias technologijas, kad užtikrintume ilgaamžiškumą ir švarias estetiką.",
+        "card3Title": "Prototipų kūrimas",
+        "card3Description": "Turite keistą idėją? Mes ją įgyvendinsime metale - nesvarbu, kokia ji keista.",
+        "card4Title": "Mažos apimties gamyba",
+        "card4Description": "Reikia 5 detalių, o ne 5000? Pasiūlysime lankstų gamybos sprendimą.",
+        "card5Title": "Dizaino konsultacijos",
+        "card5Description": "Padėsime išgryninti jūsų idėją prieš ją gaminant.",
+        "card6Title": "Nestandartinė gamyba",
+        "card6Description": "Nesvarbu, ar tai meno kūrinys, ar pramoninis rėmas - mes sukursime jį nuo nulio."
+    },
+
+    "designs": {
+        "title": "Mūsų darbai",
+        "card1": {
+        "name": "Individualus laikiklis",
+        "description": "Tiksliai CNC apdirbtas plieninis laikiklis pramoniniam naudojimui.",
+        "price": "€120"
+        },
+        "card2": {
+        "name": "Suvirintas rėmas",
+        "description": "Tvirtas aliuminio rėmas architektūros projektams.",
+        "price": "€220"
+        },
+        "card3": {
+        "name": "Metalinė skulptūra",
+        "description": "Meno kūrinys, jungiantis industrinę formą su išraiška.",
+        "price": "€350"
+        }
+    },
+
+    "categories": {
+        "filterByCategory": "Kategorijų filtras",
+        "all": "Visi",
+        "chair": "Kėdė",
+        "table": "Stalas",
+        "bench": "Suolas"
+    },
+
+    "designInfo": {
+        "price": "Kaina",
+        "contact": "Susisiekti",
+        "addToCart": "Pridėti į krepšelį"
+    },
+
+    "about": {
+        "heroTitle": "Sukurta ilgam. Sukurta žavėti.",
+        "heroText": {
+            "part1": "Įmonėje",
+            "part2": "mes specializuojamės aukštos kokybės metalinių baldų gamyboje, kur susilieja tvirtumas ir modernus dizainas."
+        },
+        "imageAlt": "Metalinis baldas",
+        "whoTitle": "Kas mes esame",
+        "whoText1": "Įkurta 2021 m., mūsų įmonė jau 4 metus yra metalinių baldų gamybos priešakyje. Nuo stilingų darbo stalų iki sunkių pramoninių lentynų – mūsų gaminiai sukurti funkcionalumui ir stiliui.",
+        "whoText2": "Kiekvienas mūsų gaminys atspindi aistrą preciziškai inžinerijai ir minimalistiškam dizainui. Pagaminta su pasididžiavimu. Sukurta pranokti madas.",
+        "feature1": {
+            "title": "4 metų patirtis",
+            "text": "Metalinių gaminių lyderiai nuo 2021 metų."
+        },
+        "feature2": {
+            "title": "10 tūkst.+ pristatymų",
+            "text": "Patikima tiekimo grandinė ir masinė gamyba."
+        },
+        "feature3": {
+            "title": "Ekologiškas požiūris",
+            "text": "Pirmenybę teikiame perdirbamoms medžiagoms ir tvariems procesams."
+        },
+        "ctaTitle": "Norite sužinoti daugiau?",
+        "ctaText": "Pakalbėkime apie jūsų projektą arba apžiūrėkite mūsų katalogą.",
+        "contactButton": "Susisiekti"
+    },
+
+    "contacts": {
+        "title": "Susisiekite su mumis",
+        "emailLabel": "Jūsų el. paštas",
+        "subjectLabel": "Tema",
+        "messageLabel": "Žinutė",
+        "sendButton": "Siųsti žinutę",
+        "infoTitle": "Susisiekite",
+        "email": "El. paštas:",
+        "phone": "Telefonas:",
+        "address": "Adresas: Briedžių g. 7, Vilnius, Lietuva"
+    }
+}
+  

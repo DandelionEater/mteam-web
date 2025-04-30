@@ -1,24 +1,27 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { XMarkIcon } from "@heroicons/react/24/solid";
+import { useTranslation } from 'react-i18next';
 
 interface DesignInfoProps {
   isOpen: boolean;
   onClose: () => void;
-  name: string;
-  description: string;
-  price: string;
-  image: string;
+  design: { id: number; name: string; description: string; price: string; stock: number; image: string; category: string }; // Pass entire design object
+  onAddToCart: (item: { id: number; name: string; description: string; price: string; stock: number; image: string; category: string }) => void; // New prop for add to cart
 }
 
 const DesignInfo: React.FC<DesignInfoProps> = ({
   isOpen,
   onClose,
-  name,
-  description,
-  price,
-  image,
+  design, // Receive the full design object
+  onAddToCart,
 }) => {
+  const navigate = useNavigate();
   const modalRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
+
+  // Floating message state
+  const [showMessage, setShowMessage] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -36,29 +39,67 @@ const DesignInfo: React.FC<DesignInfoProps> = ({
     };
   }, [isOpen, onClose]);
 
+  // Handle Add to Cart
+  const handleAddToCart = () => {
+    // Add full item to cart
+    onAddToCart(design); 
+
+    // Show success message
+    setShowMessage(true);
+
+    // Hide message after 2 seconds
+    setTimeout(() => setShowMessage(false), 2000);
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center px-4">
-    {/* Modal */}
-    <div
-        ref={modalRef}
-        className="bg-white p-6 rounded-xl max-w-xl w-full shadow-lg relative"
-    >
-        <img src={image} alt={name} className="w-full h-auto rounded-lg mb-4" />
-        <h2 className="text-2xl font-bold mb-2">{name}</h2>
-        <p className="text-gray-700 mb-4">{description}</p>
-        <p className="text-lg font-semibold text-gray-900">Price: {price}</p>
-    </div>
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center px-4">
+        {/* Modal */}
+        <div
+          ref={modalRef}
+          className="bg-white p-6 rounded-xl max-w-xl w-full shadow-lg relative"
+        >
+          <img src={design.image} alt={design.name} className="w-full h-auto rounded-lg mb-4" />
+          <h2 className="text-2xl font-bold mb-2">{design.name}</h2>
+          <p className="text-gray-700 mb-4">{design.description}</p>
+          <p className="text-lg font-semibold text-gray-900 mb-2">
+            {t('designInfo.price')}: {design.price}
+          </p>
 
-    {/* Close Button - floating and outside the modal */}
-    <button
-        onClick={onClose}
-        className="absolute top-6 right-6 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition"
-    >
-        <XMarkIcon className="w-5 h-5 text-gray-700" />
-    </button>
-    </div>
+          <div className="flex gap-4">
+            <button
+              onClick={() => navigate('/contacts')}
+              className="bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 w-full transition rounded-xl"
+            >
+              {t('designInfo.contact')}
+            </button>
+            <button
+              onClick={handleAddToCart}
+              className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 w-full transition rounded-xl"
+            >
+              {t('designInfo.addToCart')}
+            </button>
+          </div>
+        </div>
+
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-6 right-6 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition"
+        >
+          <XMarkIcon className="w-5 h-5 text-gray-700" />
+        </button>
+      </div>
+
+      {/* Floating Message */}
+      {showMessage && (
+        <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg">
+          <p>{t('designInfo.addedToCart')}</p>
+        </div>
+      )}
+    </>
   );
 };
 

@@ -1,0 +1,102 @@
+{
+    "nav": {
+        "home": "Home",
+        "designs": "Designs",
+        "about": "About",
+        "contacts": "Contacts",
+        "languageToggle": "LT"
+    },
+
+    "home": {
+        "heroTitle": "Welcome to MTEAM",
+        "heroSubtitle": "Innovative solutions. Professional results.",
+        "viewDesigns": "Our Designs",
+        "whatWeDo": "What We Do",
+        "introText": "MTEAM blends precision and craftsmanship to shape the future of metalwork — one part, weld or prototype at a time.",
+        "card1Title": "CNC Machining",
+        "card1Description": "High-precision CNC milling and turning for custom metal parts with industrial accuracy.",
+        "card2Title": "Welding Services",
+        "card2Description": "Structural and detailed welding using modern techniques to ensure durability and clean aesthetics.",
+        "card3Title": "Prototyping",
+        "card3Description": "Got a weird idea? We'll bring it to life in metal, no matter how odd it sounds.",
+        "card4Title": "Small Batch Production",
+        "card4Description": "Need 5 parts, not 5,000? We've got you covered with flexible production runs.",
+        "card5Title": "Design Consultation",
+        "card5Description": "We'll help you refine your concept before it hits the machines.",
+        "card6Title": "Custom Fabrication",
+        "card6Description": "Whether it's an art piece or an industrial frame, we'll build it from scratch."
+    },
+
+    "designs": {
+        "title": "Our Designs",
+        "card1": {
+        "name": "Custom Bracket",
+        "description": "Precision CNC-milled steel bracket for industrial use.",
+        "price": "$120"
+        },
+        "card2": {
+        "name": "Welded Frame",
+        "description": "Sturdy aluminum frame made for architectural projects.",
+        "price": "$220"
+        },
+        "card3": {
+        "name": "Metal Sculpture",
+        "description": "Artistic piece combining industrial form with expression.",
+        "price": "$350"
+        }
+    },
+
+    "categories": {
+        "filterByCategory": "Filter by category",
+        "all": "All",
+        "chair": "Chair",
+        "table": "Table",
+        "bench": "Bench"
+    },
+
+    "designInfo": {
+        "price": "Price",
+        "contact": "Contact us",
+        "addToCart": "Add to cart"
+    },
+
+    "about": {
+        "heroTitle": "Built to Last. Designed to Impress.",
+        "heroText": {
+            "part1": "At",
+            "part2": "we specialize in high-quality metal furniture that blends durability with bold, modern design."
+        },
+        "imageAlt": "Metal Furniture",
+        "whoTitle": "Who We Are",
+        "whoText1": "Founded in 2021, we've been at the forefront of metal furniture manufacturing for 4 years. From sleek office desks to heavy-duty industrial shelving, our products are crafted for performance and style.",
+        "whoText2": "Every piece we produce reflects our passion for precision engineering and minimalistic design. Made with pride. Built to outlast trends.",
+        "feature1": {
+            "title": "4 Years Experience",
+            "text": "Industry leaders in metal craftsmanship since 2021."
+        },
+        "feature2": {
+            "title": "10K+ Units Shipped",
+            "text": "Reliable supply chain and large-scale manufacturing."
+        },
+        "feature3": {
+            "title": "Eco-Conscious",
+            "text": "We prioritize recyclable materials and sustainable processes."
+        },
+        "ctaTitle": "Want to know more?",
+        "ctaText": "Let's talk about your next project or explore our catalog.",
+        "contactButton": "Contact Us"
+    },
+
+    "contacts": {
+        "title": "Contact Us",
+        "emailLabel": "Your Email",
+        "subjectLabel": "Subject",
+        "messageLabel": "Message",
+        "sendButton": "Send Message",
+        "infoTitle": "Get in Touch",
+        "email": "Email:",
+        "phone": "Phone:",
+        "address": "Address: Briedžių g. 7, Vilnius, Lithuania"
+    }
+}
+  
