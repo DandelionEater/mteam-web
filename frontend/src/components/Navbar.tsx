@@ -6,14 +6,14 @@ import { useTranslation } from 'react-i18next';
 import logo from "../assets/MTEAM_logotipas_be fono - šviesiam.png";
 import CartOverlay from "./CartOverlay";
 import DesignInfo from './DesignInfo';
-import { BaseDesign } from '../types';
+import { BaseDesign, CartItem } from '../types';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { t, i18n } = useTranslation();
 
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cartItems, setCartItems] = useState<BaseDesign[]>(() => {
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     const stored = localStorage.getItem("cart");
     return stored ? JSON.parse(stored) : [];
   });
@@ -24,14 +24,7 @@ const Navbar: React.FC = () => {
   const cartIconDesktopRef = useRef<HTMLDivElement>(null);
   const cartIconMobileRef = useRef<HTMLDivElement>(null);
 
-  const onAddToCart = (item: BaseDesign) => {
-    const updatedCart = [...cartItems, item];
-    setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart)); // Save cart to localStorage
-  };
-
-  // Update cart in state and localStorage
-  const updateCart = (updatedCart: BaseDesign[]) => {
+  const updateCart = (updatedCart: CartItem[]) => {
     setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
@@ -40,15 +33,14 @@ const Navbar: React.FC = () => {
     const updatedCart = cartItems.map(item =>
       item.id === id ? { ...item, quantity } : item
     );
-    updateCart(updatedCart); // Update both state and localStorage
+    updateCart(updatedCart);
   };
   
   const onRemoveItem = (id: number) => {
     const updatedCart = cartItems.filter(item => item.id !== id);
-    updateCart(updatedCart); // Update both state and localStorage
+    updateCart(updatedCart);
   };
 
-  // Sync cart state with localStorage when storage event occurs
   useEffect(() => {
     const handleStorage = () => {
       const stored = localStorage.getItem("cart");
@@ -69,11 +61,6 @@ const Navbar: React.FC = () => {
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'lt' : 'en');
-  };
-
-  const openDesignInfo = (design: BaseDesign) => {
-    setSelectedDesign(design);
-    setIsDesignInfoOpen(true);
   };
 
   const closeDesignInfo = () => {
@@ -206,7 +193,6 @@ const Navbar: React.FC = () => {
           isOpen={isDesignInfoOpen}
           onClose={closeDesignInfo}
           design={selectedDesign}
-          onAddToCart={onAddToCart}
         />
       )}
     </nav>

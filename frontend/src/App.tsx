@@ -7,6 +7,7 @@ import Designs from './pages/Designs';
 import Contacts from './pages/Contacts';
 import ScrollToTop from './components/ScrollToTop';
 import ResetScroll from './utils/ResetScroll';
+import { CartProvider } from './context/CartContext';
 
 interface LayoutProps {
   children: ReactNode;
@@ -24,16 +25,17 @@ function Layout({ children }: LayoutProps) {
 
 function App() {
   return (
-    <Router>
-      <Navbar />
-      {/* React Router Routes */}
-      <Routes>
-        <Route path="/" element={<Layout> <Home /> </Layout>}/>
-        <Route path="/designs" element={<Layout> <Designs /> </Layout>}/>
-        <Route path="/about" element={<Layout> <About /> </Layout>} />
-        <Route path='/contacts' element={<Layout> <Contacts /> </Layout>}/>
-      </Routes>
-    </Router>
+    <CartProvider> {/* ✅ Wrap everything inside CartProvider */}
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Layout><Home /></Layout>} />
+          <Route path="/designs" element={<Layout><Designs /></Layout>} />
+          <Route path="/about" element={<Layout><About /></Layout>} />
+          <Route path="/contacts" element={<Layout><Contacts /></Layout>} />
+        </Routes>
+      </Router>
+    </CartProvider>
   );
 }
 

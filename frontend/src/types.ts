@@ -10,5 +10,7 @@ export type BaseDesign = {
   
   export type DisplayDesign = BaseDesign;
 
-  export type CartItem = BaseDesign & { quantity?: number };
+  export type CartItem = BaseDesign & {
+    quantity: number;
+  };
   

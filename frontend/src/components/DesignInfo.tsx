@@ -2,20 +2,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from 'react-i18next';
+import { useCart } from '../context/CartContext';
 import { BaseDesign } from '../types';
 
 interface DesignInfoProps {
   isOpen: boolean;
   onClose: () => void;
   design: BaseDesign;
-  onAddToCart: (item: BaseDesign) => void;
 }
 
 const DesignInfo: React.FC<DesignInfoProps> = ({
   isOpen,
   onClose,
-  design, // Receive the full design object
-  onAddToCart,
+  design
 }) => {
   const navigate = useNavigate();
   const modalRef = useRef<HTMLDivElement>(null);
@@ -23,6 +22,15 @@ const DesignInfo: React.FC<DesignInfoProps> = ({
 
   // Floating message state
   const [showMessage, setShowMessage] = useState(false);
+
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    const cartItem = { ...design, quantity: 1 };
+    addToCart(cartItem);
+    setShowMessage(true);
+    setTimeout(() => setShowMessage(false), 2000);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -39,13 +47,6 @@ const DesignInfo: React.FC<DesignInfoProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, onClose]);
-
-  // Handle Add to Cart
-  const handleAddToCart = () => {
-    onAddToCart(design);
-    setShowMessage(true);
-    setTimeout(() => setShowMessage(false), 2000);
-  };
 
   if (!isOpen) return null;
 
