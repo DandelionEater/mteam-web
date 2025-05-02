@@ -1,19 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DesignInfo from '../components/DesignInfo';
 import { useTranslation } from 'react-i18next';
+import { BaseDesign, DisplayDesign, CartItem } from '../types';
 
 const Designs: React.FC = () => {
   const { t } = useTranslation();
-  const [selectedDesign, setSelectedDesign] = useState<null | typeof designs[0]>(null);
-  const [cart, setCart] = useState<Array<typeof designs[0]>>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>(''); // Track selected category
 
-  const designs = [
+  const designs: BaseDesign[] = [
     {
       id: 0,
       name: t('designs.card1.name'),
       description: t('designs.card1.description'),
-      price: t('designs.card1.price'),
+      price: 200,
       stock: 5,
       image: "https://placehold.co/400x250",
       category: t('categories.chair'),
@@ -22,7 +20,7 @@ const Designs: React.FC = () => {
       id: 1,
       name: t('designs.card2.name'),
       description: t('designs.card2.description'),
-      price: t('designs.card2.price'),
+      price: 250,
       stock: 10,
       image: "https://placehold.co/400x250",
       category: t('categories.table'),
@@ -31,24 +29,49 @@ const Designs: React.FC = () => {
       id: 2,
       name: t('designs.card3.name'),
       description: t('designs.card3.description'),
-      price: t('designs.card3.price'),
+      price: 350,
       stock: 3,
       image: "https://placehold.co/400x250",
       category: t('categories.bench'),
     },
   ];
 
+  const [selectedDesign, setSelectedDesign] = useState<DisplayDesign | null>(null);
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    const storedCart = localStorage.getItem("cart");
+    return storedCart ? JSON.parse(storedCart) : [];
+  });
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+
   const categories = Array.from(new Set(designs.map(design => design.category)));
 
-  // Add to cart functionality
-  const addToCart = (design: { id: number; name: string; description: string; price: string; stock: number; image: string; category: string }) => {
-    setCart((prevCart) => [...prevCart, design]);
+  const addToCart = (design: BaseDesign) => {
+    setCart(prevCart => {
+      const existingItem = prevCart.find(item => item.id === design.id);
+      if (existingItem) {
+        return prevCart.map(item =>
+          item.id === design.id
+            ? { ...item, quantity: (item.quantity ?? 1) + 1 }
+            : item
+        );
+      } else {
+        return [...prevCart, { ...design, quantity: 1 }];
+      }
+    });
   };
 
-  // Filter designs based on selected category
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
   const filteredDesigns = selectedCategory
     ? designs.filter(design => design.category === selectedCategory)
     : designs;
+
+  const handleSelectDesign = (design: BaseDesign) => {
+    const { price, ...rest } = design;
+    setSelectedDesign({ ...rest, price });
+  };
 
   return (
     <section className="bg-white py-16 px-6 min-h-screen pt-24">
@@ -90,7 +113,7 @@ const Designs: React.FC = () => {
             {filteredDesigns.map((design, index) => (
               <div
                 key={index}
-                onClick={() => setSelectedDesign(design)}
+                onClick={() => handleSelectDesign(design)}
                 className="relative group overflow-hidden rounded-xl shadow-lg cursor-pointer"
               >
                 <img
@@ -113,7 +136,15 @@ const Designs: React.FC = () => {
       <DesignInfo
         isOpen={!!selectedDesign}
         onClose={() => setSelectedDesign(null)}
-        design={selectedDesign || { id: 0, name: '', description: '', price: '', stock: 0, image: '', category: '' }}
+        design={selectedDesign || {
+          id: 0,
+          name: '',
+          description: '',
+          price: 0,
+          stock: 0,
+          image: '',
+          category: ''
+        }}
         onAddToCart={addToCart}
       />
     </section>

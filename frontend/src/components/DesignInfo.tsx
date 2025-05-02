@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from 'react-i18next';
+import { BaseDesign } from '../types';
 
 interface DesignInfoProps {
   isOpen: boolean;
   onClose: () => void;
-  design: { id: number; name: string; description: string; price: string; stock: number; image: string; category: string }; // Pass entire design object
-  onAddToCart: (item: { id: number; name: string; description: string; price: string; stock: number; image: string; category: string }) => void; // New prop for add to cart
+  design: BaseDesign;
+  onAddToCart: (item: BaseDesign) => void;
 }
 
 const DesignInfo: React.FC<DesignInfoProps> = ({
@@ -41,13 +42,8 @@ const DesignInfo: React.FC<DesignInfoProps> = ({
 
   // Handle Add to Cart
   const handleAddToCart = () => {
-    // Add full item to cart
-    onAddToCart(design); 
-
-    // Show success message
+    onAddToCart(design);
     setShowMessage(true);
-
-    // Hide message after 2 seconds
     setTimeout(() => setShowMessage(false), 2000);
   };
 

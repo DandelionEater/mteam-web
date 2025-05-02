@@ -30,19 +30,16 @@
     "designs": {
         "title": "Our Designs",
         "card1": {
-        "name": "Custom Bracket",
-        "description": "Precision CNC-milled steel bracket for industrial use.",
-        "price": "$120"
+            "name": "Custom Bracket",
+            "description": "Precision CNC-milled steel bracket for industrial use."
         },
         "card2": {
-        "name": "Welded Frame",
-        "description": "Sturdy aluminum frame made for architectural projects.",
-        "price": "$220"
+            "name": "Welded Frame",
+            "description": "Sturdy aluminum frame made for architectural projects."
         },
         "card3": {
-        "name": "Metal Sculpture",
-        "description": "Artistic piece combining industrial form with expression.",
-        "price": "$350"
+            "name": "Metal Sculpture",
+            "description": "Artistic piece combining industrial form with expression."
         }
     },
 

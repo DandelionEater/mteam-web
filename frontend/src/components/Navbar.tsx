@@ -1,13 +1,62 @@
-import React, { useState } from 'react';
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
+import React, { useState, useRef, useEffect } from 'react';
+import { Bars3Icon, XMarkIcon, ShoppingCartIcon } from "@heroicons/react/24/solid";
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import logo from "../assets/MTEAM_logotipas_be fono - šviesiam.png";
+import CartOverlay from "./CartOverlay";
+import DesignInfo from './DesignInfo';
+import { BaseDesign } from '../types';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { t, i18n } = useTranslation();
+
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState<BaseDesign[]>(() => {
+    const stored = localStorage.getItem("cart");
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  const [isDesignInfoOpen, setIsDesignInfoOpen] = useState(false);
+  const [selectedDesign, setSelectedDesign] = useState<BaseDesign | null>(null);
+
+  const cartIconDesktopRef = useRef<HTMLDivElement>(null);
+  const cartIconMobileRef = useRef<HTMLDivElement>(null);
+
+  const onAddToCart = (item: BaseDesign) => {
+    const updatedCart = [...cartItems, item];
+    setCartItems(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart)); // Save cart to localStorage
+  };
+
+  // Update cart in state and localStorage
+  const updateCart = (updatedCart: BaseDesign[]) => {
+    setCartItems(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+
+  const onUpdateQuantity = (id: number, quantity: number) => {
+    const updatedCart = cartItems.map(item =>
+      item.id === id ? { ...item, quantity } : item
+    );
+    updateCart(updatedCart); // Update both state and localStorage
+  };
+  
+  const onRemoveItem = (id: number) => {
+    const updatedCart = cartItems.filter(item => item.id !== id);
+    updateCart(updatedCart); // Update both state and localStorage
+  };
+
+  // Sync cart state with localStorage when storage event occurs
+  useEffect(() => {
+    const handleStorage = () => {
+      const stored = localStorage.getItem("cart");
+      if (stored) setCartItems(JSON.parse(stored));
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   const flexBetween = "flex items-center justify-between";
   
@@ -20,6 +69,16 @@ const Navbar: React.FC = () => {
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'en' ? 'lt' : 'en');
+  };
+
+  const openDesignInfo = (design: BaseDesign) => {
+    setSelectedDesign(design);
+    setIsDesignInfoOpen(true);
+  };
+
+  const closeDesignInfo = () => {
+    setIsDesignInfoOpen(false);
+    setSelectedDesign(null);
   };
 
   return (
@@ -58,6 +117,20 @@ const Navbar: React.FC = () => {
                 </motion.span>
               </Link>
             ))}
+
+            {/* Cart icon */}
+            <div ref={cartIconDesktopRef} className="relative">
+              <button onClick={() => setIsCartOpen(prev => !prev)} className="relative text-white">
+                <ShoppingCartIcon className="w-6 h-6" />
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-xs px-1 rounded-full">
+                    {cartItems.length}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Language toggle */}
             <button
               onClick={toggleLanguage}
               className="text-white text-sm border px-3 py-1 rounded-lg hover:bg-white hover:text-gray-900 transition"
@@ -89,6 +162,20 @@ const Navbar: React.FC = () => {
             {label}
           </Link>
         ))}
+
+        {/* Cart icon */}
+        <div className="flex justify-center py-2" ref={cartIconMobileRef}>
+          <button onClick={() => setIsCartOpen(prev => !prev)} className="relative text-white">
+            <ShoppingCartIcon className="w-6 h-6" />
+            {cartItems.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-xs px-1 rounded-full">
+                {cartItems.length}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Language toggle */}
         <button
           onClick={() => {
             toggleLanguage();
@@ -99,6 +186,29 @@ const Navbar: React.FC = () => {
           {t('nav.languageToggle')}
         </button>
       </div>
+
+      {/* Cart Overlay */}
+      {isCartOpen && (
+        <CartOverlay
+          key={JSON.stringify(cartItems)} // forces rerender when cart changes
+          items={cartItems}
+          onUpdateQuantity={onUpdateQuantity}
+          onRemoveItem={onRemoveItem}
+          anchorRef={cartIconDesktopRef}
+          isOpen={isCartOpen}
+          onClose={() => setIsCartOpen(false)}
+        />
+      )}
+
+      {/* DesignInfo Section */}
+      {isDesignInfoOpen && selectedDesign && (
+        <DesignInfo
+          isOpen={isDesignInfoOpen}
+          onClose={closeDesignInfo}
+          design={selectedDesign}
+          onAddToCart={onAddToCart}
+        />
+      )}
     </nav>
   );
 };

@@ -30,19 +30,16 @@
     "designs": {
         "title": "Mūsų darbai",
         "card1": {
-        "name": "Individualus laikiklis",
-        "description": "Tiksliai CNC apdirbtas plieninis laikiklis pramoniniam naudojimui.",
-        "price": "€120"
+            "name": "Individualus laikiklis",
+            "description": "Tiksliai CNC apdirbtas plieninis laikiklis pramoniniam naudojimui."
         },
         "card2": {
-        "name": "Suvirintas rėmas",
-        "description": "Tvirtas aliuminio rėmas architektūros projektams.",
-        "price": "€220"
+            "name": "Suvirintas rėmas",
+            "description": "Tvirtas aliuminio rėmas architektūros projektams."
         },
         "card3": {
-        "name": "Metalinė skulptūra",
-        "description": "Meno kūrinys, jungiantis industrinę formą su išraiška.",
-        "price": "€350"
+            "name": "Metalinė skulptūra",
+            "description": "Meno kūrinys, jungiantis industrinę formą su išraiška."
         }
     },
 
