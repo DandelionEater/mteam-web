@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useLayoutEffect, useRef, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
-import { CartItem } from "../types";
+import { BaseDesign } from "../types";
+import { Link } from 'react-router-dom';
 
 type CartOverlayProps = {
-  items: CartItem[];
+  items: BaseDesign[];
   onUpdateQuantity: (id: number, quantity: number) => void;
   onRemoveItem: (id: number) => void;
   anchorRef: React.RefObject<HTMLDivElement | null>;
@@ -19,10 +20,31 @@ export default function CartOverlay({
   isOpen,
   onClose
 }: CartOverlayProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Close the modal when clicking outside
+  const [position, setPosition] = useState<{ top: number; right: number } | null>(null);
+
+  const total = items.reduce((acc, item) => {
+    return acc + item.price * (item.quantity ?? 1);
+  }, 0);
+
+  useLayoutEffect(() => {
+    if (isOpen && anchorRef.current) {
+      const rect = anchorRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.bottom + window.scrollY + 8,
+        right: window.innerWidth - rect.right,
+      });
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setPosition(null);
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -38,23 +60,6 @@ export default function CartOverlay({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, onClose]);
-
-  // Calculate total directly from numeric price
-  const total = items.reduce((acc, item) => {
-    return acc + item.price * (item.quantity ?? 1);
-  }, 0);
-
-  const [position, setPosition] = useState({ top: 0, right: 0 });
-
-  useEffect(() => {
-    if (anchorRef.current) {
-      const rect = anchorRef.current.getBoundingClientRect();
-      setPosition({
-        top: rect.bottom + window.scrollY + 8,
-        right: window.innerWidth - rect.right,
-      });
-    }
-  }, [anchorRef, items.length, isOpen]);
 
   const formatPrice = (price: number): string => {
     const locale = i18n.language === 'lt' ? 'lt-LT' : 'en-US';
@@ -72,17 +77,21 @@ export default function CartOverlay({
     <div
       ref={modalRef}
       className="absolute w-80 bg-white shadow-xl rounded-2xl z-50 p-4 border"
-      style={{ top: position.top, right: position.right }}
+      style={{
+        top: position?.top ?? -9999,
+        right: position?.right ?? -9999,
+        visibility: position ? 'visible' : 'hidden',
+      }}
     >
-      <h2 className="text-lg font-semibold mb-2">Your Cart</h2>
+      <h2 className="text-lg font-semibold mb-2">{t('cartPage.title')}</h2>
       {items.length === 0 ? (
-        <p className="text-sm text-gray-500">Cart is empty</p>
+        <p className="text-sm text-gray-500">{t('cartPage.emptyCart')}</p>
       ) : (
         <div className="space-y-4 max-h-64 overflow-y-auto">
           {items.map((item) => (
             <div key={item.id} className="flex items-center justify-between">
               <div>
-                <p className="font-medium">{item.name}</p>
+                <p className="font-medium">{t(item.nameKey)}</p>
                 <p className="text-sm text-gray-600">{formatPrice(item.price)}</p>
                 <div className="flex items-center mt-1 gap-2">
                   <button
@@ -106,7 +115,7 @@ export default function CartOverlay({
               </div>
               <button
                 onClick={() => onRemoveItem(item.id)}
-                className="text-red-500 hover:text-red-700"
+                className="text-red-500 hover:text-red-700 pr-3"
               >
                 ✕
               </button>
@@ -117,11 +126,13 @@ export default function CartOverlay({
       <div className="mt-4">
         <p className="font-semibold text-right">Total: {formatPrice(total)}</p>
         <div className="flex gap-2 mt-3">
-          <button className="w-full px-4 py-2 border rounded hover:bg-gray-100">
-            Go to Cart
-          </button>
+        <button className="w-full px-4 py-2 border rounded hover:bg-gray-100">
+          <Link to="/cart" className="w-full text-center">
+            {t('cartPage.goToCart')}
+          </Link>
+        </button>
           <button className="w-full px-4 py-2 bg-black text-white rounded hover:bg-gray-800">
-            Checkout
+            {t('cartPage.checkout')}
           </button>
         </div>
       </div>

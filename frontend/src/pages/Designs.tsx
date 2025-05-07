@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import DesignInfo from '../components/DesignInfo';
 import { useTranslation } from 'react-i18next';
-import { BaseDesign, DisplayDesign, CartItem } from '../types';
+import { BaseDesign, DisplayDesign } from '../types';
 
 const Designs: React.FC = () => {
   const { t } = useTranslation();
@@ -9,63 +9,44 @@ const Designs: React.FC = () => {
   const designs: BaseDesign[] = [
     {
       id: 0,
-      name: t('designs.card1.name'),
-      description: t('designs.card1.description'),
+      nameKey: 'designs.card1_name',
+      descriptionKey: 'designs.card1_description',
       price: 200,
       stock: 5,
       image: "https://placehold.co/400x250",
-      category: t('categories.chair'),
+      categoryKey: 'categories.chair',
+      quantity: 15,
     },
     {
       id: 1,
-      name: t('designs.card2.name'),
-      description: t('designs.card2.description'),
+      nameKey: 'designs.card2_name',
+      descriptionKey: 'designs.card2_description',
       price: 250,
       stock: 10,
       image: "https://placehold.co/400x250",
-      category: t('categories.table'),
+      categoryKey: 'categories.table',
+      quantity: 12,
     },
     {
       id: 2,
-      name: t('designs.card3.name'),
-      description: t('designs.card3.description'),
+      nameKey: 'designs.card3_name',
+      descriptionKey: 'designs.card3_description',
       price: 350,
       stock: 3,
       image: "https://placehold.co/400x250",
-      category: t('categories.bench'),
+      categoryKey: 'categories.bench',
+      quantity: 8,
     },
   ];
+  
 
   const [selectedDesign, setSelectedDesign] = useState<DisplayDesign | null>(null);
-  const [cart, setCart] = useState<CartItem[]>(() => {
-    const storedCart = localStorage.getItem("cart");
-    return storedCart ? JSON.parse(storedCart) : [];
-  });
   const [selectedCategory, setSelectedCategory] = useState<string>('');
 
-  const categories = Array.from(new Set(designs.map(design => design.category)));
-
-  const addToCart = (design: BaseDesign) => {
-    setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.id === design.id);
-      if (existingItem) {
-        return prevCart.map(item =>
-          item.id === design.id
-            ? { ...item, quantity: (item.quantity ?? 1) + 1 }
-            : item
-        );
-      } else {
-        return [...prevCart, { ...design, quantity: 1 }];
-      }
-    });
-  };
-
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+  const categories = Array.from(new Set(designs.map(design => design.categoryKey)));
 
   const filteredDesigns = selectedCategory
-    ? designs.filter(design => design.category === selectedCategory)
+    ? designs.filter(design => design.categoryKey === selectedCategory)
     : designs;
 
   const handleSelectDesign = (design: BaseDesign) => {
@@ -94,13 +75,13 @@ const Designs: React.FC = () => {
                 {t('categories.all')}
               </button>
             </li>
-            {categories.map((category, index) => (
+            {categories.map((categoryKey, index) => (
               <li key={index}>
                 <button
-                  onClick={() => setSelectedCategory(category)}
-                  className={`w-full text-left px-4 py-2 border rounded-lg hover:bg-gray-200 transition ${selectedCategory === category ? 'bg-gray-300' : ''}`}
+                  onClick={() => setSelectedCategory(categoryKey)}
+                  className={`w-full text-left px-4 py-2 border rounded-lg hover:bg-gray-200 transition ${selectedCategory === categoryKey ? 'bg-gray-300' : ''}`}
                 >
-                  {category}
+                  {t(categoryKey)}
                 </button>
               </li>
             ))}
@@ -118,12 +99,12 @@ const Designs: React.FC = () => {
               >
                 <img
                   src={design.image}
-                  alt={design.name}
+                  alt={design.nameKey}
                   className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <h3 className="text-xl font-bold">{design.name}</h3>
-                  <p className="text-sm mt-2 px-4 text-center">{design.description}</p>
+                  <h3 className="text-xl font-bold">{t(design.nameKey)}</h3>
+                  <p className="text-sm mt-2 px-4 text-center">{t(design.descriptionKey)}</p>
                   <p className="text-lg font-semibold mt-2">{design.price}</p>
                 </div>
               </div>
@@ -138,14 +119,14 @@ const Designs: React.FC = () => {
         onClose={() => setSelectedDesign(null)}
         design={selectedDesign || {
           id: 0,
-          name: '',
-          description: '',
+          nameKey: '',
+          descriptionKey: '',
           price: 0,
           stock: 0,
           image: '',
-          category: ''
+          categoryKey: '',
+          quantity: 0,
         }}
-        onAddToCart={addToCart}
       />
     </section>
   );

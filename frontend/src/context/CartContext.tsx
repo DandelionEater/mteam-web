@@ -12,15 +12,27 @@ const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cartItems, setCartItems] = useState<BaseDesign[]>(() => {
-    // Initialize cart from localStorage if available
     const storedCart = localStorage.getItem('cart');
     return storedCart ? JSON.parse(storedCart) : [];
   });
 
   const addToCart = (item: BaseDesign) => {
     setCartItems((prevItems) => {
-      const updatedCart = [...prevItems, item];
-      localStorage.setItem('cart', JSON.stringify(updatedCart)); // Persist in localStorage
+      const existingItem = prevItems.find((cartItem) => cartItem.id === item.id);
+  
+      let updatedCart;
+  
+      if (existingItem) {
+        updatedCart = prevItems.map((cartItem) =>
+          cartItem.id === item.id
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      } else {
+        updatedCart = [...prevItems, { ...item, quantity: 1 }];
+      }
+  
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
       return updatedCart;
     });
   };
@@ -28,17 +40,22 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const removeFromCart = (id: number) => {
     setCartItems((prevItems) => {
       const updatedCart = prevItems.filter(item => item.id !== id);
-      localStorage.setItem('cart', JSON.stringify(updatedCart)); // Persist in localStorage
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
       return updatedCart;
     });
   };
 
   const updateQuantity = (id: number, quantity: number) => {
     setCartItems((prevItems) => {
-      const updatedCart = prevItems.map(item =>
-        item.id === id ? { ...item, quantity } : item
+      const updatedCart = prevItems.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              quantity: Math.max(quantity, 1),
+            }
+          : item
       );
-      localStorage.setItem('cart', JSON.stringify(updatedCart)); // Persist in localStorage
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
       return updatedCart;
     });
   };

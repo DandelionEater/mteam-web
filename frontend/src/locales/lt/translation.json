@@ -4,7 +4,8 @@
         "designs": "Dizainai",
         "about": "Apie mus",
         "contacts": "Kontaktai",
-        "languageToggle": "EN"
+        "languageToggle": "EN",
+        "cart": "Krepšelis"
     },
 
     "home": {
@@ -28,19 +29,13 @@
     },
 
     "designs": {
-        "title": "Mūsų darbai",
-        "card1": {
-            "name": "Individualus laikiklis",
-            "description": "Tiksliai CNC apdirbtas plieninis laikiklis pramoniniam naudojimui."
-        },
-        "card2": {
-            "name": "Suvirintas rėmas",
-            "description": "Tvirtas aliuminio rėmas architektūros projektams."
-        },
-        "card3": {
-            "name": "Metalinė skulptūra",
-            "description": "Meno kūrinys, jungiantis industrinę formą su išraiška."
-        }
+        "card1_name": "Individualus laikiklis",
+        "card1_description": "Tiksliai CNC apdirbtas plieninis laikiklis pramoniniam naudojimui.",
+        "card2_name": "Suvirintas rėmas",
+        "card2_description": "Tvirtas aliuminio rėmas architektūros projektams.",
+        "card3_name": "Metalinė skulptūra",
+        "card3_description": "Meno kūrinys, jungiantis industrinę formą su išraiška.",
+        "title": "Mūsų darbai"
     },
 
     "categories": {
@@ -54,7 +49,8 @@
     "designInfo": {
         "price": "Kaina",
         "contact": "Susisiekti",
-        "addToCart": "Pridėti į krepšelį"
+        "addToCart": "Pridėti į krepšelį",
+        "floatingMessage": "Sėkmingai pridėta į krepšelį"
     },
 
     "about": {
@@ -94,6 +90,14 @@
         "email": "El. paštas:",
         "phone": "Telefonas:",
         "address": "Adresas: Briedžių g. 7, Vilnius, Lietuva"
+    },
+
+    "cartPage": {
+        "title": "Jūsų Krepšelis",
+        "emptyCart": "Jūsų krepšelis yra tuščias.",
+        "total": "Iš viso",
+        "checkout": "Apmokėti",
+        "goToCart": "Eiti į krepšelį"
     }
 }
   

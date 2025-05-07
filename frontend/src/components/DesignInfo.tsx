@@ -20,7 +20,6 @@ const DesignInfo: React.FC<DesignInfoProps> = ({
   const modalRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
 
-  // Floating message state
   const [showMessage, setShowMessage] = useState(false);
 
   const { addToCart } = useCart();
@@ -58,9 +57,9 @@ const DesignInfo: React.FC<DesignInfoProps> = ({
           ref={modalRef}
           className="bg-white p-6 rounded-xl max-w-xl w-full shadow-lg relative"
         >
-          <img src={design.image} alt={design.name} className="w-full h-auto rounded-lg mb-4" />
-          <h2 className="text-2xl font-bold mb-2">{design.name}</h2>
-          <p className="text-gray-700 mb-4">{design.description}</p>
+          <img src={design.image} alt={t(design.nameKey)} className="w-full h-auto rounded-lg mb-4" />
+          <h2 className="text-2xl font-bold mb-2">{t(design.nameKey)}</h2>
+          <p className="text-gray-700 mb-4">{t(design.descriptionKey)}</p>
           <p className="text-lg font-semibold text-gray-900 mb-2">
             {t('designInfo.price')}: {design.price}
           </p>
@@ -92,8 +91,8 @@ const DesignInfo: React.FC<DesignInfoProps> = ({
 
       {/* Floating Message */}
       {showMessage && (
-        <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg">
-          <p>{t('designInfo.addedToCart')}</p>
+        <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg z-50">
+          <p className='text-center'>{t('designInfo.floatingMessage')}</p>
         </div>
       )}
     </>

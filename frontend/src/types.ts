@@ -1,16 +1,12 @@
-export type BaseDesign = {
-    id: number;
-    name: string;
-    description: string;
-    price: number;
-    stock: number;
-    image: string;
-    category: string;
-  };
+export interface BaseDesign {
+  id: number;
+  nameKey: string;
+  descriptionKey: string;
+  price: number;
+  stock: number;
+  image: string;
+  categoryKey: string;
+  quantity: number;
+}
   
-  export type DisplayDesign = BaseDesign;
-
-  export type CartItem = BaseDesign & {
-    quantity: number;
-  };
-  
+export type DisplayDesign = BaseDesign;

@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Designs from './pages/Designs';
 import Contacts from './pages/Contacts';
+import CartPage from './pages/CartPage';
 import ScrollToTop from './components/ScrollToTop';
 import ResetScroll from './utils/ResetScroll';
 import { CartProvider } from './context/CartContext';
@@ -25,7 +26,7 @@ function Layout({ children }: LayoutProps) {
 
 function App() {
   return (
-    <CartProvider> {/* ✅ Wrap everything inside CartProvider */}
+    <CartProvider>
       <Router>
         <Navbar />
         <Routes>
@@ -33,6 +34,7 @@ function App() {
           <Route path="/designs" element={<Layout><Designs /></Layout>} />
           <Route path="/about" element={<Layout><About /></Layout>} />
           <Route path="/contacts" element={<Layout><Contacts /></Layout>} />
+          <Route path="/cart" element={<Layout><CartPage /></Layout>} />
         </Routes>
       </Router>
     </CartProvider>

@@ -9,7 +9,7 @@ const Home: React.FC = () => {
 
   return (
     <>
-      {/* Full-Page Hero Section */}
+      {/* Full-Page Header Section */}
       <section
         className="h-screen w-full bg-cover bg-center flex items-center justify-center text-center px-4"
         style={{

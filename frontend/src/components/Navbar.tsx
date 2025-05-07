@@ -1,54 +1,26 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Bars3Icon, XMarkIcon, ShoppingCartIcon } from "@heroicons/react/24/solid";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import logo from "../assets/MTEAM_logotipas_be fono - šviesiam.png";
 import CartOverlay from "./CartOverlay";
 import DesignInfo from './DesignInfo';
-import { BaseDesign, CartItem } from '../types';
+import { BaseDesign } from '../types';
+import { useCart } from '../context/CartContext';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { t, i18n } = useTranslation();
 
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    const stored = localStorage.getItem("cart");
-    return stored ? JSON.parse(stored) : [];
-  });
+  const { cartItems, updateQuantity, removeFromCart } = useCart();
 
   const [isDesignInfoOpen, setIsDesignInfoOpen] = useState(false);
   const [selectedDesign, setSelectedDesign] = useState<BaseDesign | null>(null);
 
   const cartIconDesktopRef = useRef<HTMLDivElement>(null);
   const cartIconMobileRef = useRef<HTMLDivElement>(null);
-
-  const updateCart = (updatedCart: CartItem[]) => {
-    setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-  };
-
-  const onUpdateQuantity = (id: number, quantity: number) => {
-    const updatedCart = cartItems.map(item =>
-      item.id === id ? { ...item, quantity } : item
-    );
-    updateCart(updatedCart);
-  };
-  
-  const onRemoveItem = (id: number) => {
-    const updatedCart = cartItems.filter(item => item.id !== id);
-    updateCart(updatedCart);
-  };
-
-  useEffect(() => {
-    const handleStorage = () => {
-      const stored = localStorage.getItem("cart");
-      if (stored) setCartItems(JSON.parse(stored));
-    };
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
-  }, []);
 
   const flexBetween = "flex items-center justify-between";
   
@@ -68,6 +40,8 @@ const Navbar: React.FC = () => {
     setSelectedDesign(null);
   };
 
+  const location = useLocation();
+
   return (
     <nav className={`${flexBetween} fixed top-0 z-30 w-full py-6 px-4 bg-gray-900 shadow-md`}>
       <div className={`${flexBetween} mx-auto w-full max-w-screen-xl`}>
@@ -79,17 +53,15 @@ const Navbar: React.FC = () => {
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-8 text-sm pr-4">
-            {navLinks.map(({ label, path }) => (
-              <Link
-                key={path}
-                to={path}
-                className="relative text-white py-2 text-center"
-              >
+          {navLinks.map(({ label, path }) => {
+            const isActive = location.pathname === path;
+            return (
+              <Link key={path} to={path} className="relative text-white py-2 text-center">
                 <motion.span
                   className="relative"
                   whileHover="hover"
-                  initial="rest"
-                  animate="rest"
+                  initial={isActive ? "hover" : "rest"}
+                  animate={isActive ? "hover" : "rest"}
                 >
                   {label}
                   <motion.span
@@ -103,9 +75,10 @@ const Navbar: React.FC = () => {
                   />
                 </motion.span>
               </Link>
-            ))}
+            );
+          })}
 
-            {/* Cart icon */}
+            {/* Cart icon on desktop */}
             <div ref={cartIconDesktopRef} className="relative">
               <button onClick={() => setIsCartOpen(prev => !prev)} className="relative text-white">
                 <ShoppingCartIcon className="w-6 h-6" />
@@ -126,7 +99,7 @@ const Navbar: React.FC = () => {
             </button>
           </div>
 
-          {/* Mobile Toggle Icon */}
+          {/* Mobile Burger Icon */}
           <div className="md:hidden flex items-center pr-3" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? (
               <XMarkIcon className="w-6 h-6 text-white" />
@@ -139,48 +112,53 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Menu */}
       <div className={`md:hidden ${isMenuOpen ? "block" : "hidden"} absolute left-0 top-full w-full bg-gray-900 py-4 shadow-md border-t border-gray-500`}>
-        {navLinks.map(({ label, path }) => (
+      {navLinks.map(({ label, path }) => {
+        const isActive = location.pathname === path;
+        return (
           <Link
             key={path}
             to={path}
-            className="block text-white hover:text-gray-400 py-2 text-center"
             onClick={() => setIsMenuOpen(false)}
+            className={`block text-white py-2 text-center ${isActive ? "underline font-semibold" : "hover:text-gray-400"}`}
           >
             {label}
           </Link>
-        ))}
+        );
+      })}
 
-        {/* Cart icon */}
         <div className="flex justify-center py-2" ref={cartIconMobileRef}>
-          <button onClick={() => setIsCartOpen(prev => !prev)} className="relative text-white">
-            <ShoppingCartIcon className="w-6 h-6" />
-            {cartItems.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-xs px-1 rounded-full">
-                {cartItems.length}
-              </span>
-            )}
-          </button>
+          <Link to="/cart" className="text-white" onClick={() => setIsMenuOpen(false)}>
+            <span className="md:hidden">{t('nav.cart')}</span>
+            <span className="hidden md:block">
+              <ShoppingCartIcon className="w-6 h-6" />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-xs px-1 rounded-full">
+                  {cartItems.length}
+                </span>
+              )}
+            </span>
+          </Link>
         </div>
 
-        {/* Language toggle */}
-        <button
-          onClick={() => {
-            toggleLanguage();
-            setIsMenuOpen(false);
-          }}
-          className="block text-white hover:text-gray-400 py-2 text-center"
-        >
-          {t('nav.languageToggle')}
-        </button>
+        <div className="flex justify-center py-2">
+          <button
+            onClick={() => {
+              toggleLanguage();
+              setIsMenuOpen(false);
+            }}
+            className="text-white text-sm border px-3 py-1 rounded-lg hover:bg-white hover:text-gray-900 transition"
+          >
+            {t('nav.languageToggle')}
+          </button>
+        </div>
       </div>
 
       {/* Cart Overlay */}
       {isCartOpen && (
         <CartOverlay
-          key={JSON.stringify(cartItems)} // forces rerender when cart changes
           items={cartItems}
-          onUpdateQuantity={onUpdateQuantity}
-          onRemoveItem={onRemoveItem}
+          onUpdateQuantity={updateQuantity}
+          onRemoveItem={removeFromCart}
           anchorRef={cartIconDesktopRef}
           isOpen={isCartOpen}
           onClose={() => setIsCartOpen(false)}

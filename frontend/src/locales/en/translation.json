@@ -4,7 +4,8 @@
         "designs": "Designs",
         "about": "About",
         "contacts": "Contacts",
-        "languageToggle": "LT"
+        "languageToggle": "LT",
+        "cart": "Cart"
     },
 
     "home": {
@@ -28,19 +29,13 @@
     },
 
     "designs": {
-        "title": "Our Designs",
-        "card1": {
-            "name": "Custom Bracket",
-            "description": "Precision CNC-milled steel bracket for industrial use."
-        },
-        "card2": {
-            "name": "Welded Frame",
-            "description": "Sturdy aluminum frame made for architectural projects."
-        },
-        "card3": {
-            "name": "Metal Sculpture",
-            "description": "Artistic piece combining industrial form with expression."
-        }
+        "card1_name": "Custom Bracket",
+        "card1_description": "Precision CNC-milled steel bracket for industrial use.",
+        "card2_name": "Welded Frame",
+        "card2_description": "Sturdy aluminum frame made for architectural projects.",
+        "card3_name": "Metal Sculpture",
+        "card3_description": "Artistic piece combining industrial form with expression.",
+        "title": "Our Designs"
     },
 
     "categories": {
@@ -54,7 +49,8 @@
     "designInfo": {
         "price": "Price",
         "contact": "Contact us",
-        "addToCart": "Add to cart"
+        "addToCart": "Add to cart",
+        "floatingMessage": "Succsessfully added to cart"
     },
 
     "about": {
@@ -94,6 +90,14 @@
         "email": "Email:",
         "phone": "Phone:",
         "address": "Address: Briedžių g. 7, Vilnius, Lithuania"
+    },
+
+    "cartPage": {
+        "title": "Your Cart",
+        "emptyCart": "Your cart is empty.",
+        "total": "Total",
+        "checkout": "Checkout",
+        "goToCart": "Go to cart"
     }
 }
   
