@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import DesignInfo from '../components/DesignInfo';
 import { useTranslation } from 'react-i18next';
 import { BaseDesign, DisplayDesign } from '../types';
@@ -54,6 +54,26 @@ const Designs: React.FC = () => {
     setSelectedDesign({ ...rest, price });
   };
 
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        filterRef.current &&
+        !filterRef.current.contains(event.target as Node)
+      ) {
+        setIsMobileFilterOpen(false);
+      }
+    };
+    if (isMobileFilterOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMobileFilterOpen]);
+
   return (
     <section className="bg-white py-16 px-6 min-h-screen pt-24">
       <div className="w-full">
@@ -62,14 +82,35 @@ const Designs: React.FC = () => {
         </h2>
       </div>
 
-      <div className="max-w-6xl mx-auto flex">
-        {/* Sidebar Filter */}
-        <div className="w-1/4 bg-gray-100 p-4 rounded-lg mr-6">
-          <h3 className="text-xl font-semibold mb-4 text-center">{t('categories.filterByCategory')}</h3>
+      {/* Mobile Filter Button */}
+      <div className="md:hidden mb-4 flex justify-end">
+        <button
+          onClick={() => setIsMobileFilterOpen(prev => !prev)}
+          className="px-4 py-2 border rounded-lg bg-gray-900 text-white w-full"
+        >
+          {t('categories.filter')}
+        </button>
+      </div>
+
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-6">
+        {/* Filter Section */}
+        <div
+          ref={filterRef}
+          className={`
+            md:block md:w-1/4 bg-gray-100 p-4 rounded-lg
+            ${isMobileFilterOpen ? 'block' : 'hidden'} md:block
+          `}
+        >
+          <h3 className="text-xl font-semibold mb-4 text-center">
+            {t('categories.filterByCategory')}
+          </h3>
           <ul className="space-y-4">
             <li>
               <button
-                onClick={() => setSelectedCategory('')}
+                onClick={() => {
+                  setSelectedCategory('');
+                  setIsMobileFilterOpen(false);
+                }}
                 className={`w-full text-left px-4 py-2 border rounded-lg hover:bg-gray-200 transition ${selectedCategory === '' ? 'bg-gray-300' : ''}`}
               >
                 {t('categories.all')}
@@ -78,7 +119,10 @@ const Designs: React.FC = () => {
             {categories.map((categoryKey, index) => (
               <li key={index}>
                 <button
-                  onClick={() => setSelectedCategory(categoryKey)}
+                  onClick={() => {
+                    setSelectedCategory(categoryKey);
+                    setIsMobileFilterOpen(false);
+                  }}
                   className={`w-full text-left px-4 py-2 border rounded-lg hover:bg-gray-200 transition ${selectedCategory === categoryKey ? 'bg-gray-300' : ''}`}
                 >
                   {t(categoryKey)}
@@ -89,7 +133,7 @@ const Designs: React.FC = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="w-3/4">
+        <div className="md:w-3/4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDesigns.map((design, index) => (
               <div

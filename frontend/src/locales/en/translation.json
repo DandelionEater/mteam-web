@@ -39,6 +39,7 @@
     },
 
     "categories": {
+        "filter": "Filter",
         "filterByCategory": "Filter by category",
         "all": "All",
         "chair": "Chair",

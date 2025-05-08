@@ -39,6 +39,7 @@
     },
 
     "categories": {
+        "filter": "Filtras",
         "filterByCategory": "Kategorijų filtras",
         "all": "Visi",
         "chair": "Kėdė",
