@@ -101,7 +101,7 @@ const AddDesign = () => {
             />
           </div>
 
-          <div className="flex justify-between gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row justify-between gap-4 pt-4">
             <button
               type="button"
               onClick={() => navigate(-1)}
