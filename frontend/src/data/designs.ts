@@ -1,0 +1,34 @@
+import { BaseDesign } from '../types';
+
+export const designs: BaseDesign[] = [
+  {
+    id: 0,
+    nameKey: 'designs.card1_name',
+    descriptionKey: 'designs.card1_description',
+    price: 200,
+    stock: 5,
+    image: "https://placehold.co/400x250",
+    categoryKey: 'categories.chair',
+    quantity: 15,
+  },
+  {
+    id: 1,
+    nameKey: 'designs.card2_name',
+    descriptionKey: 'designs.card2_description',
+    price: 250,
+    stock: 10,
+    image: "https://placehold.co/400x250",
+    categoryKey: 'categories.table',
+    quantity: 12,
+  },
+  {
+    id: 2,
+    nameKey: 'designs.card3_name',
+    descriptionKey: 'designs.card3_description',
+    price: 350,
+    stock: 3,
+    image: "https://placehold.co/400x250",
+    categoryKey: 'categories.bench',
+    quantity: 8,
+  },
+];

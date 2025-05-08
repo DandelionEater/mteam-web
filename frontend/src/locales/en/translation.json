@@ -35,7 +35,10 @@
         "card2_description": "Sturdy aluminum frame made for architectural projects.",
         "card3_name": "Metal Sculpture",
         "card3_description": "Artistic piece combining industrial form with expression.",
-        "title": "Our Designs"
+        "title": "Our Designs",
+        "catName": "Category",
+        "stockName": "Stock",
+        "priceName": "Price"
     },
 
     "categories": {
@@ -99,6 +102,26 @@
         "total": "Total",
         "checkout": "Checkout",
         "goToCart": "Go to cart"
+    },
+
+    "designManager": {
+        "title": "Manage your designs",
+        "addNewDesign": "Add a new design"
+    },
+
+    "designForm": {
+        "title": "Add Design",
+        "editTitle": "Edit Design",
+        "notFound": "Design not found.",
+        "submit": "Submit design",
+        "save": "Save Changes",
+        "back": "Back",
+        "name": "Name",
+        "description": "Description",
+        "category": "Category",
+        "stock": "Stock",
+        "price": "Price",
+        "image": "Image URL"
     }
 }
   

@@ -6,6 +6,10 @@ import About from './pages/About';
 import Designs from './pages/Designs';
 import Contacts from './pages/Contacts';
 import CartPage from './pages/CartPage';
+import AdminLogin from './pages/AdminLogin';
+import AdminManager from './pages/DesignManager';
+import AddDesign from './pages/AddDesign';
+import EditDesign from './pages/EditDesign';
 import ScrollToTop from './components/ScrollToTop';
 import ResetScroll from './utils/ResetScroll';
 import { CartProvider } from './context/CartContext';
@@ -35,6 +39,10 @@ function App() {
           <Route path="/about" element={<Layout><About /></Layout>} />
           <Route path="/contacts" element={<Layout><Contacts /></Layout>} />
           <Route path="/cart" element={<Layout><CartPage /></Layout>} />
+          <Route path="/admin-login" element={<Layout><AdminLogin /></Layout>} />
+          <Route path="/admin-manager" element={<Layout><AdminManager /></Layout>} />
+          <Route path="/admin-manager/add" element={<Layout><AddDesign /></Layout>} />
+          <Route path="/admin-manager/edit/:id" element={<Layout><EditDesign /></Layout>} />
         </Routes>
       </Router>
     </CartProvider>
