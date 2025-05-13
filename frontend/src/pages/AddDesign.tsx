@@ -12,7 +12,7 @@ const AddDesign = () => {
     category: "",
     stock: "",
     price: "",
-    image: "",
+    images: [""],
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -90,15 +90,42 @@ const AddDesign = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">{t("designForm.image")}</label>
-            <input
-              name="image"
-              type="text"
-              value={form.image}
-              onChange={handleChange}
-              className="mt-1 w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-              required
-            />
+            <label className="block text-sm font-medium text-gray-700">{t("designForm.images")}</label>
+            {form.images.map((img, index) => (
+              <div key={index} className="flex items-center gap-2 mt-1">
+                <input
+                  type="text"
+                  value={img}
+                  onChange={(e) => {
+                    const updated = [...form.images];
+                    updated[index] = e.target.value;
+                    setForm({ ...form, images: updated });
+                  }}
+                  className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+                {form.images.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const filtered = form.images.filter((_, i) => i !== index);
+                      setForm({ ...form, images: filtered });
+                    }}
+                    className="text-red-500 hover:text-red-700 text-xl"
+                    title={t("designForm.removeImage")}
+                  >
+                    &times;
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, images: [...form.images, ""] })}
+              className="mt-2 text-blue-600 hover:text-blue-800 text-sm"
+            >
+              ➕ {t("designForm.addImage")}
+            </button>
           </div>
 
           <div className="flex flex-col sm:flex-row justify-between gap-4 pt-4">

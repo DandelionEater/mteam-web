@@ -32,7 +32,7 @@ const CartPage = () => {
             {cartItems.map((item) => (
               <div key={item.id} className="flex items-center justify-between bg-white shadow-md rounded-lg p-4">
                 <div className="flex items-center">
-                  <img src={item.image} alt={item.nameKey} className="h-16 w-16 object-cover rounded-md mr-4" />
+                  <img src={item.images[0]} alt={item.nameKey} className="h-16 w-16 object-cover rounded-md mr-4" />
                   <div>
                     <p className="text-lg font-medium">{t(item.nameKey)}</p>
                     <p className="text-sm text-gray-500">{formatPrice(item.price)}</p>

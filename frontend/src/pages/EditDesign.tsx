@@ -17,7 +17,7 @@ const EditDesign = () => {
     category: '',
     stock: '',
     price: '',
-    image: '',
+    images: [''],
   });
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const EditDesign = () => {
         category: t(existingDesign.categoryKey),
         stock: String(existingDesign.stock),
         price: String(existingDesign.price),
-        image: existingDesign.image,
+        images: existingDesign.images.length > 0 ? existingDesign.images : [''],
       });
     }
   }, [existingDesign, t]);
@@ -116,15 +116,43 @@ const EditDesign = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">{t("designForm.image")}</label>
-            <input
-              name="image"
-              type="text"
-              value={form.image}
-              onChange={handleChange}
-              className="mt-1 w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-              required
-            />
+            <label className="block text-sm font-medium text-gray-700">{t("designForm.images")}</label>
+            {form.images.map((img, index) => (
+              <div key={index} className="flex items-center gap-2 mt-1">
+                <input
+                  name={`image-${index}`}
+                  type="text"
+                  value={img}
+                  onChange={(e) => {
+                    const newImages = [...form.images];
+                    newImages[index] = e.target.value;
+                    setForm({ ...form, images: newImages });
+                  }}
+                  className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+                {form.images.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newImages = form.images.filter((_, i) => i !== index);
+                      setForm({ ...form, images: newImages });
+                    }}
+                    className="text-red-500 hover:text-red-700 text-xl"
+                    title="Remove"
+                  >
+                    &times;
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, images: [...form.images, ''] })}
+              className="mt-2 text-blue-600 hover:text-blue-800 text-sm"
+            >
+              ➕ {t('designForm.addImage')}
+            </button>
           </div>
 
           <div className="flex flex-col sm:flex-row justify-between gap-4 pt-4">

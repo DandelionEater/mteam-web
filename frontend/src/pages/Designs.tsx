@@ -2,43 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import DesignInfo from '../components/DesignInfo';
 import { useTranslation } from 'react-i18next';
 import { BaseDesign, DisplayDesign } from '../types';
+import { designs } from '../data/designs';  // Import the designs here
 
 const Designs: React.FC = () => {
   const { t } = useTranslation();
-
-  const designs: BaseDesign[] = [
-    {
-      id: 0,
-      nameKey: 'designs.card1_name',
-      descriptionKey: 'designs.card1_description',
-      price: 200,
-      stock: 5,
-      image: "https://placehold.co/400x250",
-      categoryKey: 'categories.chair',
-      quantity: 15,
-    },
-    {
-      id: 1,
-      nameKey: 'designs.card2_name',
-      descriptionKey: 'designs.card2_description',
-      price: 250,
-      stock: 10,
-      image: "https://placehold.co/400x250",
-      categoryKey: 'categories.table',
-      quantity: 12,
-    },
-    {
-      id: 2,
-      nameKey: 'designs.card3_name',
-      descriptionKey: 'designs.card3_description',
-      price: 350,
-      stock: 3,
-      image: "https://placehold.co/400x250",
-      categoryKey: 'categories.bench',
-      quantity: 8,
-    },
-  ];
-  
 
   const [selectedDesign, setSelectedDesign] = useState<DisplayDesign | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -142,7 +109,7 @@ const Designs: React.FC = () => {
                 className="relative group overflow-hidden rounded-xl shadow-lg cursor-pointer"
               >
                 <img
-                  src={design.image}
+                  src={design.images[0]}
                   alt={design.nameKey}
                   className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
                 />
@@ -167,7 +134,7 @@ const Designs: React.FC = () => {
           descriptionKey: '',
           price: 0,
           stock: 0,
-          image: '',
+          images: [],
           categoryKey: '',
           quantity: 0,
         }}

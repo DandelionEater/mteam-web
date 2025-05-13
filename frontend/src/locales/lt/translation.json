@@ -2,6 +2,7 @@
     "nav": {
         "home": "Pagrindinis",
         "designs": "Dizainai",
+        "gallery": "Galerija",
         "about": "Apie mus",
         "contacts": "Kontaktai",
         "languageToggle": "EN",
@@ -25,7 +26,13 @@
         "card5Title": "Dizaino konsultacijos",
         "card5Description": "Padėsime išgryninti jūsų idėją prieš ją gaminant.",
         "card6Title": "Nestandartinė gamyba",
-        "card6Description": "Nesvarbu, ar tai meno kūrinys, ar pramoninis rėmas - mes sukursime jį nuo nulio."
+        "card6Description": "Nesvarbu, ar tai meno kūrinys, ar pramoninis rėmas - mes sukursime jį nuo nulio.",
+        "card1Extra": "Mūsų CNC staklės užtikrina mikronų tikslumo apdirbimą - tinkamą net aviacijai ar medicinai.",
+        "card2Extra": "Sertifikuoti suvirintojai ir robotizuoti įrenginiai garantuoja kokybę bei ilgaamžiškumą.",
+        "card3Extra": "Prototipus gaminame greitai, naudodami tiek rankinius, tiek skaitmeninius įrankius.",
+        "card4Extra": "Mažos serijos padeda klientams testuoti produktus prieš pradedant masinę gamybą.",
+        "card5Extra": "Nuo eskizo iki CAD - padedame vizualizuoti jūsų idėją prieš gamybą.",
+        "card6Extra": "Kiekvienas projektas - unikalus iššūkis. Mums tai patinka!"
     },
 
     "designs": {
@@ -39,6 +46,18 @@
         "catName": "Kategorija",
         "stockName": "Likutis",
         "priceName": "Kaina"
+    },
+
+    "gallery": {
+        "title": "Galerija",
+        "item1": {
+            "name": "Jaukus minimalistinis svetainės dizainas",
+            "description": "Šiltas ir minimalistinis svetainės dizainas su natūraliomis tekstūromis."
+        },
+        "item2": {
+            "name": "Moderni virtuvės koncepcija",
+            "description": "Stilinga, moderni virtuvė su išmania saugojimo sistema."
+        }
     },
 
     "categories": {
@@ -93,7 +112,7 @@
         "infoTitle": "Susisiekite",
         "email": "El. paštas:",
         "phone": "Telefonas:",
-        "address": "Adresas: Briedžių g. 7, Vilnius, Lietuva"
+        "address": "Adresas:"
     },
 
     "cartPage": {
@@ -121,7 +140,8 @@
         "category": "Kategorija",
         "stock": "Likutis",
         "price": "Kaina",
-        "image": "Nuotraukos URL"
+        "images": "Nuotraukų URLs",
+        "addImage": "Pridėti nuotraukos lauką"
     }
 }
   

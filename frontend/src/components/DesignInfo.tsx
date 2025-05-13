@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { XMarkIcon } from "@heroicons/react/24/solid";
+import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../context/CartContext';
 import { BaseDesign } from '../types';
@@ -19,10 +19,12 @@ const DesignInfo: React.FC<DesignInfoProps> = ({
   const navigate = useNavigate();
   const modalRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
+  const { addToCart } = useCart();
 
   const [showMessage, setShowMessage] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const { addToCart } = useCart();
+  const images = design?.images ?? [];
 
   const handleAddToCart = () => {
     const cartItem = { ...design, quantity: 1 };
@@ -49,6 +51,14 @@ const DesignInfo: React.FC<DesignInfoProps> = ({
 
   if (!isOpen) return null;
 
+  const handlePrev = () => {
+    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center px-4">
@@ -57,7 +67,35 @@ const DesignInfo: React.FC<DesignInfoProps> = ({
           ref={modalRef}
           className="bg-white p-6 rounded-xl max-w-xl w-full shadow-lg relative"
         >
-          <img src={design.image} alt={t(design.nameKey)} className="w-full h-auto rounded-lg mb-4" />
+          {/* Carousel Section */}
+          {images.length > 0 ? (
+            <div className="relative mb-4">
+              <img
+                src={images[currentImageIndex]}
+                alt={`${t(design.nameKey)} ${currentImageIndex + 1}`}
+                onError={(e) => e.currentTarget.src = 'https://via.placeholder.com/400x250?text=Fallback'} // Fallback image
+                className="w-full h-auto rounded-lg object-contain"
+              />
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={handlePrev}
+                    className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white bg-opacity-70 hover:bg-opacity-90 p-2 rounded-full shadow"
+                  >
+                    <ChevronLeftIcon className="w-5 h-5 text-gray-800" />
+                  </button>
+                  <button
+                    onClick={handleNext}
+                    className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white bg-opacity-70 hover:bg-opacity-90 p-2 rounded-full shadow"
+                  >
+                    <ChevronRightIcon className="w-5 h-5 text-gray-800" />
+                  </button>
+                </>
+              )}
+            </div>
+          ) : (
+            <div>No images available</div> // Debug: Display a message if no images
+          )}
           <h2 className="text-2xl font-bold mb-2">{t(design.nameKey)}</h2>
           <p className="text-gray-700 mb-4">{t(design.descriptionKey)}</p>
           <p className="text-lg font-semibold text-gray-900 mb-2">

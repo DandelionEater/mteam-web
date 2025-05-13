@@ -2,6 +2,7 @@
     "nav": {
         "home": "Home",
         "designs": "Designs",
+        "gallery": "Gallery",
         "about": "About",
         "contacts": "Contacts",
         "languageToggle": "LT",
@@ -25,7 +26,14 @@
         "card5Title": "Design Consultation",
         "card5Description": "We'll help you refine your concept before it hits the machines.",
         "card6Title": "Custom Fabrication",
-        "card6Description": "Whether it's an art piece or an industrial frame, we'll build it from scratch."
+        "card6Description": "Whether it's an art piece or an industrial frame, we'll build it from scratch.",
+        "card1Extra": "Our CNC machines achieve micron-level accuracy, suitable for aerospace and medical components.",
+        "card2Extra": "Certified welders and robotic arms ensure each seam is as strong as it is neat.",
+        "card3Extra": "We rapidly iterate prototypes using a mix of manual and digital fabrication tools.",
+        "card4Extra": "Small production batches help customers test products before full-scale rollout.",
+        "card5Extra": "From sketch to CAD, we help visualize ideas before they become metal.",
+        "card6Extra": "Every fabrication job is a unique challenge, and we love solving them."
+
     },
 
     "designs": {
@@ -39,6 +47,18 @@
         "catName": "Category",
         "stockName": "Stock",
         "priceName": "Price"
+    },
+
+    "gallery": {
+        "title": "Gallery",
+        "item1": {
+            "name": "Cozy Minimalist Living Room",
+            "description": "A warm and minimal living room design with soft tones and natural textures."
+        },
+        "item2": {
+            "name": "Modern Kitchen Concept",
+            "description": "Sleek and stylish kitchen with a modern touch and smart storage."
+        }
     },
 
     "categories": {
@@ -93,7 +113,7 @@
         "infoTitle": "Get in Touch",
         "email": "Email:",
         "phone": "Phone:",
-        "address": "Address: Briedžių g. 7, Vilnius, Lithuania"
+        "address": "Address:"
     },
 
     "cartPage": {
@@ -121,7 +141,8 @@
         "category": "Category",
         "stock": "Stock",
         "price": "Price",
-        "image": "Image URL"
+        "images": "Image URLs",
+        "addImage": "Add Image Field"
     }
 }
   

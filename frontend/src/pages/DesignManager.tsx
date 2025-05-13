@@ -1,54 +1,27 @@
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BaseDesign } from '../types';
-
-const designs: BaseDesign[] = [
-  {
-    id: 0,
-    nameKey: 'designs.card1_name',
-    descriptionKey: 'designs.card1_description',
-    price: 200,
-    stock: 5,
-    image: "https://placehold.co/400x250",
-    categoryKey: 'categories.chair',
-    quantity: 15,
-  },
-  {
-    id: 1,
-    nameKey: 'designs.card2_name',
-    descriptionKey: 'designs.card2_description',
-    price: 250,
-    stock: 10,
-    image: "https://placehold.co/400x250",
-    categoryKey: 'categories.table',
-    quantity: 12,
-  },
-  {
-    id: 2,
-    nameKey: 'designs.card3_name',
-    descriptionKey: 'designs.card3_description',
-    price: 350,
-    stock: 3,
-    image: "https://placehold.co/400x250",
-    categoryKey: 'categories.bench',
-    quantity: 8,
-  },
-];
+import { designs } from '../data/designs';
 
 const DesignManager = () => {
   const { t, i18n } = useTranslation();
   const [designList, setDesignList] = useState<BaseDesign[]>(designs);
   const navigate = useNavigate();
 
-  const formatPrice = (price: number): string => {
-    const locale = i18n.language === 'lt' ? 'lt-LT' : 'en-US';
-    const currencySymbol = i18n.language === 'lt' ? '€' : '$';
-
+  const currencySymbol = i18n.language === 'lt' ? '€' : '$';
+  const locale = i18n.language === 'lt' ? 'lt-LT' : 'en-US';
+  const currency = i18n.language === 'lt' ? 'EUR' : 'USD';
+  
+  const priceFormatter = useMemo(() => {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: i18n.language === 'lt' ? 'EUR' : 'USD',
-    }).format(price).replace(/\u20AC|\$/g, currencySymbol);
+      currency,
+    });
+  }, [locale, currency]);
+
+  const formatPrice = (price: number): string => {
+    return priceFormatter.format(price).replace(/\u20AC|\$/g, currencySymbol);
   };
 
   const handleRemoveDesign = (id: number) => {
@@ -84,7 +57,7 @@ const DesignManager = () => {
             {designList.map((design) => (
               <div key={design.id} className="flex items-center justify-between bg-white shadow-md rounded-lg p-4">
                 <div className="flex items-center">
-                  <img src={design.image} alt={t(design.nameKey)} className="h-16 w-16 object-cover rounded-md mr-4" />
+                  <img src={design.images[0] || 'https://placehold.co/100x100?text=No+Image'} alt={t(design.nameKey)} className="h-16 w-16 object-cover rounded-md mr-4" />
                   <div>
                     <p className="text-lg font-medium">{t(design.nameKey)}</p>
                     <p className="text-sm text-gray-500">{t(design.descriptionKey)}</p>

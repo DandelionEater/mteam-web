@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import About from './pages/About';
 import Designs from './pages/Designs';
+import Gallery from './pages/Gallery';
 import Contacts from './pages/Contacts';
 import CartPage from './pages/CartPage';
 import AdminLogin from './pages/AdminLogin';
@@ -36,6 +37,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout><Home /></Layout>} />
           <Route path="/designs" element={<Layout><Designs /></Layout>} />
+          <Route path="/gallery" element={<Layout><Gallery /></Layout>} />
           <Route path="/about" element={<Layout><About /></Layout>} />
           <Route path="/contacts" element={<Layout><Contacts /></Layout>} />
           <Route path="/cart" element={<Layout><CartPage /></Layout>} />

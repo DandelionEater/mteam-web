@@ -7,7 +7,10 @@ export const designs: BaseDesign[] = [
     descriptionKey: 'designs.card1_description',
     price: 200,
     stock: 5,
-    image: "https://placehold.co/400x250",
+    images: [
+      "https://placehold.co/400x250?text=Chair+1",
+      "https://placehold.co/400x250?text=Chair+2"
+    ],
     categoryKey: 'categories.chair',
     quantity: 15,
   },
@@ -17,7 +20,10 @@ export const designs: BaseDesign[] = [
     descriptionKey: 'designs.card2_description',
     price: 250,
     stock: 10,
-    image: "https://placehold.co/400x250",
+    images: [
+      "https://placehold.co/400x250?text=Table+1",
+      "https://placehold.co/400x250?text=Table+2"
+    ],
     categoryKey: 'categories.table',
     quantity: 12,
   },
@@ -27,7 +33,10 @@ export const designs: BaseDesign[] = [
     descriptionKey: 'designs.card3_description',
     price: 350,
     stock: 3,
-    image: "https://placehold.co/400x250",
+    images: [
+      "https://placehold.co/400x250?text=Bench+1",
+      "https://placehold.co/400x250?text=Bench+2"
+    ],
     categoryKey: 'categories.bench',
     quantity: 8,
   },

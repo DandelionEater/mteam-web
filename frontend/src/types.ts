@@ -4,7 +4,7 @@ export interface BaseDesign {
   descriptionKey: string;
   price: number;
   stock: number;
-  image: string;
+  images: string[];
   categoryKey: string;
   quantity: number;
 }

@@ -58,7 +58,7 @@ export default function Contacts() {
         <div className="w-full h-96 rounded-xl overflow-hidden shadow-lg">
           <iframe
             className="w-full h-full"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2317.4256492431464!2d25.397332776829348!3d54.70226407271354!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dd963edcd6be29%3A0xf1be29353afb7f5f!2sBried%C5%BEi%C5%B3%20g.%207%2C%20Vilnius%2C%2011105%20Vilniaus%20m.%20sav.!5e1!3m2!1sen!2slt!4v1746004725865!5m2!1sen!2slt"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3943.27039352074!2d25.302886477909627!3d54.837114272759116!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dd9b004d51b55d%3A0xe9dd0dfe66b91173!2sUAB%20Mteam!5e1!3m2!1sen!2slt!4v1747131245848!5m2!1sen!2slt"
             allowFullScreen={true}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
@@ -76,7 +76,7 @@ export default function Contacts() {
           {t('contacts.phone')} <a href="tel:+37063333355" className="underline">+370 633 33355</a>
         </p>
         <p className="text-gray-700">
-          {t('contacts.address')}
+          {t('contacts.address')} <a href='https://maps.app.goo.gl/trhQzw6qmkWLk34s6' className='underline'>Briedžių g. 7, Pašiliai, Vilniaus r. sav.</a>
         </p>
       </div>
     </section>

@@ -1,11 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import backgroundImage from '../assets/fph-image.jpg';
+import CardOverlay from '../components/CardOverlay';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { WrenchScrewdriverIcon, Cog6ToothIcon, LightBulbIcon, PuzzlePieceIcon, PencilIcon, CubeIcon } from '@heroicons/react/24/solid';
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
+
+  const [activeOverlay, setActiveOverlay] = useState<null | number>(null);
+
+  const handleOverlayOpen = (index: number) => {
+    setActiveOverlay(index);
+  };
+
+  const handleOverlayClose = () => {
+    setActiveOverlay(null);
+  };
 
   return (
     <>
@@ -45,7 +56,10 @@ const Home: React.FC = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
         {/* Card 1 */}
-        <div className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition">
+        <div 
+          onClick={() => handleOverlayOpen(1)} 
+          className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition transform hover:scale-105 duration-300 ease-in-out cursor-pointer"
+        >
           <div className="flex items-center gap-2 mb-2">
             <WrenchScrewdriverIcon className="h-6 w-6 text-black p-1" />
             <h3 className="text-xl font-semibold text-black text-center">{t('home.card1Title')}</h3>
@@ -56,7 +70,10 @@ const Home: React.FC = () => {
         </div>
 
         {/* Card 2 */}
-        <div className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition">
+        <div 
+          onClick={() => handleOverlayOpen(2)} 
+          className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition transform hover:scale-105 duration-300 ease-in-out cursor-pointer"
+        >
           <div className="flex items-center gap-2 mb-2">
             <Cog6ToothIcon className="h-6 w-6 text-black p-1" />
             <h3 className="text-xl font-semibold text-black">{t('home.card2Title')}</h3>
@@ -67,7 +84,10 @@ const Home: React.FC = () => {
         </div>
 
         {/* Card 3 */}
-        <div className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition">
+        <div 
+          onClick={() => handleOverlayOpen(3)} 
+          className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition transform hover:scale-105 duration-300 ease-in-out cursor-pointer"
+        >
           <div className="flex items-center gap-2 mb-2">
             <LightBulbIcon className="h-6 w-6 text-black p-1" />
             <h3 className="text-xl font-semibold text-black">{t('home.card3Title')}</h3>
@@ -78,7 +98,10 @@ const Home: React.FC = () => {
         </div>
 
         {/* Card 4 */}
-        <div className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition">
+        <div 
+          onClick={() => handleOverlayOpen(4)} 
+          className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition transform hover:scale-105 duration-300 ease-in-out cursor-pointer"
+        >
           <div className="flex items-center gap-2 mb-2">
             <PuzzlePieceIcon className="h-6 w-6 text-black p-1" />
             <h3 className="text-xl font-semibold text-black">{t('home.card4Title')}</h3>
@@ -89,7 +112,10 @@ const Home: React.FC = () => {
         </div>
 
         {/* Card 5 */}
-        <div className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition">
+        <div 
+          onClick={() => handleOverlayOpen(5)} 
+          className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition transform hover:scale-105 duration-300 ease-in-out cursor-pointer"
+        >
           <div className="flex items-center gap-2 mb-2">
             <PencilIcon className="h-6 w-6 text-black p-1" />
             <h3 className="text-xl font-semibold text-black">{t('home.card5Title')}</h3>
@@ -100,7 +126,10 @@ const Home: React.FC = () => {
         </div>
 
         {/* Card 6 */}
-        <div className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition">
+        <div 
+          onClick={() => handleOverlayOpen(6)} 
+          className="bg-gray-300 p-6 rounded-tl-xl rounded-br-xl shadow-md hover:shadow-lg transition transform hover:scale-105 duration-300 ease-in-out cursor-pointer"
+        >
           <div className="flex items-center gap-2 mb-2">
             <CubeIcon className="h-6 w-6 text-black p-1 " />
             <h3 className="text-xl font-semibold text-black">{t('home.card6Title')}</h3>
@@ -111,6 +140,7 @@ const Home: React.FC = () => {
         </div>
       </div>
     </section>
+    <CardOverlay activeIndex={activeOverlay} onClose={handleOverlayClose} />
     </>
   );
 };
