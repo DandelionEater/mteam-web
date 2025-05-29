@@ -23,7 +23,7 @@ const CartPage = () => {
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
-        <h1 className="text-3xl font-semibold mb-6">{t('cartPage.title')}</h1>
+        <h1 className="text-center text-3xl font-semibold mb-6">{t('cartPage.title')}</h1>
 
         {cartItems.length === 0 ? (
           <p className="text-center text-lg text-gray-500 pt-6">{t('cartPage.emptyCart')}</p>

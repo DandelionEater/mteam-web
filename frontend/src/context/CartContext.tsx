@@ -12,9 +12,18 @@ const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cartItems, setCartItems] = useState<BaseDesign[]>(() => {
-    const storedCart = localStorage.getItem('cart');
-    return storedCart ? JSON.parse(storedCart) : [];
-  });
+  const storedCart = localStorage.getItem('cart');
+  try {
+    const parsed = storedCart ? JSON.parse(storedCart) : [];
+    return parsed.map((item: any) => ({
+      ...item,
+      images: Array.isArray(item.images) ? item.images : [],
+      quantity: item.quantity ?? 1,
+    }));
+  } catch {
+    return [];
+  }
+});
 
   const addToCart = (item: BaseDesign) => {
     setCartItems((prevItems) => {

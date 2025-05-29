@@ -1,0 +1,24 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "out/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.ts",
+    "compile": "tsc",
+    "start": "node ."
+  },
+  "dependencies": {
+    "@typegoose/typegoose": "^12.16.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.15.1",
+    "zod": "^3.25.35"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.24"
+  }
+}

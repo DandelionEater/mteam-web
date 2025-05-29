@@ -39,7 +39,7 @@ const DesignManager = () => {
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
-        <h1 className="text-3xl font-semibold mb-6">{t('designManager.title')}</h1>
+        <h1 className="text-center text-3xl font-semibold mb-6">{t('designManager.title')}</h1>
 
         <div className="mb-8 bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
           <button
