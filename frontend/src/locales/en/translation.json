@@ -58,7 +58,9 @@
         "item2": {
             "name": "Modern Kitchen Concept",
             "description": "Sleek and stylish kitchen with a modern touch and smart storage."
-        }
+        },
+        "addNewGallery": "Add a new gallery item",
+        "empty": "No gallery items available."
     },
 
     "categories": {
@@ -125,24 +127,59 @@
     },
 
     "designManager": {
-        "title": "Manage your designs",
-        "addNewDesign": "Add a new design"
+        "title": "Admin Panel",
+        "addNewDesign": "Add a new design",
+        "empty": "No designs available."
     },
 
     "designForm": {
-        "title": "Add Design",
-        "editTitle": "Edit Design",
-        "notFound": "Design not found.",
-        "submit": "Submit design",
-        "save": "Save Changes",
-        "back": "Back",
+        "title": "Add New Design",
         "name": "Name",
+        "namePlaceholder": "Enter the design name",
         "description": "Description",
+        "descriptionPlaceholder": "Enter a description of the design",
+        "manufacturingId": "Manufacturing ID",
+        "manufacturingIdPlaceholder": "Enter manufacturing ID",
         "category": "Category",
+        "categoryPlaceholder": "Enter category",
         "stock": "Stock",
+        "stockPlaceholder": "Enter available stock",
         "price": "Price",
-        "images": "Image URLs",
-        "addImage": "Add Image Field"
+        "pricePlaceholder": "Enter price",
+        "images": "Images",
+        "imagePlaceholder": "Enter image URL",
+        "addImage": "Add Image",
+        "removeImage": "Remove Image",
+        "back": "Back",
+        "submit": "Submit",
+
+        "editTitle": "Edit Design",
+        "color": "Color",
+        "material": "Material",
+        "countryOfOrigin": "Country of Origin",
+        "size": "Size",
+        "save": "Save",
+        "notFound": "Design not found."
+    },
+
+    "galleryForm": {
+        "title": "Add Gallery Entry",
+        "editTitle": "Edit Gallery Entry",
+        "name": "Name",
+        "namePlaceholder": "Enter name",
+        "description": "Description",
+        "descriptionPlaceholder": "Enter description",
+        "images": "Images",
+        "imagePlaceholder": "Enter image URL",
+        "addImage": "Add Image",
+        "removeImage": "Remove Image",
+        "submit": "Submit",
+        "back": "Back"
+    },
+
+    "languages": {
+        "en": "English",
+        "lt": "Lithuanian"
     }
 }
   

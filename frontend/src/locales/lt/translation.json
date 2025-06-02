@@ -57,7 +57,9 @@
         "item2": {
             "name": "Moderni virtuvės koncepcija",
             "description": "Stilinga, moderni virtuvė su išmania saugojimo sistema."
-        }
+        },
+        "addNewGallery": "Pridėti naują nuotrauką į galeriją.",
+        "empty": "Sąrašas tusčias."
     },
 
     "categories": {
@@ -124,24 +126,59 @@
     },
 
     "designManager": {
-        "title": "Dizainų tvarkyklė",
-        "addNewDesign": "Pridėti naują dizainą"
+        "title": "Administratoriaus Panelė",
+        "addNewDesign": "Pridėti naują dizainą",
+        "empty": "Sąrašas tusčias."
     },
 
     "designForm": {
-        "title": "Pridėti dizainą",
-        "editTitle": "Redaguoti Dizainą",
-        "notFound": "Dizainas nerastas.",
-        "submit": "Patvirtinti dizainą",
-        "save": "Išsaugoti pakeitimus",
-        "back": "Atgal",
+        "title": "Pridėti naują dizainą",
         "name": "Pavadinimas",
+        "namePlaceholder": "Įveskite dizaino pavadinimą",
         "description": "Aprašymas",
+        "descriptionPlaceholder": "Įveskite dizaino aprašymą",
+        "manufacturingId": "Gamybos ID",
+        "manufacturingIdPlaceholder": "Įveskite gamybos ID",
         "category": "Kategorija",
-        "stock": "Likutis",
+        "categoryPlaceholder": "Įveskite kategoriją",
+        "stock": "Sandėlyje",
+        "stockPlaceholder": "Įveskite turimą kiekį",
         "price": "Kaina",
-        "images": "Nuotraukų URLs",
-        "addImage": "Pridėti nuotraukos lauką"
+        "pricePlaceholder": "Įveskite kainą",
+        "images": "Nuotraukos",
+        "imagePlaceholder": "Įveskite nuotraukos URL",
+        "addImage": "Pridėti nuotrauką",
+        "removeImage": "Pašalinti nuotrauką",
+        "back": "Atgal",
+        "submit": "Pateikti",
+
+        "editTitle": "Redaguoti dizainą",
+        "color": "Spalva",
+        "material": "Medžiaga",
+        "countryOfOrigin": "Kilmės šalis",
+        "size": "Dydis",
+        "save": "Išsaugoti",
+        "notFound": "Dizainas nerastas."
+    },
+
+    "galleryForm": {
+        "title": "Pridėti galerijos įrašą",
+        "editTitle": "Redaguoti galerijos įrašą",
+        "name": "Pavadinimas",
+        "namePlaceholder": "Įveskite pavadinimą",
+        "description": "Aprašymas",
+        "descriptionPlaceholder": "Įveskite aprašymą",
+        "images": "Nuotraukos",
+        "imagePlaceholder": "Įveskite nuotraukos URL",
+        "addImage": "Pridėti nuotrauką",
+        "removeImage": "Pašalinti nuotrauką",
+        "submit": "Išsaugoti",
+        "back": "Atgal"
+    },
+
+    "languages": {
+        "en": "Anglų",
+        "lt": "Lietuvių"
     }
 }
   

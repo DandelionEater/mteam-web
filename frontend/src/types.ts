@@ -7,6 +7,8 @@ export interface BaseDesign {
   images: string[];
   categoryKey: string;
   quantity: number;
+
+  manufacturingID: string;
 }
   
 export type DisplayDesign = BaseDesign;

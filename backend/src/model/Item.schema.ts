@@ -1,22 +1,30 @@
 import { prop, getModelForClass } from '@typegoose/typegoose';
 
-class GalleryEntry {
+class LocalizedString {
   @prop()
-  name?: string;
+  en?: string;
 
   @prop()
-  description?: string;
+  lt?: string;
+}
+
+class GalleryEntry {
+  @prop({ _id: false })
+  name?: LocalizedString;
+
+  @prop({ _id: false })
+  description?: LocalizedString;
 
   @prop({ type: () => [String] })
   images?: string[];
 }
 
 export class Item {
-  @prop({ required: true })
-  name!: string;
+  @prop({ required: true, _id: false })
+  name!: LocalizedString;
 
-  @prop()
-  description?: string;
+  @prop({ _id: false })
+  description?: LocalizedString;
 
   @prop({ required: true })
   manufacturingID!: string;
@@ -30,7 +38,7 @@ export class Item {
   @prop({ type: () => [String] })
   images!: string[];
 
-  @prop({ _id: false }) // embedded subdocument
+  @prop({ _id: false })
   galleryEntry?: GalleryEntry;
 }
 
