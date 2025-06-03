@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { PlusIcon, TrashIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { handleGalleryAdd } from "../dbMiddleware/GalleryCRUD";
 
 type LocalizedString = {
   en: string;
@@ -53,10 +54,15 @@ const AddGallery = () => {
     setForm((prevForm) => ({ ...prevForm, images: filteredImages }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Gallery entry data:", form);
-    // Submit logic here
+    try {
+      await handleGalleryAdd(form);
+      console.log("Gallery item added successfully");
+      navigate("/admin-manager");
+    } catch (err) {
+      console.error("Submission failed:", err);
+    }
   };
 
   return (

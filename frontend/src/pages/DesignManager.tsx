@@ -3,13 +3,25 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BaseDesign } from '../types';
 import { designs } from '../data/designs';
-import { gallery, GalleryItem } from '../data/gallery';
+import { GalleryItem, LocalizedString } from '../data/gallery';
+import { fetchGalleryItems, deleteGalleryItem } from "../dbMiddleware/GalleryCRUD";
+import { useEffect } from "react";
 
 const DesignManager = () => {
   const { t, i18n } = useTranslation();
   const [designList, setDesignList] = useState<BaseDesign[]>(designs);
-  const [galleryList, setGalleryList] = useState<GalleryItem[]>(gallery);
+  const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
   const [activePage, setActivePage] = useState<'designs' | 'gallery'>('designs');
+
+  const getLocalizedString = (field: LocalizedString): string => {
+    if(!i18n.language)
+      return field.en ?? "";
+
+    if(i18n.language == "en")
+      return field.en ?? "";
+
+    return field.lt ?? "";
+  };
 
   const navigate = useNavigate();
 
@@ -29,25 +41,52 @@ const DesignManager = () => {
   };
 
   // Design handlers
-  const handleRemoveDesign = (id: number) => {
+  const handleRemoveDesign = (id: string) => {
     setDesignList(designList.filter((design) => design.id !== id));
   };
   const handleAddDesign = () => {
     navigate('/admin-manager/add');
   };
-  const handleEditDesign = (id: number) => {
+  const handleEditDesign = (id: string) => {
     navigate(`/admin-manager/edit/${id}`);
   };
 
   // Gallery handlers
-  const handleRemoveGallery = (id: number) => {
-    setGalleryList(galleryList.filter((item) => item.id !== id));
-  };
+  useEffect(() => {
+    const loadGallery = async () => {
+      try {
+        const data = await fetchGalleryItems(); // returns Gallery[]
+        // Map _id to id
+        const galleryItems: GalleryItem[] = data.map(item => ({
+          id: (item as any)._id || "", // cast if needed
+          images: item.images,
+          name: item.name,
+          description: item.description || { en: "", lt: "" },
+        }));
+        setGalleryList(galleryItems);
+      } catch (error) {
+        console.error("Failed to load gallery items", error);
+      }
+    };
+
+    loadGallery();
+  }, []);
+
   const handleAddGallery = () => {
     navigate('/admin-manager/gallery/add');
   };
-  const handleEditGallery = (id: number) => {
+
+  const handleEditGallery = (id: string) => {
     navigate(`/admin-manager/gallery/edit/${id}`);
+  };
+
+  const handleRemoveGallery = async (id: string) => {
+    try {
+      await deleteGalleryItem(id);
+      setGalleryList((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Failed to delete gallery item:", error);
+    }
   };
 
   return (
@@ -137,10 +176,10 @@ const DesignManager = () => {
                 {galleryList.map((item) => (
                   <div key={item.id} className="flex items-center justify-between bg-white shadow-md rounded-lg p-4">
                     <div className="flex items-center">
-                      <img src={item.images[0] || 'https://placehold.co/100x100?text=No+Image'} alt={t(item.nameKey)} className="h-16 w-16 object-cover rounded-md mr-4" />
+                      <img src={item.images[0] || 'https://placehold.co/100x100?text=No+Image'} alt={getLocalizedString(item.name)} className="h-16 w-16 object-cover rounded-md mr-4" />
                       <div>
-                        <p className="text-lg font-medium">{t(item.nameKey)}</p>
-                        <p className="text-sm text-gray-500">{t(item.descriptionKey)}</p>
+                        <p className="text-lg font-medium">{getLocalizedString(item.name)}</p>
+                        <p className="text-sm text-gray-500">{getLocalizedString(item.description)}</p>
                       </div>
                     </div>
 

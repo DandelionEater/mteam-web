@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import bcrypt from 'bcrypt';
 import { UserModel } from './model/User.schema';
+import { Gallery, GalleryModel } from "./model/Item.schema";
 
 const app = express();
 const PORT = 4000;
@@ -51,6 +52,62 @@ app.post('/api/login', async (req: Request, res: Response): Promise<void> => {
     console.error('Login error:', err);
     res.status(500).json({ message: 'Internal server error' });
   }
+});
+
+// Gallery CRUD
+// Add
+app.post('/api/gallery', async (req: Request, res: Response): Promise<void> => {
+  console.log('Gallery item added successfully:', req.body);
+  const { name, description, images} : Gallery = req.body;
+
+  if (!name || !images) {
+    res.status(400).json({ message: "Name and images can't be null" });
+    return;
+  }
+
+  const result = await GalleryModel.create({name, description, images});
+
+  res.status(201).json({ message: "Gallery item added succesfully", entry: result });
+});
+
+// Get
+app.get('/api/gallery', async (req: Request, res: Response): Promise<void> => {
+  const result = await GalleryModel.find().lean();
+
+  res.json(result);
+});
+
+// Put
+app.put('/api/gallery/:id', async (req: Request, res: Response): Promise<void> =>{
+  const id = req.params.id;
+
+  const entry = await GalleryModel.findById(id);
+
+  if(!entry) {
+    res.status(404).json({ message: "Item not found" });
+    return;
+  }
+
+  const { name, description, images} : Gallery = req.body;
+  entry.name = name;
+  entry.description = description;
+  entry.images = images;
+  const result = await entry.save();
+
+  res.json(result);
+});
+
+// Delete
+app.delete('/api/gallery/:id', async (req: Request, res: Response): Promise<void> =>{
+  const id = req.params.id;
+
+  const entry = await GalleryModel.findByIdAndDelete(id);
+
+  if(!entry) {
+    res.status(404).json({ message: "Item not found" });
+    return;
+  }
+  res.json({ message: "Item deleted successfully" });
 });
 
 // Start server

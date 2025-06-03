@@ -8,15 +8,15 @@ class LocalizedString {
   lt?: string;
 }
 
-class GalleryEntry {
-  @prop({ _id: false })
-  name?: LocalizedString;
+export class Gallery {
+  @prop({ required: true,  _id: false })
+  name!: LocalizedString;
 
   @prop({ _id: false })
-  description?: LocalizedString;
+  description: LocalizedString;
 
-  @prop({ type: () => [String] })
-  images?: string[];
+  @prop({ required: true, type: () => [String] })
+  images!: string[];
 }
 
 export class Item {
@@ -37,9 +37,7 @@ export class Item {
 
   @prop({ type: () => [String] })
   images!: string[];
-
-  @prop({ _id: false })
-  galleryEntry?: GalleryEntry;
 }
 
 export const ItemModel = getModelForClass(Item);
+export const GalleryModel = getModelForClass(Gallery);

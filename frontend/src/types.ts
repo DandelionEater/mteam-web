@@ -1,5 +1,5 @@
 export interface BaseDesign {
-  id: number;
+  id: string;
   nameKey: string;
   descriptionKey: string;
   price: number;

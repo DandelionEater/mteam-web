@@ -2,7 +2,7 @@ import { BaseDesign } from '../types';
 
 export const designs: BaseDesign[] = [
   {
-    id: 0,
+    id: "0",
     nameKey: 'designs.card1_name',
     descriptionKey: 'designs.card1_description',
     price: 200,
@@ -13,9 +13,10 @@ export const designs: BaseDesign[] = [
     ],
     categoryKey: 'categories.chair',
     quantity: 15,
+    manufacturingID: "1",
   },
   {
-    id: 1,
+    id: "1",
     nameKey: 'designs.card2_name',
     descriptionKey: 'designs.card2_description',
     price: 250,
@@ -26,9 +27,10 @@ export const designs: BaseDesign[] = [
     ],
     categoryKey: 'categories.table',
     quantity: 12,
+    manufacturingID: "2",
   },
   {
-    id: 2,
+    id: "2",
     nameKey: 'designs.card3_name',
     descriptionKey: 'designs.card3_description',
     price: 350,
@@ -39,5 +41,6 @@ export const designs: BaseDesign[] = [
     ],
     categoryKey: 'categories.bench',
     quantity: 8,
+    manufacturingID: "3",
   },
 ];
