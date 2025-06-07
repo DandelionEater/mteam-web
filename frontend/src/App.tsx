@@ -16,6 +16,8 @@ import EditGallery from './pages/EditGallery';
 import ScrollToTop from './components/ScrollToTop';
 import ResetScroll from './utils/ResetScroll';
 import { CartProvider } from './context/CartContext';
+import AddCategory from './pages/AddCategory';
+import EditCategory from './pages/EditCategory';
 
 interface LayoutProps {
   children: ReactNode;
@@ -49,6 +51,8 @@ function App() {
           <Route path="/admin-manager/edit/:id" element={<Layout><EditDesign /></Layout>} />
           <Route path="/admin-manager/gallery/add" element={<Layout><AddGallery /></Layout>}/>
           <Route path="/admin-manager/gallery/edit/:id" element={<Layout><EditGallery /></Layout>}/>
+          <Route path="/admin-manager/category/add" element={<Layout><AddCategory /></Layout>}/>
+          <Route path="/admin-manager/category/edit/:id" element={<Layout><EditCategory /></Layout>}/>
         </Routes>
       </Router>
     </CartProvider>

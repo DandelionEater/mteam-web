@@ -1,8 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
-import { designs } from "../data/designs";
 import { PlusIcon, TrashIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { fetchItemById, updateItem } from "../dbMiddleware/ItemCRUD";
+import { Item } from "../model/Item.schema";
+import { fetchCategories } from "../api/categoryService";
+import i18n from "../i18n";
+import { Category } from "../model/Category.schema";
 
 type LocalizedString = { en: string; lt: string };
 
@@ -21,9 +25,6 @@ const EditDesign = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const designId = Number(id);
-  const existingDesign = designs.find((d) => d.id === designId);
-
   const [form, setForm] = useState<FormState>({
     name: { en: "", lt: "" },
     description: { en: "", lt: "" },
@@ -34,30 +35,67 @@ const EditDesign = () => {
     images: [""],
   });
 
-  useEffect(() => {
-    if (existingDesign) {
-      setForm({
-        name: {
-          en: t(existingDesign.nameKey + ".en") || "",
-          lt: t(existingDesign.nameKey + ".lt") || "",
-        },
-        description: {
-          en: existingDesign.descriptionKey ? t(existingDesign.descriptionKey + ".en") : "",
-          lt: existingDesign.descriptionKey ? t(existingDesign.descriptionKey + ".lt") : "",
-        },
-        category: existingDesign.categoryKey || "",
-        manufacturingID: existingDesign.manufacturingID || "",
-        stock: String(existingDesign.stock || ""),
-        price: String(existingDesign.price || ""),
-        images: existingDesign.images.length > 0 ? existingDesign.images : [""],
-      });
-    }
-  }, [existingDesign, t]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!existingDesign) {
+  // Design loader
+  useEffect(() => {
+    if (!id) {
+      setError(t("designForm.notFound"));
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+
+    async function load() {
+      try {
+        const design: Item = await fetchItemById(id!);
+        setForm({
+          name: design.name || { en: "", lt: "" },
+          description: design.description || { en: "", lt: "" },
+          category: design.category,
+          manufacturingID: design.manufacturingID,
+          stock: design.stock.toString(),
+          price: design.price.toString(),
+          images: design.images.length > 0 ? design.images : [""],
+        });
+        setError(null);
+      } catch (err: any) {
+        setError(err.message || t("designForm.loadError"));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    load();
+  }, [id, t]);
+
+  // Category loader
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await fetchCategories();
+        setCategories(data);
+      } catch (err) {
+        console.error("Failed to load categories", err);
+      }
+    })();
+  }, []);
+
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center pt-32">
-        <p className="text-lg text-gray-700">{t("designForm.notFound")}</p>
+        <p className="text-lg text-gray-700">{t("designForm.loading")}</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-32">
+        <p className="text-lg text-red-600">{error}</p>
       </div>
     );
   }
@@ -76,7 +114,7 @@ const EditDesign = () => {
     }));
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
@@ -84,10 +122,26 @@ const EditDesign = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you can handle your updated design data (e.g. API call, update state)
-    console.log("Updated design data:", form);
+
+    try {
+      const updatedDesign = {
+        name: form.name,
+        description: form.description,
+        category: form.category,
+        manufacturingID: form.manufacturingID,
+        stock: Number(form.stock),
+        price: Number(form.price),
+        images: form.images,
+      };
+
+      await updateItem(id!, updatedDesign);
+
+      navigate(-1);
+    } catch (err: any) {
+      alert(err.message || t("designForm.saveError"));
+    }
   };
 
   return (
@@ -148,14 +202,22 @@ const EditDesign = () => {
           {/* Category */}
           <div>
             <label className="block text-sm font-medium text-gray-700">{t("designForm.category")}</label>
-            <input
+            <select
               name="category"
-              type="text"
               value={form.category}
               onChange={handleChange}
-              className="mt-1 w-full px-4 py-2 border rounded-md"
+              className="mt-1 w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 bg-white"
               required
-            />
+            >
+              <option value="" disabled hidden>
+                {t("designForm.categoryPlaceholder")}
+              </option>
+              {categories.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.name[i18n.language as "en" | "lt"] || cat.name.en}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Manufacturing ID */}
@@ -251,6 +313,7 @@ const EditDesign = () => {
             <button
               type="submit"
               className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition"
+              disabled={loading}
             >
               {t("designForm.save")}
             </button>

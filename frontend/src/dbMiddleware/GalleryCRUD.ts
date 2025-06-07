@@ -32,6 +32,27 @@ export const fetchGalleryItems = async (): Promise<Gallery[]> => {
   }
 };
 
+export const updateGalleryItem = async (id: string, form: Gallery): Promise<Gallery> => {
+  try {
+    const response = await fetch(`http://localhost:4000/api/gallery/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to update gallery item");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error updating gallery item:", error);
+    throw error;
+  }
+};
+
 export const deleteGalleryItem = async (id: string): Promise<void> => {
   try {
     const response = await fetch(`http://localhost:4000/api/gallery/${id}`, {

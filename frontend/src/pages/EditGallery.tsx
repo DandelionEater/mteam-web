@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { PlusIcon, TrashIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { updateGalleryItem } from "../dbMiddleware/GalleryCRUD";
 
 type LocalizedString = {
   en: string;
@@ -26,17 +27,18 @@ const EditGallery = () => {
   });
 
   useEffect(() => {
-    // Fetch gallery entry by id, example:
-    // fetch(`/api/gallery/${id}`).then(res => res.json()).then(data => {
-    //   setForm(data.galleryEntry);
-    // });
-    // For now simulate with dummy data
-    const dummyData: GalleryEntryForm = {
-      name: { en: "Sample EN", lt: "Sample LT" },
-      description: { en: "Sample description EN", lt: "Sample description LT" },
-      images: ["https://example.com/image1.jpg", "https://example.com/image2.jpg"],
+    const fetchItem = async () => {
+      try {
+        const response = await fetch(`http://localhost:4000/api/gallery`);
+        const allItems: GalleryEntryForm[] = await response.json();
+        const item = allItems.find((entry: any) => entry._id === id);
+        if (item) setForm(item);
+      } catch (error) {
+        console.error("Failed to load gallery item:", error);
+      }
     };
-    setForm(dummyData);
+
+    if (id) fetchItem();
   }, [id]);
 
   const handleLocalizedChange = (
@@ -68,10 +70,18 @@ const EditGallery = () => {
     setForm((prevForm) => ({ ...prevForm, images: filteredImages }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Edited gallery entry data:", form);
-    // Submit logic here
+
+    try {
+      if (!id) throw new Error("Missing item ID");
+
+      await updateGalleryItem(id, form);
+      console.log("Gallery item updated successfully");
+      navigate("/admin-manager");
+    } catch (error) {
+      console.error("Update failed:", error);
+    }
   };
 
   return (

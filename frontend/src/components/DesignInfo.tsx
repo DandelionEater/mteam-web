@@ -1,124 +1,181 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+/* src/components/DesignInfo.tsx */
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
-import { useTranslation } from 'react-i18next';
-import { useCart } from '../context/CartContext';
-import { BaseDesign } from '../types';
+import { useTranslation } from "react-i18next";
+import { useCart } from "../context/CartContext";
+import { Item } from "../model/Item.schema";
+import { fetchItemById } from "../dbMiddleware/ItemCRUD";
+import { fetchCategories } from "../api/categoryService";
+import { Category } from "../model/Category.schema";
 
 interface DesignInfoProps {
   isOpen: boolean;
   onClose: () => void;
-  design: BaseDesign;
+  designId: string | null;
 }
 
-const DesignInfo: React.FC<DesignInfoProps> = ({
-  isOpen,
-  onClose,
-  design
-}) => {
+const DesignInfo: React.FC<DesignInfoProps> = ({ isOpen, onClose, designId }) => {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language === "lt" ? "lt" : "en";
   const navigate = useNavigate();
   const modalRef = useRef<HTMLDivElement>(null);
-  const { t } = useTranslation();
   const { addToCart } = useCart();
 
-  const [showMessage, setShowMessage] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const images = design?.images ?? [];
-
-  const handleAddToCart = () => {
-    const cartItem = { ...design, quantity: 1 };
-    addToCart(cartItem);
-    setShowMessage(true);
-    setTimeout(() => setShowMessage(false), 2000);
-  };
+  const [design, setDesign] = useState<Item | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState(false);
+  const [idx, setIdx] = useState(0);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+    if (!isOpen || !designId) {
+      setDesign(null);
+      setError(null);
+      setIdx(0);
+      return;
     }
+    setLoading(true);
+    fetchItemById(designId)
+      .then(data => setDesign(data))
+      .catch(() => setError(t("designInfo.loadError")))
+      .finally(() => setLoading(false));
+  }, [isOpen, designId, t]);
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+  useEffect(() => {
+    fetchCategories()
+      .then(setCategories)
+      .catch((err) => console.error("Failed to fetch categories", err));
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node))
+        onClose();
     };
+    if (isOpen) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, [isOpen, onClose]);
 
+  const images = design?.images ?? [];
+  const prev = () => setIdx(p => (p === 0 ? images.length - 1 : p - 1));
+  const next = () => setIdx(p => (p === images.length - 1 ? 0 : p + 1));
+
+  const addToCartHandler = () => {
+    if (!design) return;
+    addToCart({ ...design, quantity: 1 });
+    setToast(true);
+    setTimeout(() => setToast(false), 2000);
+  };
+
+  const categoryLabel =
+    categories.find((c) => c._id === design?.category)?.name[lang] ??
+    t("designInfo.noCategory");
+
+  // Price formatter & currency symbol like in Designs.tsx
+  const currencySymbol = lang === "lt" ? "€" : "$";
+  const priceFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat(lang === "lt" ? "lt-LT" : "en-US", {
+        style: "currency",
+        currency: lang === "lt" ? "EUR" : "USD",
+      }),
+    [lang]
+  );
+  const formatPrice = (price: number) =>
+    priceFormatter.format(price).replace(/\u20AC|\$/g, currencySymbol);
+
   if (!isOpen) return null;
-
-  const handlePrev = () => {
-    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
-
-  const handleNext = () => {
-    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-  };
 
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center px-4">
-        {/* Modal */}
         <div
           ref={modalRef}
-          className="bg-white p-6 rounded-xl max-w-xl w-full shadow-lg relative"
+          className="bg-white p-6 rounded-xl max-w-xl w-full shadow-lg relative max-h-[90vh] overflow-y-auto"
         >
-          {/* Carousel Section */}
-          {images.length > 0 ? (
-            <div className="relative mb-4">
-              <img
-                src={images[currentImageIndex]}
-                alt={`${t(design.nameKey)} ${currentImageIndex + 1}`}
-                onError={(e) => e.currentTarget.src = 'https://via.placeholder.com/400x250?text=Fallback'} // Fallback image
-                className="w-full h-auto rounded-lg object-contain"
-              />
-              {images.length > 1 && (
-                <>
-                  <button
-                    onClick={handlePrev}
-                    className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white bg-opacity-70 hover:bg-opacity-90 p-2 rounded-full shadow"
-                  >
-                    <ChevronLeftIcon className="w-5 h-5 text-gray-800" />
-                  </button>
-                  <button
-                    onClick={handleNext}
-                    className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white bg-opacity-70 hover:bg-opacity-90 p-2 rounded-full shadow"
-                  >
-                    <ChevronRightIcon className="w-5 h-5 text-gray-800" />
-                  </button>
-                </>
-              )}
-            </div>
-          ) : (
-            <div>No images available</div> // Debug: Display a message if no images
-          )}
-          <h2 className="text-2xl font-bold mb-2">{t(design.nameKey)}</h2>
-          <p className="text-gray-700 mb-4">{t(design.descriptionKey)}</p>
-          <p className="text-lg font-semibold text-gray-900 mb-2">
-            {t('designInfo.price')}: {design.price}
-          </p>
+          {loading && <p className="text-center">{t("designInfo.loading")}</p>}
+          {error && <p className="text-center text-red-600">{error}</p>}
 
-          <div className="flex gap-4">
-            <button
-              onClick={() => navigate('/contacts')}
-              className="bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 w-full transition rounded-xl"
-            >
-              {t('designInfo.contact')}
-            </button>
-            <button
-              onClick={handleAddToCart}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 w-full transition rounded-xl"
-            >
-              {t('designInfo.addToCart')}
-            </button>
-          </div>
+          {!loading && design && (
+            <>
+              {/* ---------- images ---------- */}
+              {images.length > 0 ? (
+                <div className="relative mb-4">
+                  <img
+                    src={images[idx]}
+                    alt={`${design.name[lang]} ${idx + 1}`}
+                    className="w-full h-auto rounded-lg object-contain"
+                    onError={(e) =>
+                      (e.currentTarget.src =
+                        "https://via.placeholder.com/400x250?text=No+Image")
+                    }
+                  />
+
+                  {images.length > 1 && (
+                    <>
+                      <button
+                        onClick={prev}
+                        className="absolute top-1/2 left-2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200 transition"
+                      >
+                        <ChevronLeftIcon className="w-5 h-5 text-gray-800" />
+                      </button>
+
+                      <button
+                        onClick={next}
+                        className="absolute top-1/2 right-2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200 transition"
+                      >
+                        <ChevronRightIcon className="w-5 h-5 text-gray-800" />
+                      </button>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <p>{t("designInfo.noImages")}</p>
+              )}
+
+              {/* ---------- text ---------- */}
+              <div className="border-gray-700 border-t-2 border-b-2">
+                <h2 className="text-2xl font-bold mt-2 mb-2">{design.name[lang]}</h2>
+                <p className="mb-4 text-gray-700">
+                  {design.description?.[lang] || ""}
+                </p>
+              </div>
+
+              <div className="mt-4">
+                <p className="mb-2 font-semibold">
+                  {t("designInfo.category")}: {categoryLabel}
+                </p>
+                <p className="mb-2 font-semibold">
+                  {t("designInfo.stock")}: {design.stock ?? t("designInfo.noStockInfo")} {t("designInfo.stockExtra")}
+                </p>
+
+                <p className="mb-2 font-semibold">
+                  {t("designInfo.price")}: {formatPrice(design.price)}
+                </p>
+              </div>
+
+              {/* ---------- actions ---------- */}
+              <div className="flex gap-4 mt-6">
+                <button
+                  onClick={() => navigate("/contacts")}
+                  className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition w-1/2"
+                >
+                  {t("designInfo.contact")}
+                </button>
+                <button
+                  onClick={addToCartHandler}
+                  className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition w-1/2"
+                >
+                  {t("designInfo.addToCart")}
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Close Button */}
+        {/* close icon */}
         <button
           onClick={onClose}
           className="absolute top-6 right-6 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition"
@@ -127,10 +184,10 @@ const DesignInfo: React.FC<DesignInfoProps> = ({
         </button>
       </div>
 
-      {/* Floating Message */}
-      {showMessage && (
-        <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg z-50">
-          <p className='text-center'>{t('designInfo.floatingMessage')}</p>
+      {/* toast */}
+      {toast && (
+        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg z-50">
+          {t("designInfo.floatingMessage")}
         </div>
       )}
     </>

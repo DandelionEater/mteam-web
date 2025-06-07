@@ -1,19 +1,20 @@
-class LocalizedString {
-  en?: string;
-  lt?: string;
+export interface LocalizedString {
+  en: string;
+  lt: string;
 }
 
 export class Gallery {
   name!: LocalizedString;
-  description: LocalizedString = new LocalizedString();
+  description: LocalizedString = { en: "", lt: "" };
   images!: string[];
 }
 
-export class Item {
-  name!: LocalizedString;
+export interface Item {
+  name: LocalizedString;
   description?: LocalizedString;
-  manufacturingID!: string;
-  stock!: number;
-  price!: number;
-  images!: string[];
+  manufacturingID: string;
+  category: string;
+  stock: number;
+  price: number;
+  images: string[];
 }

@@ -68,14 +68,24 @@
         "all": "Visi",
         "chair": "Kėdė",
         "table": "Stalas",
-        "bench": "Suolas"
+        "bench": "Suolas",
+        "addNewCategory": "Pridėti naują kategoriją",
+        "empty": "Sąrašas tusčias.",
+        "admin": "Kategorijos",
+        "name": "Pavadinimas",
+        "namePlaceholder": "Įveskite kategorijos pavadinimą",
+        "back": "Atgal",
+        "submit": "Išsaugoti"
     },
 
     "designInfo": {
         "price": "Kaina",
         "contact": "Susisiekti",
         "addToCart": "Pridėti į krepšelį",
-        "floatingMessage": "Sėkmingai pridėta į krepšelį"
+        "floatingMessage": "Sėkmingai pridėta į krepšelį",
+        "stock": "Likutis",
+        "stockExtra": "vnt.",
+        "category": "Kategorija"
     },
 
     "about": {
@@ -140,7 +150,7 @@
         "manufacturingId": "Gamybos ID",
         "manufacturingIdPlaceholder": "Įveskite gamybos ID",
         "category": "Kategorija",
-        "categoryPlaceholder": "Įveskite kategoriją",
+        "categoryPlaceholder": "Pasirinkite kategoriją",
         "stock": "Sandėlyje",
         "stockPlaceholder": "Įveskite turimą kiekį",
         "price": "Kaina",
@@ -150,7 +160,7 @@
         "addImage": "Pridėti nuotrauką",
         "removeImage": "Pašalinti nuotrauką",
         "back": "Atgal",
-        "submit": "Pateikti",
+        "submit": "Išsaugoti",
 
         "editTitle": "Redaguoti dizainą",
         "color": "Spalva",
@@ -158,7 +168,10 @@
         "countryOfOrigin": "Kilmės šalis",
         "size": "Dydis",
         "save": "Išsaugoti",
-        "notFound": "Dizainas nerastas."
+        "notFound": "Dizainas nerastas.",
+
+        "addCategory": "Pridėti kategoriją",
+        "noCategories": "Kategorijų nėra"
     },
 
     "galleryForm": {

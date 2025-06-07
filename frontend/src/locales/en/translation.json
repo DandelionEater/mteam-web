@@ -69,14 +69,24 @@
         "all": "All",
         "chair": "Chair",
         "table": "Table",
-        "bench": "Bench"
+        "bench": "Bench",
+        "addNewCategory": "Add a new category",
+        "empty": "No categories available.",
+        "admin": "Categories",
+        "name": "Name",
+        "namePlaceholder": "Enter category name",
+        "back": "Back",
+        "submit": "Submit"
     },
 
     "designInfo": {
         "price": "Price",
         "contact": "Contact us",
         "addToCart": "Add to cart",
-        "floatingMessage": "Succsessfully added to cart"
+        "floatingMessage": "Successfully added to cart",
+        "stock": "Left in stock",
+        "stockExtra": "units",
+        "category": "Category"
     },
 
     "about": {
@@ -141,7 +151,7 @@
         "manufacturingId": "Manufacturing ID",
         "manufacturingIdPlaceholder": "Enter manufacturing ID",
         "category": "Category",
-        "categoryPlaceholder": "Enter category",
+        "categoryPlaceholder": "Choose a category",
         "stock": "Stock",
         "stockPlaceholder": "Enter available stock",
         "price": "Price",
@@ -159,7 +169,10 @@
         "countryOfOrigin": "Country of Origin",
         "size": "Size",
         "save": "Save",
-        "notFound": "Design not found."
+        "notFound": "Design not found.",
+
+        "addCategory": "Add Category",
+        "noCategories": "No categories available"
     },
 
     "galleryForm": {

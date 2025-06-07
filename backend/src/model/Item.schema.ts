@@ -1,4 +1,5 @@
-import { prop, getModelForClass } from '@typegoose/typegoose';
+import { Ref, prop, getModelForClass } from '@typegoose/typegoose';
+import { Category } from './Category.schema';
 
 class LocalizedString {
   @prop()
@@ -37,6 +38,9 @@ export class Item {
 
   @prop({ type: () => [String] })
   images!: string[];
+
+  @prop({ ref: () => Category, required: true })
+  category!: Ref<Category>;
 }
 
 export const ItemModel = getModelForClass(Item);
