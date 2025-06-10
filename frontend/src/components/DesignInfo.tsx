@@ -64,7 +64,7 @@ const DesignInfo: React.FC<DesignInfoProps> = ({ isOpen, onClose, designId }) =>
 
   const addToCartHandler = () => {
     if (!design) return;
-    addToCart({ ...design, quantity: 1 });
+    addToCart(design);
     setToast(true);
     setTimeout(() => setToast(false), 2000);
   };
@@ -90,89 +90,91 @@ const DesignInfo: React.FC<DesignInfoProps> = ({ isOpen, onClose, designId }) =>
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center px-4">
-        <div
-          ref={modalRef}
-          className="bg-white p-6 rounded-xl max-w-xl w-full shadow-lg relative max-h-[90vh] overflow-y-auto"
-        >
-          {loading && <p className="text-center">{t("designInfo.loading")}</p>}
-          {error && <p className="text-center text-red-600">{error}</p>}
+      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 justify-center px-4 overflow-y-auto py-8">
+        <div className="flex justify-center">
+          <div
+            ref={modalRef}
+            className="bg-white p-6 rounded-xl max-w-xl w-full shadow-lg relative max-h-[90vh] overflow-y-auto"
+          >
+            {loading && <p className="text-center">{t("designInfo.loading")}</p>}
+            {error && <p className="text-center text-red-600">{error}</p>}
 
-          {!loading && design && (
-            <>
-              {/* ---------- images ---------- */}
-              {images.length > 0 ? (
-                <div className="relative mb-4">
-                  <img
-                    src={images[idx]}
-                    alt={`${design.name[lang]} ${idx + 1}`}
-                    className="w-full h-auto rounded-lg object-contain"
-                    onError={(e) =>
-                      (e.currentTarget.src =
-                        "https://via.placeholder.com/400x250?text=No+Image")
-                    }
-                  />
+            {!loading && design && (
+              <>
+                {/* ---------- images ---------- */}
+                {images.length > 0 ? (
+                  <div className="relative mb-4">
+                    <img
+                      src={images[idx]}
+                      alt={`${design.name[lang]} ${idx + 1}`}
+                      className="w-full h-auto rounded-lg object-contain"
+                      onError={(e) =>
+                        (e.currentTarget.src =
+                          "https://via.placeholder.com/400x250?text=No+Image")
+                      }
+                    />
 
-                  {images.length > 1 && (
-                    <>
-                      <button
-                        onClick={prev}
-                        className="absolute top-1/2 left-2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200 transition"
-                      >
-                        <ChevronLeftIcon className="w-5 h-5 text-gray-800" />
-                      </button>
+                    {images.length > 1 && (
+                      <>
+                        <button
+                          onClick={prev}
+                          className="absolute top-1/2 left-2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200 transition"
+                        >
+                          <ChevronLeftIcon className="w-5 h-5 text-gray-800" />
+                        </button>
 
-                      <button
-                        onClick={next}
-                        className="absolute top-1/2 right-2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200 transition"
-                      >
-                        <ChevronRightIcon className="w-5 h-5 text-gray-800" />
-                      </button>
-                    </>
-                  )}
+                        <button
+                          onClick={next}
+                          className="absolute top-1/2 right-2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-200 transition"
+                        >
+                          <ChevronRightIcon className="w-5 h-5 text-gray-800" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <p>{t("designInfo.noImages")}</p>
+                )}
+
+                {/* ---------- text ---------- */}
+                <div className="border-gray-700 border-t-2 border-b-2">
+                  <h2 className="text-2xl font-bold mt-2 mb-2">{design.name[lang]}</h2>
+                  <p className="mb-4 text-gray-700">
+                    {design.description?.[lang] || ""}
+                  </p>
                 </div>
-              ) : (
-                <p>{t("designInfo.noImages")}</p>
-              )}
 
-              {/* ---------- text ---------- */}
-              <div className="border-gray-700 border-t-2 border-b-2">
-                <h2 className="text-2xl font-bold mt-2 mb-2">{design.name[lang]}</h2>
-                <p className="mb-4 text-gray-700">
-                  {design.description?.[lang] || ""}
-                </p>
-              </div>
+                <div className="mt-4">
+                  <p className="mb-2 font-semibold">
+                    {t("designInfo.category")}: {categoryLabel}
+                  </p>
+                  <p className="mb-2 font-semibold">
+                    {t("designInfo.stock")}: {design.stock ?? t("designInfo.noStockInfo")} {t("designInfo.stockExtra")}
+                  </p>
 
-              <div className="mt-4">
-                <p className="mb-2 font-semibold">
-                  {t("designInfo.category")}: {categoryLabel}
-                </p>
-                <p className="mb-2 font-semibold">
-                  {t("designInfo.stock")}: {design.stock ?? t("designInfo.noStockInfo")} {t("designInfo.stockExtra")}
-                </p>
+                  <p className="mb-2 font-semibold">
+                    {t("designInfo.price")}: {formatPrice(design.price)}
+                  </p>
+                </div>
 
-                <p className="mb-2 font-semibold">
-                  {t("designInfo.price")}: {formatPrice(design.price)}
-                </p>
-              </div>
-
-              {/* ---------- actions ---------- */}
-              <div className="flex gap-4 mt-6">
-                <button
-                  onClick={() => navigate("/contacts")}
-                  className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition w-1/2"
-                >
-                  {t("designInfo.contact")}
-                </button>
-                <button
-                  onClick={addToCartHandler}
-                  className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition w-1/2"
-                >
-                  {t("designInfo.addToCart")}
-                </button>
-              </div>
-            </>
-          )}
+                {/* ---------- actions ---------- */}
+                <div className="flex gap-4 mt-6">
+                  <button
+                    onClick={() => navigate("/contacts")}
+                    className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition w-1/2"
+                  >
+                    {t("designInfo.contact")}
+                  </button>
+                  <button
+                    onClick={addToCartHandler}
+                    className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition w-1/2"
+                  >
+                    {t("designInfo.addToCart")}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {/* close icon */}

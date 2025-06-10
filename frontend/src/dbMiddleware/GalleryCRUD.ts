@@ -32,6 +32,17 @@ export const fetchGalleryItems = async (): Promise<Gallery[]> => {
   }
 };
 
+export const fetchGalleryItemById = async (id: string): Promise<Gallery> => {
+  try {
+    const response = await fetch(`http://localhost:4000/api/gallery/${id}`);
+    if (!response.ok) throw new Error("Failed to fetch gallery item");
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching gallery item ${id}:`, error);
+    throw error;
+  }
+};
+
 export const updateGalleryItem = async (id: string, form: Gallery): Promise<Gallery> => {
   try {
     const response = await fetch(`http://localhost:4000/api/gallery/${id}`, {

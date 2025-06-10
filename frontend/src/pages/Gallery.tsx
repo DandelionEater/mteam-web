@@ -1,35 +1,89 @@
-import { useState } from 'react';
-import { gallery } from '../data/gallery';
-import GalleryInfo from '../components/GalleryInfo';
-import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from "react";
+import { fetchGalleryItems } from "../dbMiddleware/GalleryCRUD";
+import GalleryInfo from "../components/GalleryInfo";
+import { useTranslation } from "react-i18next";
+import { Gallery as GalleryItem } from "../model/Item.schema";
 
 const Gallery = () => {
-  const { t } = useTranslation();
-  const [selectedItem, setSelectedItem] = useState<typeof gallery[0] | null>(null);
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language === "lt" ? "lt" : "en";
+
+  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+
+  useEffect(() => {
+    let ignore = false;
+    setLoading(true);
+
+    fetchGalleryItems()
+      .then((data) => !ignore && setItems(data))
+      .catch((e) =>
+        !ignore &&
+        setError(
+          e instanceof Error ? e.message : t("gallery.loadError" as never)
+        )
+      )
+      .finally(() => !ignore && setLoading(false));
+
+    return () => {
+      ignore = true;
+    };
+  }, [t]);
+
+  if (loading)
+    return (
+      <section className="min-h-screen flex items-center justify-center">
+        <p>{t("gallery.loading")}</p>
+      </section>
+    );
+
+  if (error)
+    return (
+      <section className="min-h-screen flex items-center justify-center">
+        <p className="text-red-600">{error}</p>
+      </section>
+    );
 
   return (
     <section className="bg-white py-16 px-6 min-h-screen pt-24">
       <div className="w-full">
+        {/* title */}
         <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-12 text-center pt-4">
           {t('gallery.title')}
         </h2>
       </div>
 
+      {/* empty state */}
+      {items.length === 0 && (
+        <p className="text-center text-gray-500">{t("gallery.empty")}</p>
+      )}
+
+      {/* grid */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {gallery.map((item) => (
+        {items.map((item) => (
           <div
-            key={item.id}
-            onClick={() => setSelectedItem(item)}
-            className="relative group overflow-hidden rounded-xl shadow-lg cursor-pointer"
+            key={item._id}
+            onClick={() => {
+              if (item._id) setSelectedItem(item._id);
+            }}
+            className="relative group overflow-hidden rounded-xl shadow-lg cursor-pointer h-56"
           >
             <img
-              src={item.images[0]}
-              alt={t(item.nameKey)}
-              className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
+              src={
+                item.images?.[0] ?? "https://via.placeholder.com/400x250?text=No+Image"
+              }
+              alt={item.name[lang]}
+              className="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 className="text-xl font-bold text-center">{t(item.nameKey)}</h3>
-              <p className="text-sm mt-2 px-4 text-center">{t(item.descriptionKey)}</p>
+              <h3 className="text-xl font-bold text-center">
+                {item.name[lang]}
+              </h3>
+              <p className="text-sm mt-2 px-4 text-center">
+                {item.description?.[lang]}
+              </p>
             </div>
           </div>
         ))}
@@ -38,9 +92,9 @@ const Gallery = () => {
       {/* Modal */}
       {selectedItem && (
         <GalleryInfo
-          isOpen={!!selectedItem}
+          isOpen
           onClose={() => setSelectedItem(null)}
-          item={selectedItem}
+          itemId={selectedItem}
         />
       )}
     </section>

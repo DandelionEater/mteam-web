@@ -4,12 +4,14 @@ export interface LocalizedString {
 }
 
 export class Gallery {
+  _id!: string;
   name!: LocalizedString;
   description: LocalizedString = { en: "", lt: "" };
   images!: string[];
 }
 
 export interface Item {
+  _id: string;
   name: LocalizedString;
   description?: LocalizedString;
   manufacturingID: string;

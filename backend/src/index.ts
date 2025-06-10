@@ -158,6 +158,23 @@ app.get('/api/gallery', async (req: Request, res: Response): Promise<void> => {
   res.json(result);
 });
 
+// Get by ID
+app.get('/api/gallery/:id', async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+
+  try {
+    const entry = await GalleryModel.findById(id).lean();
+    if (!entry) {
+      res.status(404).json({ message: 'Gallery item not found' });
+      return;
+    }
+    res.json(entry);
+  } catch (error) {
+    console.error('Error fetching gallery item:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Put
 app.put('/api/gallery/:id', async (req: Request, res: Response): Promise<void> =>{
   const id = req.params.id;

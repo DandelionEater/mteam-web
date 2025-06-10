@@ -186,12 +186,12 @@ const Designs: React.FC = () => {
                 <div
                   key={d.id}
                   onClick={() => handleSelect(d)}
-                  className="relative group overflow-hidden rounded-xl shadow-lg cursor-pointer"
+                  className="relative group overflow-hidden rounded-xl shadow-lg cursor-pointer h-56"
                 >
                   <img
                     src={d.images[0] || "https://placehold.co/400x300?text=No+Image"}
                     alt={d.name}
-                    className="w-full h-auto object-cover transition-all duration-300 group-hover:scale-105 group-hover:blur-sm"
+                    className="w-full h-56 object-cover transition-all duration-300 group-hover:scale-105 group-hover:blur-sm"
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-white opacity-0 transition-opacity group-hover:opacity-100">
                     <h3 className="text-xl font-bold">{d.name}</h3>

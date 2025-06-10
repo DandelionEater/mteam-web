@@ -1,34 +1,37 @@
+/* src/components/CartOverlay.tsx */
 import { useState, useLayoutEffect, useRef, useEffect } from "react";
-import { useTranslation } from 'react-i18next';
-import { BaseDesign } from "../types";
-import { Link } from 'react-router-dom';
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { Item } from "../model/Item.schema";
+
+/* ---------- types ---------- */
+export type CartItem = Item & { _id: string; quantity: number };
 
 type CartOverlayProps = {
-  items: BaseDesign[];
-  onUpdateQuantity: (id: number, quantity: number) => void;
-  onRemoveItem: (id: number) => void;
+  items: CartItem[];
+  onUpdateQuantity: (id: string, quantity: number) => void;
+  onRemoveItem: (id: string) => void;
   anchorRef: React.RefObject<HTMLDivElement | null>;
   isOpen: boolean;
   onClose: () => void;
 };
 
+/* ---------- component ---------- */
 export default function CartOverlay({
   items,
   onUpdateQuantity,
   onRemoveItem,
   anchorRef,
   isOpen,
-  onClose
+  onClose,
 }: CartOverlayProps) {
   const { t, i18n } = useTranslation();
-  const modalRef = useRef<HTMLDivElement>(null);
+  const lang = i18n.language === "lt" ? "lt" : "en";
 
+  const modalRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<{ top: number; right: number } | null>(null);
 
-  const total = items.reduce((acc, item) => {
-    return acc + item.price * (item.quantity ?? 1);
-  }, 0);
-
+  /* ── Position below the anchor (cart icon) ─────────────────── */
   useLayoutEffect(() => {
     if (isOpen && anchorRef.current) {
       const rect = anchorRef.current.getBoundingClientRect();
@@ -37,42 +40,37 @@ export default function CartOverlay({
         right: window.innerWidth - rect.right,
       });
     }
+  }, [isOpen, anchorRef]);
+
+  /* ── Hide position when closed ─────────────────────────────── */
+  useEffect(() => {
+    if (!isOpen) setPosition(null);
   }, [isOpen]);
 
+  /* ── Close on outside click ───────────────────────────────── */
   useEffect(() => {
-    if (!isOpen) {
-      setPosition(null);
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        onClose();
-      }
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) onClose();
     };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    if (isOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, onClose]);
 
-  const formatPrice = (price: number): string => {
-    const locale = i18n.language === 'lt' ? 'lt-LT' : 'en-US';
-    const currencySymbol = i18n.language === 'lt' ? '€' : '$';
+  /* ── Helpers ──────────────────────────────────────────────── */
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat(lang === "lt" ? "lt-LT" : "en-US", {
+      style: "currency",
+      currency: lang === "lt" ? "EUR" : "USD",
+    })
+      .format(price)
+      .replace(/\u20AC|\$/g, lang === "lt" ? "€" : "$");
 
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: i18n.language === 'lt' ? 'EUR' : 'USD',
-    }).format(price).replace(/\u20AC|\$/g, currencySymbol);
-  };
+  const total = items.reduce((acc, it) => acc + it.price * it.quantity, 0);
 
+  /* ── Early exit ───────────────────────────────────────────── */
   if (!isOpen) return null;
 
+  /* ── UI ───────────────────────────────────────────────────── */
   return (
     <div
       ref={modalRef}
@@ -80,42 +78,44 @@ export default function CartOverlay({
       style={{
         top: position?.top ?? -9999,
         right: position?.right ?? -9999,
-        visibility: position ? 'visible' : 'hidden',
+        visibility: position ? "visible" : "hidden",
       }}
     >
-      <h2 className="text-lg font-semibold mb-2">{t('cartPage.title')}</h2>
+      <h2 className="text-lg font-semibold mb-2">{t("cartPage.title")}</h2>
+
+      {/* empty */}
       {items.length === 0 ? (
-        <p className="text-sm text-gray-500">{t('cartPage.emptyCart')}</p>
+        <p className="text-sm text-gray-500">{t("cartPage.emptyCart")}</p>
       ) : (
-        <div className="space-y-4 max-h-64 overflow-y-auto">
+        <div className="space-y-4 max-h-64 overflow-y-auto pr-1">
           {items.map((item) => (
-            <div key={item.id} className="flex items-center justify-between">
+            <div key={item._id} className="flex items-start justify-between">
               <div>
-                <p className="font-medium">{t(item.nameKey)}</p>
+                <p className="font-medium leading-tight">{item.name[lang]}</p>
                 <p className="text-sm text-gray-600">{formatPrice(item.price)}</p>
-                <div className="flex items-center mt-1 gap-2">
+
+                <div className="flex items-center gap-2 mt-1">
                   <button
-                    onClick={() =>
-                      onUpdateQuantity(item.id, Math.max((item.quantity ?? 1) - 1, 1))
-                    }
                     className="px-2 py-1 border rounded"
+                    onClick={() =>
+                      onUpdateQuantity(item._id, Math.max(item.quantity - 1, 1))
+                    }
                   >
-                    -
+                    −
                   </button>
-                  <span>{item.quantity ?? 1}</span>
+                  <span>{item.quantity}</span>
                   <button
-                    onClick={() =>
-                      onUpdateQuantity(item.id, (item.quantity ?? 1) + 1)
-                    }
                     className="px-2 py-1 border rounded"
+                    onClick={() => onUpdateQuantity(item._id, item.quantity + 1)}
                   >
                     +
                   </button>
                 </div>
               </div>
+
               <button
-                onClick={() => onRemoveItem(item.id)}
-                className="text-red-500 hover:text-red-700 pr-3"
+                onClick={() => onRemoveItem(item._id)}
+                className="text-red-500 hover:text-red-700 pl-3"
               >
                 ✕
               </button>
@@ -123,16 +123,27 @@ export default function CartOverlay({
           ))}
         </div>
       )}
+
+      {/* footer */}
       <div className="mt-4">
-        <p className="font-semibold text-right">Total: {formatPrice(total)}</p>
+        <p className="font-semibold text-right">
+          Total: {formatPrice(total)}
+        </p>
+
         <div className="flex gap-2 mt-3">
-        <button className="w-full px-4 py-2 border rounded hover:bg-gray-100">
-          <Link to="/cart" className="w-full text-center">
-            {t('cartPage.goToCart')}
+          <Link
+            to="/cart"
+            className="w-full px-4 py-2 border rounded hover:bg-gray-100 text-center"
+            onClick={onClose}
+          >
+            {t("cartPage.goToCart")}
           </Link>
-        </button>
-          <button className="w-full px-4 py-2 bg-black text-white rounded hover:bg-gray-800">
-            {t('cartPage.checkout')}
+
+          <button
+            className="w-full px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+            /* TODO: wire up checkout */
+          >
+            {t("cartPage.checkout")}
           </button>
         </div>
       </div>
