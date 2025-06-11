@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { PlusIcon, TrashIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { useToast } from "../components/ToastContext";
 
 import i18n from "../i18n";
 import { Item } from "../model/Item.schema";
@@ -22,11 +23,13 @@ type ItemForm = Omit<Item, "name" | "description"> & {
 const AddDesign = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState<ItemForm>({
+    _id:             "",
     name:            emptyValue,
     description:     emptyValue,
-    category:      "",
+    category:        "",
     stock:           0,
     price:           0,
     images:          [""],
@@ -77,9 +80,17 @@ const AddDesign = () => {
 
     try {
       await handleItemAdd(payload);
-      navigate("/admin-manager");
+      navigate(-1);
+      showToast({
+        type: "success",
+        message: t("adminToast.success")
+      });
     } catch (err) {
       console.error("Error creating item:", err);
+      showToast({
+          type: "error",
+          message: t("adminToast.error")
+      });
     }
   };
 

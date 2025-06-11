@@ -2,7 +2,8 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import DesignInfo from "../components/DesignInfo";
-import { fetchItems } from "../dbMiddleware/ItemCRUD";          // <- CRUD
+import { fetchItems } from "../dbMiddleware/ItemCRUD";
+import { useItemsPerRow } from "../hooks/useItemPerRow";
 
 type DisplayItem = {
   id: string;
@@ -17,6 +18,8 @@ type DisplayItem = {
 const Designs: React.FC = () => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language === "lt" ? "lt" : "en";
+  const { containerRef, itemRef, itemsPerRow } = useItemsPerRow();
+  const itemsPerPage = Math.max(itemsPerRow, 1) * 5;
 
   /* ------------------------------------------------------------------ */
   /* LOAD ITEMS FROM BACKEND                                            */
@@ -103,6 +106,18 @@ const Designs: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [isMobileFilterOpen]);
 
+    /* ------------------------------------------------------------------ */
+    /* PAGINATION                                                         */
+    /* ------------------------------------------------------------------ */
+    const [currentPage, setCurrentPage] = useState(1);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedDesigns = filteredDesigns.slice(startIndex, startIndex + itemsPerPage);
+    const totalPages = Math.ceil(filteredDesigns.length / itemsPerPage);
+
+    useEffect(() => {
+      setCurrentPage(1);
+    }, [itemsPerRow, selectedCategory, filteredDesigns.length]);
+
   /* ------------------------------------------------------------------ */
   /* RENDER                                                             */
   /* ------------------------------------------------------------------ */
@@ -115,7 +130,7 @@ const Designs: React.FC = () => {
   }
 
   return (
-    <section className="bg-white py-16 px-6 min-h-screen pt-24">
+    <section className="bg-white py-16 px-6 min-h-screen pt-28">
       <h2 className="text-3xl md:text-4xl font-semibold text-center mb-12">
         {t("designs.title")}
       </h2>
@@ -176,15 +191,19 @@ const Designs: React.FC = () => {
 
         {/* Grid */}
         <div className="md:w-3/4">
-          {filteredDesigns.length === 0 ? (
-            <p className="text-center text-lg text-gray-500">
-              {t("designs.empty")}
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredDesigns.map((d) => (
+          <div
+            ref={containerRef}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {paginatedDesigns.length === 0 ? (
+              <p className="text-center text-lg text-gray-500 col-span-full">
+                {t("designs.empty")}
+              </p>
+            ) : (
+              paginatedDesigns.map((d, i) => (
                 <div
                   key={d.id}
+                  ref={i === 0 ? itemRef : null}
                   onClick={() => handleSelect(d)}
                   className="relative group overflow-hidden rounded-xl shadow-lg cursor-pointer h-56"
                 >
@@ -199,11 +218,36 @@ const Designs: React.FC = () => {
                     <p className="text-lg font-semibold mt-2">{formatPrice(d.price)}</p>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Pagination controls */}
+      {totalPages > 1 && (
+        <div className="mt-10 flex justify-center">
+          {Array.from({ length: totalPages }, (_, idx) => {
+            const page = idx + 1;
+            return (
+              <button
+                key={page}
+                onClick={() => {
+                  setCurrentPage(page);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`mx-1 px-4 py-2 rounded-lg border transition
+                  ${page === currentPage
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white text-gray-900 hover:bg-gray-100'
+                  }`}
+              >
+                {page}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Info Modal */}
       <DesignInfo

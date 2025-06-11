@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { PlusIcon, TrashIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { handleGalleryAdd } from "../dbMiddleware/GalleryCRUD";
+import { useToast } from "../components/ToastContext";
 
 type LocalizedString = {
   en: string;
@@ -18,6 +19,7 @@ type GalleryEntryForm = {
 const AddGallery = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState<GalleryEntryForm>({
     name: { en: "", lt: "" },
@@ -58,10 +60,17 @@ const AddGallery = () => {
     e.preventDefault();
     try {
       await handleGalleryAdd(form);
-      console.log("Gallery item added successfully");
-      navigate("/admin-manager");
+      navigate(-1);
+      showToast({
+          type: "success",
+          message: t("adminToast.success")
+      });
     } catch (err) {
       console.error("Submission failed:", err);
+      showToast({
+          type: "error",
+          message: t("adminToast.error")
+      });
     }
   };
 

@@ -1,6 +1,10 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCart } from "../context/CartContext";
 import { Link } from "react-router-dom";
+import ConfirmDialog from "../components/ConfirmDialog";
+import { useToast } from "../components/ToastContext";
+import { MinusIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const CartPage = () => {
   const { cartItems, updateQuantity, removeFromCart } = useCart();
@@ -19,12 +23,39 @@ const CartPage = () => {
       .replace(/\u20AC|\$/g, currencySymbol);
   };
 
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+
+  const { showToast } = useToast();
+
+  const handleRemoveClick = (id: string) => {
+    setItemToDelete(id);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (itemToDelete) {
+      removeFromCart(itemToDelete);
+    }
+    setConfirmOpen(false);
+    setItemToDelete(null);
+    showToast({
+      type: "success",
+      message: t("toast.success")
+    });
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmOpen(false);
+    setItemToDelete(null);
+  };
+
   const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
-        <h1 className="text-center text-3xl font-semibold mb-6">
+        <h1 className="text-center text-3xl font-semibold mb-8">
           {t("cartPage.title")}
         </h1>
 
@@ -55,7 +86,7 @@ const CartPage = () => {
                         }
                         className="px-2 py-1 border rounded"
                       >
-                        −
+                        <MinusIcon className="w-4 h-4" />
                       </button>
                       <span>{item.quantity}</span>
                       <button
@@ -64,16 +95,16 @@ const CartPage = () => {
                         }
                         className="px-2 py-1 border rounded"
                       >
-                        +
+                        <PlusIcon className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
                 </div>
                 <button
-                  onClick={() => removeFromCart(item._id)}
+                  onClick={() => handleRemoveClick(item._id)}
                   className="text-red-500 hover:text-red-700 pr-4"
                 >
-                  ✕
+                  <XMarkIcon className="w-5 h-5" />
                 </button>
               </div>
             ))}
@@ -92,6 +123,14 @@ const CartPage = () => {
           </Link>
         </div>
       </div>
+      {/* Confirmation dialog */}
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        title={t("cartPage.confirmTitle")}
+        message={t("cartPage.confirmMessage")}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   );
 };

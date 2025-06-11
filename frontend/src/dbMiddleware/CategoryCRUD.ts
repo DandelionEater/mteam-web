@@ -8,6 +8,7 @@ export const handleCategoryAdd = async (form: CategoryItem): Promise<CategoryIte
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
+      credentials: 'include',
     });
 
     const data = await response.json();
@@ -46,6 +47,7 @@ export const updateCategory = async (id: string, form: CategoryItem): Promise<Ca
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
+      credentials: 'include',
     });
 
     const data = await response.json();
@@ -65,6 +67,7 @@ export const deleteCategory = async (id: string): Promise<void> => {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: "DELETE",
+      credentials: 'include',
     });
 
     if (!response.ok) {

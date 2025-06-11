@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { setIsAuthed } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,11 +20,12 @@ const AdminLogin: React.FC = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: normalizedEmail, password }),
+        credentials: 'include',
       });
 
       const data = await response.json();
       if (response.ok) {
-        console.log("Login successful");
+        setIsAuthed(true);
         navigate("/admin-manager"); // Redirect upon successful login
       } else {
         setError(data.message || "Invalid email or password");

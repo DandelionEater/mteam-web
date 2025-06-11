@@ -1,11 +1,14 @@
 import { Gallery } from "../model/Item.schema";
 
-export const handleGalleryAdd = async (form: Gallery) => {
+export type NewGallery = Omit<Gallery, "_id">;
+
+export const handleGalleryAdd = async (form: NewGallery) => {
   try {
     const response = await fetch("http://localhost:4000/api/gallery", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
+      credentials: 'include',
     });
 
     const data = await response.json();
@@ -43,12 +46,13 @@ export const fetchGalleryItemById = async (id: string): Promise<Gallery> => {
   }
 };
 
-export const updateGalleryItem = async (id: string, form: Gallery): Promise<Gallery> => {
+export const updateGalleryItem = async (id: string, form: NewGallery): Promise<Gallery> => {
   try {
     const response = await fetch(`http://localhost:4000/api/gallery/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
+      credentials: 'include',
     });
 
     const data = await response.json();
@@ -68,6 +72,7 @@ export const deleteGalleryItem = async (id: string): Promise<void> => {
   try {
     const response = await fetch(`http://localhost:4000/api/gallery/${id}`, {
       method: "DELETE",
+      credentials: 'include',
     });
     if (!response.ok) {
       const data = await response.json();

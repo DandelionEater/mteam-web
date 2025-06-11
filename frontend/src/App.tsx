@@ -18,6 +18,9 @@ import ResetScroll from './utils/ResetScroll';
 import { CartProvider } from './context/CartContext';
 import AddCategory from './pages/AddCategory';
 import EditCategory from './pages/EditCategory';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import { ToastProvider } from './components/ToastContext';
 
 interface LayoutProps {
   children: ReactNode;
@@ -35,27 +38,31 @@ function Layout({ children }: LayoutProps) {
 
 function App() {
   return (
-    <CartProvider>
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Layout><Home /></Layout>} />
-          <Route path="/designs" element={<Layout><Designs /></Layout>} />
-          <Route path="/gallery" element={<Layout><Gallery /></Layout>} />
-          <Route path="/about" element={<Layout><About /></Layout>} />
-          <Route path="/contacts" element={<Layout><Contacts /></Layout>} />
-          <Route path="/cart" element={<Layout><CartPage /></Layout>} />
-          <Route path="/admin-login" element={<Layout><AdminLogin /></Layout>} />
-          <Route path="/admin-manager" element={<Layout><AdminManager /></Layout>} />
-          <Route path="/admin-manager/add" element={<Layout><AddDesign /></Layout>} />
-          <Route path="/admin-manager/edit/:id" element={<Layout><EditDesign /></Layout>} />
-          <Route path="/admin-manager/gallery/add" element={<Layout><AddGallery /></Layout>}/>
-          <Route path="/admin-manager/gallery/edit/:id" element={<Layout><EditGallery /></Layout>}/>
-          <Route path="/admin-manager/category/add" element={<Layout><AddCategory /></Layout>}/>
-          <Route path="/admin-manager/category/edit/:id" element={<Layout><EditCategory /></Layout>}/>
-        </Routes>
-      </Router>
-    </CartProvider>
+    <AuthProvider>
+      <ToastProvider>
+        <CartProvider>
+          <Router>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Layout><Home /></Layout>} />
+              <Route path="/designs" element={<Layout><Designs /></Layout>} />
+              <Route path="/gallery" element={<Layout><Gallery /></Layout>} />
+              <Route path="/about" element={<Layout><About /></Layout>} />
+              <Route path="/contacts" element={<Layout><Contacts /></Layout>} />
+              <Route path="/cart" element={<Layout><CartPage /></Layout>} />
+              <Route path="/admin-login" element={<Layout><AdminLogin /></Layout>} />
+              <Route path="/admin-manager" element={<ProtectedRoute><Layout><AdminManager /></Layout></ProtectedRoute>} />
+              <Route path="/admin-manager/add" element={<ProtectedRoute><Layout><AddDesign /></Layout></ProtectedRoute>} />
+              <Route path="/admin-manager/edit/:id" element={<ProtectedRoute><Layout><EditDesign /></Layout></ProtectedRoute>} />
+              <Route path="/admin-manager/gallery/add" element={<ProtectedRoute><Layout><AddGallery /></Layout></ProtectedRoute>}/>
+              <Route path="/admin-manager/gallery/edit/:id" element={<ProtectedRoute><Layout><EditGallery /></Layout></ProtectedRoute>}/>
+              <Route path="/admin-manager/category/add" element={<ProtectedRoute><Layout><AddCategory /></Layout></ProtectedRoute>}/>
+              <Route path="/admin-manager/category/edit/:id" element={<ProtectedRoute><Layout><EditCategory /></Layout></ProtectedRoute>}/>
+            </Routes>
+          </Router>
+        </CartProvider>
+      </ToastProvider>
+    </AuthProvider>
   );
 }
 

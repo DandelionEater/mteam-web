@@ -7,6 +7,7 @@ import { Item } from "../model/Item.schema";
 import { fetchCategories } from "../api/categoryService";
 import i18n from "../i18n";
 import { Category } from "../model/Category.schema";
+import { useToast } from "../components/ToastContext";
 
 type LocalizedString = { en: string; lt: string };
 
@@ -34,6 +35,8 @@ const EditDesign = () => {
     price: "",
     images: [""],
   });
+
+  const { showToast } = useToast();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -127,6 +130,7 @@ const EditDesign = () => {
 
     try {
       const updatedDesign = {
+        _id: id!,
         name: form.name,
         description: form.description,
         category: form.category,
@@ -139,8 +143,18 @@ const EditDesign = () => {
       await updateItem(id!, updatedDesign);
 
       navigate(-1);
+
+      showToast({
+          type: "info",
+          message: t("adminToast.info")
+      });
+
     } catch (err: any) {
-      alert(err.message || t("designForm.saveError"));
+      console.error("Update failed:", err)
+      showToast({
+          type: "error",
+          message: t("adminToast.error")
+      });
     }
   };
 

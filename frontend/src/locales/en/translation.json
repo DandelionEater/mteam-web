@@ -133,7 +133,10 @@
         "emptyCart": "Your cart is empty.",
         "total": "Total",
         "checkout": "Checkout",
-        "goToCart": "Go to cart"
+        "goToCart": "Go to cart",
+
+        "confirmTitle": "Are you sure?",
+        "confirmMessage": "This action will delete the selected item from your cart permanently."
     },
 
     "designManager": {
@@ -193,6 +196,24 @@
     "languages": {
         "en": "English",
         "lt": "Lithuanian"
+    },
+
+    "confirmation": {
+        "title": "Delete permanently?",
+        "message": "This action cannot be undone.",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+    },
+
+    "toast": {
+        "success": "Action successful.",
+        "error": "Something went wrong."
+    },
+
+    "adminToast": {
+        "success": "Item added successfully.",
+        "error": "Something went wrong.",
+        "info": "Changes saved successfully"
     }
 }
   

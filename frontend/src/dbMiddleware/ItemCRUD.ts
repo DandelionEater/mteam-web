@@ -7,6 +7,7 @@ export const handleItemAdd = async (item: Item) => {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(item),
+    credentials: 'include',
   });
 
   console.log("Sending to backend...");
@@ -42,6 +43,7 @@ export const updateItem = async (id: string, form: Item): Promise<Item> => {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
+      credentials: 'include',
     });
 
     const data = await response.json();
@@ -61,6 +63,7 @@ export const deleteItem = async (id: string): Promise<void> => {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: "DELETE",
+      credentials: 'include',
     });
 
     if (!response.ok) {

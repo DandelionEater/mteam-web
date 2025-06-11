@@ -8,13 +8,26 @@ import { CategoriesItem } from '../data/categories';
 import { fetchItems, deleteItem } from "../dbMiddleware/ItemCRUD";
 import { fetchGalleryItems, deleteGalleryItem } from "../dbMiddleware/GalleryCRUD";
 import { fetchCategories, deleteCategory } from "../dbMiddleware/CategoryCRUD";
+import ConfirmDialog from '../components/ConfirmDialog';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { useToast } from '../components/ToastContext';
 
 const DesignManager = () => {
   const { t, i18n } = useTranslation();
   const [designList, setDesignList] = useState<DesignItem[]>([]);
   const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
   const [categoryList, setCategoryList] = useState<CategoriesItem[]>([]);
-  const [activePage, setActivePage] = useState<'designs' | 'gallery' | 'categories'>('designs');
+  const [confirm, setConfirm] = useState<{
+    id: string;
+    type: 'design' | 'gallery' | 'category';
+  } | null>(null);
+  const { showToast } = useToast();
+  
+  const params = new URLSearchParams(location.search);
+  const tabParam = params.get('tab') as 'designs' | 'gallery' | 'categories' | null;
+  const defaultTab: 'designs' | 'gallery' | 'categories' = tabParam || 'designs';
+
+  const [activePage, setActivePage] = useState(defaultTab);
 
   const getLocalizedString = (field: LocalizedString): string => {
     if (!i18n.language) return field.en ?? "";
@@ -38,6 +51,21 @@ const DesignManager = () => {
 
   const formatPrice = (price: number): string => {
     return priceFormatter.format(price).replace(/\u20AC|\$/g, currencySymbol);
+  };
+
+  // Sub-page loader
+  useEffect(() => {
+    if (tabParam && tabParam !== activePage) {
+      setActivePage(tabParam);
+    }
+  }, [tabParam]);
+
+  const onChangeTab = (page: 'designs' | 'gallery' | 'categories') => {
+    setActivePage(page);
+
+    const newParams = new URLSearchParams(location.search);
+    newParams.set('tab', page);
+    navigate({ search: newParams.toString() }, { replace: true });
   };
 
   // Load designs
@@ -107,14 +135,6 @@ const DesignManager = () => {
   const handleEditDesign = (id: string) => {
     navigate(`/admin-manager/edit/${id}`);
   };
-  const handleRemoveDesign = async (id: string) => {
-    try {
-      await deleteItem(id);
-      setDesignList((prev) => prev.filter(item => item.id !== id));
-    } catch (error) {
-      console.error("Failed to delete item:", error);
-    }
-  };
 
   // Gallery handlers
   const handleAddGallery = () => {
@@ -122,14 +142,6 @@ const DesignManager = () => {
   };
   const handleEditGallery = (id: string) => {
     navigate(`/admin-manager/gallery/edit/${id}`);
-  };
-  const handleRemoveGallery = async (id: string) => {
-    try {
-      await deleteGalleryItem(id);
-      setGalleryList((prev) => prev.filter(item => item.id !== id));
-    } catch (error) {
-      console.error("Failed to delete gallery item:", error);
-    }
   };
 
   // Categories handlers
@@ -139,14 +151,46 @@ const DesignManager = () => {
   const handleEditCategory = (id: string) => {
     navigate(`/admin-manager/category/edit/${id}`);
   };
-  const handleRemoveCategory = async (id: string) => {
+
+  // Confirmation Dialog handlers
+  const askDelete = (id: string, type: 'design' | 'gallery' | 'category') =>
+    setConfirm({ id, type });
+
+  const confirmDelete = async () => {
+    if (!confirm) return;
+    const { id, type } = confirm;
+
     try {
-      await deleteCategory(id);
-      setCategoryList((prev) => prev.filter(cat => cat.id !== id && cat.id !== id));
-    } catch (error) {
-      console.error("Failed to delete category:", error);
+      if (type === 'design') {
+        await deleteItem(id);
+        showToast({
+          type: "success",
+          message: t("adminToast.success")
+        });
+        setDesignList(prev => prev.filter(d => d.id !== id));
+      } else if (type === 'gallery') {
+        await deleteGalleryItem(id);
+        showToast({
+          type: "success",
+          message: t("adminToast.success")
+        });
+        setGalleryList(prev => prev.filter(g => g.id !== id));
+      } else if (type === 'category') {
+        await deleteCategory(id);
+        showToast({
+          type: "success",
+          message: t("adminToast.success")
+        });
+        setCategoryList(prev => prev.filter(c => c.id !== id));
+      }
+    } catch (err) {
+      console.error('Delete failed:', err);
+    } finally {
+      setConfirm(null);
     }
   };
+
+  const cancelDelete = () => setConfirm(null);
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
@@ -156,19 +200,19 @@ const DesignManager = () => {
         {/* Toggle between Designs, Gallery and Categories */}
         <div className="flex justify-center mb-6">
           <button
-            onClick={() => setActivePage('designs')}
+            onClick={() => onChangeTab('designs')}
             className={`px-4 py-2 ${activePage === 'designs' ? 'bg-black text-white' : 'bg-gray-200'} rounded-l`}
           >
             {t('nav.designs')}
           </button>
           <button
-            onClick={() => setActivePage('gallery')}
+            onClick={() => onChangeTab('gallery')}
             className={`px-4 py-2 ${activePage === 'gallery' ? 'bg-black text-white' : 'bg-gray-200'}`}
           >
             {t('nav.gallery')}
           </button>
           <button
-            onClick={() => setActivePage('categories')}
+            onClick={() => onChangeTab('categories')}
             className={`px-4 py-2 ${activePage === 'categories' ? 'bg-black text-white' : 'bg-gray-200'} rounded-r`}
           >
             {t('categories.admin')}
@@ -213,13 +257,13 @@ const DesignManager = () => {
                         onClick={() => handleEditDesign(design.id)}
                         className="text-blue-500 hover:text-blue-700"
                       >
-                        ✏️
+                        <PencilSquareIcon className="h-5 w-5 text-blue-500 hover:text-blue-700" />
                       </button>
                       <button
-                        onClick={() => handleRemoveDesign(design.id)}
+                        onClick={() => askDelete(design.id, 'design')}
                         className="text-red-500 hover:text-red-700"
                       >
-                        ✕
+                        <TrashIcon className="h-5 w-5 text-red-500 hover:text-red-700" />
                       </button>
                     </div>
                   </div>
@@ -263,13 +307,13 @@ const DesignManager = () => {
                         onClick={() => handleEditGallery(item.id)}
                         className="text-blue-500 hover:text-blue-700"
                       >
-                        ✏️
+                        <PencilSquareIcon className="h-5 w-5 text-blue-500 hover:text-blue-700" />
                       </button>
                       <button
-                        onClick={() => handleRemoveGallery(item.id)}
+                        onClick={() => askDelete(item.id, 'gallery')}
                         className="text-red-500 hover:text-red-700"
                       >
-                        ✕
+                        <TrashIcon className="h-5 w-5 text-red-500 hover:text-red-700" />
                       </button>
                     </div>
                   </div>
@@ -305,13 +349,13 @@ const DesignManager = () => {
                         onClick={() => handleEditCategory(cat.id)}
                         className="text-blue-500 hover:text-blue-700"
                       >
-                        ✏️
+                        <PencilSquareIcon className="h-5 w-5 text-blue-500 hover:text-blue-700" />
                       </button>
                       <button
-                        onClick={() => handleRemoveCategory(cat.id)}
+                        onClick={() => askDelete(cat.id, 'category')}
                         className="text-red-500 hover:text-red-700"
                       >
-                        ✕
+                        <TrashIcon className="h-5 w-5 text-red-500 hover:text-red-700" />
                       </button>
                     </div>
                   </div>
@@ -321,6 +365,13 @@ const DesignManager = () => {
           </>
         )}
       </div>
+      <ConfirmDialog
+        isOpen={!!confirm}
+        title={t('confirmation.title')}
+        message={t('confirmation.message')}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 };

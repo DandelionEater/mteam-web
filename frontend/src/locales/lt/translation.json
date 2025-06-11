@@ -132,7 +132,10 @@
         "emptyCart": "Jūsų krepšelis yra tuščias.",
         "total": "Iš viso",
         "checkout": "Apmokėti",
-        "goToCart": "Eiti į krepšelį"
+        "goToCart": "Eiti į krepšelį",
+
+        "confirmTitle": "Ar tikrai norite ištrinti?",
+        "confirmMessage": "Šis veiksmas ištrins pasirinktą prekę iš jūsų krepšelio."
     },
 
     "designManager": {
@@ -192,6 +195,24 @@
     "languages": {
         "en": "Anglų",
         "lt": "Lietuvių"
+    },
+
+    "confirmation": {
+        "title": "Ar tikrai norite ištrinti?",
+        "message": "Ištrinta informacija negali būti atstatyta.",
+        "confirm": "Patvirtinti",
+        "cancel": "Atšaukti"
+    },
+
+    "toast": {
+        "success": "Operacija sėkminga.",
+        "error": "Operacija nepavyko."
+    },
+
+    "adminToast": {
+        "success": "Operacija sėkminga.",
+        "error": "Operacija nepavyko.",
+        "info": "Pakeitimai išsaugoti."
     }
 }
   

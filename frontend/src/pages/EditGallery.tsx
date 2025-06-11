@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { PlusIcon, TrashIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { updateGalleryItem } from "../dbMiddleware/GalleryCRUD";
+import { useToast } from "../components/ToastContext";
 
 type LocalizedString = {
   en: string;
@@ -19,6 +20,7 @@ const EditGallery = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState<GalleryEntryForm>({
     name: { en: "", lt: "" },
@@ -77,10 +79,17 @@ const EditGallery = () => {
       if (!id) throw new Error("Missing item ID");
 
       await updateGalleryItem(id, form);
-      console.log("Gallery item updated successfully");
-      navigate("/admin-manager");
+      navigate(-1);
+      showToast({
+          type: "info",
+          message: t("adminToast.info")
+      });
     } catch (error) {
       console.error("Update failed:", error);
+      showToast({
+          type: "error",
+          message: t("adminToast.error")
+      });
     }
   };
 

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { fetchCategories, updateCategory } from "../dbMiddleware/CategoryCRUD";
+import { useToast } from "../components/ToastContext";
 
 type LocalizedString = {
   en: string;
@@ -17,6 +18,8 @@ const EditCategory = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+
+  const { showToast } = useToast();
 
   const [form, setForm] = useState<CategoryForm>({
     name: { en: "", lt: "" },
@@ -72,9 +75,17 @@ const EditCategory = () => {
 
     try {
       await updateCategory(id, form);
-      navigate("/admin-manager");
+      navigate(-1);
+      showToast({
+          type: "info",
+          message: t("adminToast.info")
+      });
     } catch (err) {
       setError(t("categories.updateFailed"));
+      showToast({
+          type: "error",
+          message: t("adminToast.error")
+      });
     }
   };
 

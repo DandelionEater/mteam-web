@@ -6,6 +6,11 @@ import bcrypt from 'bcrypt';
 import { UserModel } from './model/User.schema';
 import { Gallery, GalleryModel, Item, ItemModel } from "./model/Item.schema";
 import { Category, CategoryModel } from "./model/Category.schema";
+import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET, ACCESS_TOKEN_TTL, COOKIE_OPTIONS } from './config';
+import { requireAuth } from './middleware/requireAuth';
+import { AuthedRequest } from "./types/AuthedRequest";
 
 const app = express();
 const PORT = 4000;
@@ -22,6 +27,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Cookies
+app.use(cookieParser());
+
 // Login route
 app.post('/api/login', async (req: Request, res: Response): Promise<void> => {
   console.log('Login request body:', req.body);
@@ -35,7 +43,6 @@ app.post('/api/login', async (req: Request, res: Response): Promise<void> => {
   try {
     const normalizedEmail = email.trim().toLowerCase();
     const user = await UserModel.findOne({ email: new RegExp(`^${normalizedEmail}$`, 'i') });
-    console.log('User found:', user);
 
     if (!user) {
       res.status(401).json({ message: 'Invalid email (or password)' });
@@ -48,16 +55,27 @@ app.post('/api/login', async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    const payload = { sub: user.id };
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_TOKEN_TTL });
+
+    res.cookie('access_token', token, { ...COOKIE_OPTIONS, maxAge: 60 * 60 * 1000 }); // 1 h
     res.json({ message: 'Login successful' });
+
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
 
+// Logout route
+app.post('/api/logout', (_req, res) => {
+  res.clearCookie('access_token', COOKIE_OPTIONS);
+  res.json({ message: 'Logged out successfully' });
+});
+
 // Item CRUD
 // Add
-app.post('/api/item', async (req: Request, res: Response): Promise<void> => {
+app.post('/api/item', requireAuth, async (req: AuthedRequest, res: Response): Promise<void> => {
   console.log('Item added successfully:', req.body);
   const { name, description, manufacturingID, category, stock, price, images} : Item = req.body;
 
@@ -99,7 +117,7 @@ app.get('/api/item/:id', async (req: Request, res: Response): Promise<void> => {
 });
 
 // Put
-app.put('/api/item/:id', async (req: Request, res: Response): Promise<void> =>{
+app.put('/api/item/:id', requireAuth, async (req: AuthedRequest, res: Response): Promise<void> =>{
   const id = req.params.id;
 
   const entry = await ItemModel.findById(id);
@@ -123,7 +141,7 @@ app.put('/api/item/:id', async (req: Request, res: Response): Promise<void> =>{
 });
 
 // Delete
-app.delete('/api/item/:id', async (req: Request, res: Response): Promise<void> =>{
+app.delete('/api/item/:id', requireAuth, async (req: AuthedRequest, res: Response): Promise<void> =>{
   const id = req.params.id;
 
   const entry = await ItemModel.findByIdAndDelete(id);
@@ -137,7 +155,7 @@ app.delete('/api/item/:id', async (req: Request, res: Response): Promise<void> =
 
 // Gallery CRUD
 // Add
-app.post('/api/gallery', async (req: Request, res: Response): Promise<void> => {
+app.post('/api/gallery', requireAuth, async (req: AuthedRequest, res: Response): Promise<void> => {
   console.log('Gallery item added successfully:', req.body);
   const { name, description, images} : Gallery = req.body;
 
@@ -176,7 +194,7 @@ app.get('/api/gallery/:id', async (req: Request, res: Response): Promise<void> =
 });
 
 // Put
-app.put('/api/gallery/:id', async (req: Request, res: Response): Promise<void> =>{
+app.put('/api/gallery/:id', requireAuth, async (req: AuthedRequest, res: Response): Promise<void> =>{
   const id = req.params.id;
 
   const entry = await GalleryModel.findById(id);
@@ -196,7 +214,7 @@ app.put('/api/gallery/:id', async (req: Request, res: Response): Promise<void> =
 });
 
 // Delete
-app.delete('/api/gallery/:id', async (req: Request, res: Response): Promise<void> =>{
+app.delete('/api/gallery/:id', requireAuth, async (req: AuthedRequest, res: Response): Promise<void> =>{
   const id = req.params.id;
 
   const entry = await GalleryModel.findByIdAndDelete(id);
@@ -210,7 +228,7 @@ app.delete('/api/gallery/:id', async (req: Request, res: Response): Promise<void
 
 // Category CRUD
 // Add
-app.post('/api/categories', async (req: Request, res: Response) => {
+app.post('/api/categories', requireAuth, async (req: AuthedRequest, res: Response) => {
   try {
     const { name } = req.body;
 
@@ -240,7 +258,7 @@ app.get('/api/categories', async (req: Request, res: Response) => {
 });
 
 // Put
-app.put('/api/categories/:id', async (req: Request, res: Response) => {
+app.put('/api/categories/:id', requireAuth, async (req: AuthedRequest, res: Response) => {
   try {
     const id = req.params.id;
     const { name } = req.body;
@@ -267,7 +285,7 @@ app.put('/api/categories/:id', async (req: Request, res: Response) => {
 });
 
 // Delete
-app.delete('/api/categories/:id', async (req: Request, res: Response) => {
+app.delete('/api/categories/:id', requireAuth, async (req: AuthedRequest, res: Response) => {
   try {
     const id = req.params.id;
     const entry = await CategoryModel.findByIdAndDelete(id);

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { handleCategoryAdd } from "../dbMiddleware/CategoryCRUD";
+import { useToast } from "../components/ToastContext";
 
 type LocalizedString = {
   en: string;
@@ -16,6 +17,7 @@ type CategoryForm = {
 const AddCategory = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState<CategoryForm>({
     name: { en: "", lt: "" },
@@ -39,10 +41,17 @@ const AddCategory = () => {
     console.log("handleSubmit called", form);
     try {
         await handleCategoryAdd(form);
-        console.log("Category added successfully");
-        navigate("/admin-manager");
+        navigate(-1);
+        showToast({
+          type: "success",
+          message: t("adminToast.success")
+        });
     } catch (err) {
         console.error("Failed to add category:", err);
+        showToast({
+          type: "error",
+          message: t("adminToast.error")
+      });
     }
   };
 

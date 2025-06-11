@@ -8,6 +8,7 @@ import { Item } from "../model/Item.schema";
 import { fetchItemById } from "../dbMiddleware/ItemCRUD";
 import { fetchCategories } from "../api/categoryService";
 import { Category } from "../model/Category.schema";
+import { useToast } from "./ToastContext";
 
 interface DesignInfoProps {
   isOpen: boolean;
@@ -25,9 +26,10 @@ const DesignInfo: React.FC<DesignInfoProps> = ({ isOpen, onClose, designId }) =>
   const [design, setDesign] = useState<Item | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [toast, setToast] = useState(false);
   const [idx, setIdx] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
+
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (!isOpen || !designId) {
@@ -65,8 +67,10 @@ const DesignInfo: React.FC<DesignInfoProps> = ({ isOpen, onClose, designId }) =>
   const addToCartHandler = () => {
     if (!design) return;
     addToCart(design);
-    setToast(true);
-    setTimeout(() => setToast(false), 2000);
+    showToast({
+      type: "success",
+      message: t("designInfo.floatingMessage"),
+    });
   };
 
   const categoryLabel =
@@ -185,13 +189,6 @@ const DesignInfo: React.FC<DesignInfoProps> = ({ isOpen, onClose, designId }) =>
           <XMarkIcon className="w-5 h-5 text-gray-700" />
         </button>
       </div>
-
-      {/* toast */}
-      {toast && (
-        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg z-50">
-          {t("designInfo.floatingMessage")}
-        </div>
-      )}
     </>
   );
 };
