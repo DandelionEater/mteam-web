@@ -187,6 +187,10 @@ const DesignManager = () => {
       console.error('Delete failed:', err);
     } finally {
       setConfirm(null);
+      showToast({
+        type: "error",
+        message: t("adminToast.error")
+      });
     }
   };
 
