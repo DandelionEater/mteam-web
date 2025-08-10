@@ -142,7 +142,8 @@
     "designManager": {
         "title": "Admin Panel",
         "addNewDesign": "Add a new design",
-        "empty": "No designs available."
+        "empty": "No designs available.",
+        "orders": "Orders"
     },
 
     "designForm": {
@@ -191,6 +192,56 @@
         "removeImage": "Remove Image",
         "submit": "Submit",
         "back": "Back"
+    },
+
+    "orders": {
+        "from": "From",
+        "to": "To",
+        "apply": "Apply",
+        "clear": "Clear",
+        "validationToRequired": "“To” is required when “From” is set.",
+        "email": "E-mail",
+        "status": "Status",
+        "allStatuses": "All statuses",
+        "status_created": "Created",
+        "status_packing": "Packing",
+        "status_sent": "Sent",
+        "status_completed": "Completed",
+        "thisMonth": "This month",
+        "lastMonth": "Last month",
+        "results": "Results",
+        "exportCsv": "Export CSV",
+        "prev": "Prev",
+        "next": "Next",
+        "page": "Page",
+        "orderDetails": "Order details",
+        "orderNumber": "Order Number",
+        "createdAt": "Created at",
+        "delivery": "Delivery",
+        "address": "Address",
+        "items": "Items",
+        "viewItems": "View items",
+        "total": "Total"
+    },
+
+    "common": {
+        "close": "Close",
+        "yes": "Yes",
+        "no":"No"
+    },
+
+    "checkout": {
+        "title": "Checkout",
+        "email": "Email",
+        "delivery": "Delivery",
+        "address": "Address",
+        "addressPlaceholder": "Street, city, ZIP",
+        "placeOrder": "Place order",
+        "success": "Order created successfully",
+        "fail": "Failed to create order",
+        "addressRequired": "Address is required for delivery",
+        "noItems": "Your cart is empty",
+        "debugItems": "Items to submit:"
     },
 
     "languages": {

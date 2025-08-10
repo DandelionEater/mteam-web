@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Item } from "../model/Item.schema";
 import ConfirmDialog from "./ConfirmDialog";
 import { useToast } from "./ToastContext";
 import { MinusIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-/* ---------- types ---------- */
 export type CartItem = Item & { _id: string; quantity: number };
 
 type CartOverlayProps = {
@@ -18,7 +17,6 @@ type CartOverlayProps = {
   onClose: () => void;
 };
 
-/* ---------- component ---------- */
 export default function CartOverlay({
   items,
   onUpdateQuantity,
@@ -29,6 +27,7 @@ export default function CartOverlay({
 }: CartOverlayProps) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language === "lt" ? "lt" : "en";
+  const navigate = useNavigate();
 
   const modalRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<{ top: number; right: number } | null>(null);
@@ -60,7 +59,6 @@ export default function CartOverlay({
     setItemToDelete(null);
   };
 
-  /* ── Position below the anchor (cart icon) ─────────────────── */
   useEffect(() => {
     const updatePosition = () => {
       if (isOpen && anchorRef.current) {
@@ -72,7 +70,7 @@ export default function CartOverlay({
       }
     };
 
-    updatePosition(); // initial
+    updatePosition();
 
     window.addEventListener("scroll", updatePosition);
     window.addEventListener("resize", updatePosition);
@@ -82,12 +80,10 @@ export default function CartOverlay({
     };
   }, [isOpen, anchorRef]);
 
-  /* ── Hide position when closed ─────────────────────────────── */
   useEffect(() => {
     if (!isOpen) setPosition(null);
   }, [isOpen]);
 
-  /* ── Close on outside click ───────────────────────────────── */
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) onClose();
@@ -96,7 +92,6 @@ export default function CartOverlay({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, onClose]);
 
-  /* ── Helpers ──────────────────────────────────────────────── */
   const formatPrice = (price: number) =>
     new Intl.NumberFormat(lang === "lt" ? "lt-LT" : "en-US", {
       style: "currency",
@@ -107,10 +102,8 @@ export default function CartOverlay({
 
   const total = items.reduce((acc, it) => acc + it.price * it.quantity, 0);
 
-  /* ── Early exit ───────────────────────────────────────────── */
   if (!isOpen) return null;
 
-  /* ── UI ───────────────────────────────────────────────────── */
   return (
     <div className="fixed inset-0 z-40">
     {/* Backdrop */}
@@ -187,8 +180,11 @@ export default function CartOverlay({
             </Link>
 
             <button
+              onClick={() => {
+                onClose();
+                navigate('/checkout');
+              }}
               className="w-full px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
-              /* TODO: wire up checkout */
             >
               {t("cartPage.checkout")}
             </button>

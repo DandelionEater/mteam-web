@@ -141,7 +141,8 @@
     "designManager": {
         "title": "Administratoriaus Panelė",
         "addNewDesign": "Pridėti naują dizainą",
-        "empty": "Sąrašas tusčias."
+        "empty": "Sąrašas tusčias.",
+        "orders": "Užsakymai"
     },
 
     "designForm": {
@@ -190,6 +191,56 @@
         "removeImage": "Pašalinti nuotrauką",
         "submit": "Išsaugoti",
         "back": "Atgal"
+    },
+
+    "orders": {
+        "from": "Nuo",
+        "to": "Iki",
+        "apply": "Pritaikyti",
+        "clear": "Išvalyti",
+        "validationToRequired": "Abu datos įvėdimai yra būtini norint naudoti šį filtrą",
+        "email": "El. paštas",
+        "status": "Užsakymo būsena",
+        "allStatuses": "Visos būsenos",
+        "status_created": "Sukurta",
+        "status_packing": "Pakuojama",
+        "status_sent": "Išsiųsta",
+        "status_completed": "Užbaigta",
+        "thisMonth": "Šis mėnuo",
+        "lastMonth": "Praeitas mėnuo",
+        "results": "Rezultatas",
+        "exportCsv": "CSV failo eksportacija",
+        "prev": "Atgal",
+        "next": "Toliau",
+        "page": "Puslapis",
+        "orderDetails": "Užsakymo informacija",
+        "orderNumber": "Užsakymo numeris",
+        "createdAt": "Sukūrimo data",
+        "delivery": "Pristatymas",
+        "address": "Adresas",
+        "items": "Prekės",
+        "viewItems": "Peržiūrėti prekes",
+        "total": "Suma"
+    },
+
+    "common": {
+        "close": "Uždaryti",
+        "yes": "Taip",
+        "no":"Ne"
+    },
+
+    "checkout": {
+        "title": "Apmokėjimas",
+        "email": "El. paštas",
+        "delivery": "Pristatymas",
+        "address": "Adresas",
+        "addressPlaceholder": "Gatvė, miestas, pašto kodas",
+        "placeOrder": "Patvirtinti užsakymą",
+        "success": "Užsakymas sėkmingai sukurtas",
+        "fail": "Nepavyko sukurti užsakymo",
+        "addressRequired": "Naudojant pristatymą reikia nurodyti adresą",
+        "noItems": "Krepšelis tuščias",
+        "debugItems": "Išsiunčiami krepšelio elementai:"
     },
 
     "languages": {

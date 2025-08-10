@@ -11,6 +11,7 @@ import { fetchCategories, deleteCategory } from "../dbMiddleware/CategoryCRUD";
 import ConfirmDialog from '../components/ConfirmDialog';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useToast } from '../components/ToastContext';
+import OrdersPanel from '../components/OrdersPanel';
 
 const DesignManager = () => {
   const { t, i18n } = useTranslation();
@@ -24,8 +25,8 @@ const DesignManager = () => {
   const { showToast } = useToast();
   
   const params = new URLSearchParams(location.search);
-  const tabParam = params.get('tab') as 'designs' | 'gallery' | 'categories' | null;
-  const defaultTab: 'designs' | 'gallery' | 'categories' = tabParam || 'designs';
+  const tabParam = params.get('tab') as 'designs' | 'gallery' | 'categories' | 'orders' | null;
+  const defaultTab: 'designs' | 'gallery' | 'orders' | 'categories' = tabParam || 'designs';
 
   const [activePage, setActivePage] = useState(defaultTab);
 
@@ -60,7 +61,7 @@ const DesignManager = () => {
     }
   }, [tabParam]);
 
-  const onChangeTab = (page: 'designs' | 'gallery' | 'categories') => {
+  const onChangeTab = (page: 'designs' | 'gallery' | 'categories' | 'orders') => {
     setActivePage(page);
 
     const newParams = new URLSearchParams(location.search);
@@ -217,9 +218,15 @@ const DesignManager = () => {
           </button>
           <button
             onClick={() => onChangeTab('categories')}
-            className={`px-4 py-2 ${activePage === 'categories' ? 'bg-black text-white' : 'bg-gray-200'} rounded-r`}
+            className={`px-4 py-2 ${activePage === 'categories' ? 'bg-black text-white' : 'bg-gray-200'}`}
           >
             {t('categories.admin')}
+          </button>
+          <button
+            onClick={() => onChangeTab('orders')}
+            className={`px-4 py-2 ${activePage === 'orders' ? 'bg-black text-white' : 'bg-gray-200'} rounded-r`}
+          >
+            {t('designManager.orders') || 'Orders'}
           </button>
         </div>
 
@@ -368,6 +375,8 @@ const DesignManager = () => {
             )}
           </>
         )}
+
+        {activePage === 'orders' && <OrdersPanel />}
       </div>
       <ConfirmDialog
         isOpen={!!confirm}

@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import { UserModel } from './model/User.schema';
 import { Gallery, GalleryModel, Item, ItemModel } from "./model/Item.schema";
 import { Category, CategoryModel } from "./model/Category.schema";
+import { OrderModel, OrderStatus } from "./model/Order.schema";
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET, ACCESS_TOKEN_TTL, COOKIE_OPTIONS } from './config';
@@ -299,6 +300,160 @@ app.delete('/api/categories/:id', requireAuth, async (req: AuthedRequest, res: R
   } catch (error) {
     console.error("Error deleting category:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Orders CRUD
+// Add
+app.post('/api/orders', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, delivery, address, items } = req.body as {
+      email?: string;
+      delivery?: boolean;
+      address?: string;
+      items?: Array<{ manufacturingID: string; quantity: number }>;
+    };
+
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      res.status(400).json({ message: 'Valid email is required' });
+      return;
+    }
+    if (!Array.isArray(items) || items.length === 0) {
+      res.status(400).json({ message: 'Items are required' });
+      return;
+    }
+    if (delivery && !address) {
+      res.status(400).json({ message: 'Address is required when delivery=true' });
+      return;
+    }
+
+    const ids = items.map(i => i.manufacturingID);
+    const dbItems = await ItemModel.find({ manufacturingID: { $in: ids } })
+      .select({ manufacturingID: 1, price: 1 })
+      .lean();
+
+    const priceById = new Map(dbItems.map(d => [d.manufacturingID, d.price as number]));
+    let total = 0;
+    for (const it of items) {
+      const price = priceById.get(it.manufacturingID);
+      if (price == null) {
+        res.status(400).json({ message: `Unknown item: ${it.manufacturingID}` });
+        return;
+      }
+      const qty = Number(it.quantity);
+      if (!Number.isFinite(qty) || qty <= 0) {
+        res.status(400).json({ message: `Invalid quantity for ${it.manufacturingID}` });
+        return;
+      }
+      total += price * qty;
+    }
+
+    const created = await OrderModel.create({
+      enteredEmail: email,
+      delivery: !!delivery,
+      address: delivery ? address : undefined,
+      items,
+      total,
+    });
+
+    res.status(201).json(created);
+  } catch (err) {
+    console.error('Error creating order:', err);
+    res.status(500).json({ message: 'Failed to create order' });
+  }
+});
+
+// Get all
+app.get('/api/orders', requireAuth, async (req: AuthedRequest, res: Response): Promise<void> => {
+  try {
+    const { email, from, to, status } = req.query as {
+      email?: string;
+      from?: string;
+      to?: string;
+      status?: string;
+    };
+
+    const filter: any = {};
+
+    if (email && email.trim()) {
+      filter.enteredEmail = { $regex: email.trim(), $options: 'i' };
+    }
+
+    if (status && status.trim()) {
+      filter.status = status.trim().toLowerCase();
+    }
+
+    const createdAt: any = {};
+    const parseDateStart = (v: string) => {
+      if (/^\d{4}-\d{2}$/.test(v)) return new Date(v + "-01T00:00:00.000Z");
+      return new Date(v);
+    };
+    const parseDateEndExclusive = (v: string) => {
+      if (/^\d{4}-\d{2}$/.test(v)) {
+        const [y, m] = v.split("-").map(Number);
+        const nextMonth = m === 12 ? 1 : m + 1;
+        const nextYear = m === 12 ? y + 1 : y;
+        return new Date(`${nextYear}-${String(nextMonth).padStart(2,'0')}-01T00:00:00.000Z`);
+      } else {
+        const d = new Date(v);
+        d.setUTCDate(d.getUTCDate() + 1);
+        d.setUTCHours(0,0,0,0);
+        return d;
+      }
+    };
+
+    if (from) createdAt.$gte = parseDateStart(from);
+    if (to)   createdAt.$lt  = parseDateEndExclusive(to);
+    if (Object.keys(createdAt).length) filter.createdAt = createdAt;
+
+    const orders = await OrderModel.find(filter).sort({ createdAt: -1 }).lean();
+    res.json(orders);
+  } catch (err) {
+    console.error('Error listing orders:', err);
+    res.status(500).json({ message: 'Failed to list orders' });
+  }
+});
+
+// Get by ID
+app.get('/api/orders/:id', requireAuth, async (req: AuthedRequest, res: Response): Promise<void> => {
+  try {
+    const order = await OrderModel.findById(req.params.id).lean();
+    if (!order) {
+      res.status(404).json({ message: 'Order not found' });
+      return;
+    }
+    res.json(order);
+  } catch (err) {
+    console.error('Error fetching order:', err);
+    res.status(500).json({ message: 'Failed to fetch order' });
+  }
+});
+
+// Update
+app.patch('/api/orders/:id', requireAuth, async (req: AuthedRequest, res: Response): Promise<void> => {
+  try {
+    const { status } = req.body as { status?: string };
+
+    if (status && !Object.values(OrderStatus).includes(status as OrderStatus)) {
+      res.status(400).json({ message: 'Invalid status' });
+      return;
+    }
+
+    const updated = await OrderModel.findByIdAndUpdate(
+      req.params.id,
+      { $set: { ...(status ? { status } : {}) } },
+      { new: true }
+    ).lean();
+
+    if (!updated) {
+      res.status(404).json({ message: 'Order not found' });
+      return;
+    }
+
+    res.json(updated);
+  } catch (err) {
+    console.error('Error updating order:', err);
+    res.status(500).json({ message: 'Failed to update order' });
   }
 });
 

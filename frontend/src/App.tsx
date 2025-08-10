@@ -21,6 +21,8 @@ import EditCategory from './pages/EditCategory';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ToastProvider } from './components/ToastContext';
+import OrdersPanel from './components/OrdersPanel';
+import Checkout from './pages/Checkout';
 
 interface LayoutProps {
   children: ReactNode;
@@ -50,6 +52,7 @@ function App() {
               <Route path="/about" element={<Layout><About /></Layout>} />
               <Route path="/contacts" element={<Layout><Contacts /></Layout>} />
               <Route path="/cart" element={<Layout><CartPage /></Layout>} />
+              <Route path="/checkout" element={<Layout><Checkout /></Layout>} />
               <Route path="/admin-login" element={<Layout><AdminLogin /></Layout>} />
               <Route path="/admin-manager" element={<ProtectedRoute><Layout><AdminManager /></Layout></ProtectedRoute>} />
               <Route path="/admin-manager/add" element={<ProtectedRoute><Layout><AddDesign /></Layout></ProtectedRoute>} />
@@ -58,6 +61,7 @@ function App() {
               <Route path="/admin-manager/gallery/edit/:id" element={<ProtectedRoute><Layout><EditGallery /></Layout></ProtectedRoute>}/>
               <Route path="/admin-manager/category/add" element={<ProtectedRoute><Layout><AddCategory /></Layout></ProtectedRoute>}/>
               <Route path="/admin-manager/category/edit/:id" element={<ProtectedRoute><Layout><EditCategory /></Layout></ProtectedRoute>}/>
+              <Route path="/admin-manager/orders" element={<ProtectedRoute><Layout><OrdersPanel /></Layout></ProtectedRoute>}/>
             </Routes>
           </Router>
         </CartProvider>
