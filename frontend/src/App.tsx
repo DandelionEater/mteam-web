@@ -23,6 +23,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { ToastProvider } from './components/ToastContext';
 import OrdersPanel from './components/OrdersPanel';
 import Checkout from './pages/Checkout';
+import CheckoutSuccess from './pages/CheckoutSuccess';
+import CheckoutCancel from './pages/CheckoutCancel';
+import MockBank from './pages/MockBank';
 
 interface LayoutProps {
   children: ReactNode;
@@ -53,6 +56,9 @@ function App() {
               <Route path="/contacts" element={<Layout><Contacts /></Layout>} />
               <Route path="/cart" element={<Layout><CartPage /></Layout>} />
               <Route path="/checkout" element={<Layout><Checkout /></Layout>} />
+              <Route path="/checkout/success" element={<Layout><CheckoutSuccess /></Layout>} />
+              <Route path="/checkout/cancel" element={<Layout><CheckoutCancel /></Layout>} />
+              <Route path="/mock-bank" element={<Layout><MockBank /></Layout>} />
               <Route path="/admin-login" element={<Layout><AdminLogin /></Layout>} />
               <Route path="/admin-manager" element={<ProtectedRoute><Layout><AdminManager /></Layout></ProtectedRoute>} />
               <Route path="/admin-manager/add" element={<ProtectedRoute><Layout><AddDesign /></Layout></ProtectedRoute>} />

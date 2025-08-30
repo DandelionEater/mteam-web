@@ -206,6 +206,7 @@
         "status_packing": "Pakuojama",
         "status_sent": "Išsiųsta",
         "status_completed": "Užbaigta",
+        "cancelled": "Atšaukta",
         "thisMonth": "Šis mėnuo",
         "lastMonth": "Praeitas mėnuo",
         "results": "Rezultatas",
@@ -241,6 +242,18 @@
         "addressRequired": "Naudojant pristatymą reikia nurodyti adresą",
         "noItems": "Krepšelis tuščias",
         "debugItems": "Išsiunčiami krepšelio elementai:"
+    },
+
+    "mockbank": {
+        "title": "Elektroninė bankininkystė",
+        "merchant": "Pardavėjas",
+        "amount": "Suma",
+        "username": "Prisijungimo vardas",
+        "password": "Slaptažodis",
+        "otp": "Vienkartinis kodas",
+        "confirm": "Patvirtinti mokėjimą",
+        "cancel": "Atšaukti",
+        "secure": "Tai saugus demonstracinis atsiskaitymo imitavimas."
     },
 
     "languages": {

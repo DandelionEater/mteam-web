@@ -1,6 +1,12 @@
 const BASE_URL = "http://localhost:4000/api/orders";
 
-export type OrderStatus = 'created' | 'packing' | 'sent' | 'completed';
+export type OrderStatus = 
+'created' | 
+'packing' | 
+'sent' | 
+'completed' |
+'pending_payment' |
+'cancelled';
 
 export interface OrderItem {
   manufacturingID: string;
@@ -25,10 +31,11 @@ export interface CreateOrderPayload {
   delivery: boolean;
   address?: string;
   items: { manufacturingID: string; quantity: number }[];
+  locale?: "en" | "lt";
 }
 
-export const createOrder = async (payload: CreateOrderPayload): Promise<Order> => {
-  const res = await fetch("http://localhost:4000/api/orders", {
+export const createOrder = async (payload: CreateOrderPayload) => {
+  const res = await fetch(BASE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

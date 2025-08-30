@@ -5,7 +5,7 @@ import { Order, fetchOrders, updateOrderStatus, OrderStatus } from "../dbMiddlew
 import { useToast } from "./ToastContext";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 
-const STATUS_OPTIONS: OrderStatus[] = ["created", "packing", "sent", "completed"];
+const STATUS_OPTIONS: OrderStatus[] = ["created", "packing", "sent", "completed", "cancelled"];
 
 function formatDateTime(iso: string, locale: string) {
   try {
@@ -78,6 +78,8 @@ export default function OrdersPanel() {
       packing: "orders.status_packing",
       sent: "orders.status_sent",
       completed: "orders.status_completed",
+      pending_payment: "orders.pending_payment",
+      cancelled: "orders.cancelled",
     } as const;
     return t(keyMap[s]) || s;
   };

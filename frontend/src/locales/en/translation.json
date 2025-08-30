@@ -207,6 +207,7 @@
         "status_packing": "Packing",
         "status_sent": "Sent",
         "status_completed": "Completed",
+        "cancelled": "Cancelled",
         "thisMonth": "This month",
         "lastMonth": "Last month",
         "results": "Results",
@@ -242,6 +243,18 @@
         "addressRequired": "Address is required for delivery",
         "noItems": "Your cart is empty",
         "debugItems": "Items to submit:"
+    },
+
+    "mockbank": {
+        "title": "Online banking",
+        "merchant": "Merchant",
+        "amount": "Amount",
+        "username": "Username",
+        "password": "Password",
+        "otp": "One-time code",
+        "confirm": "Confirm payment",
+        "cancel": "Cancel",
+        "secure": "This is a secure simulation for demo purposes."
     },
 
     "languages": {

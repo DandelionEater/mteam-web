@@ -6,7 +6,7 @@ import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Checkout() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { showToast } = useToast();
   const { cartItems, clearCart } = useCart();
   const navigate = useNavigate();
@@ -35,11 +35,15 @@ export default function Checkout() {
         return;
         }
         const created = await createOrder({
-        email,
-        delivery,
-        address: delivery ? address : undefined,
-        items: orderItems
+          email,
+          delivery,
+          address: delivery ? address : undefined,
+          items: orderItems,
+          locale: i18n.language === "lt" ? "lt" : "en",
         });
+
+        showToast({ type: "success", message: t("checkout.success") || "Order created successfully" });
+        await startMock(created._id, created.total);
 
         clearCart();
 
@@ -51,6 +55,26 @@ export default function Checkout() {
     } finally {
         setSubmitting(false);
     }
+  };
+
+  const startMock = async (orderId: string, total: number) => {
+    const backend = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+    const origin = window.location.origin;
+    const res = await fetch(`${backend}/api/payments/mock/start`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        orderId,
+        amountCents: Math.round(total * 100),
+        currency: "EUR",
+        successUrl: `${origin}/checkout/success`,
+        cancelUrl: `${origin}/checkout/cancel`,
+      }),
+    });
+    if (!res.ok) throw new Error("Failed to start payment");
+    const { url } = await res.json();
+    window.location.href = url; // go to the fake bank UI
   };
 
 

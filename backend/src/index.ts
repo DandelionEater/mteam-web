@@ -12,6 +12,17 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET, ACCESS_TOKEN_TTL, COOKIE_OPTIONS } from './config';
 import { requireAuth } from './middleware/requireAuth';
 import { AuthedRequest } from "./types/AuthedRequest";
+import { sendOrderCreatedEmails, sendOrderStatusEmails } from './services/emailService';
+import 'dotenv/config';
+import { loadEnv } from "./config/env";
+import path from "path";
+import payseraRoutes from "./api/payments/paysera";
+import mockRoutes from "./api/payments/mock";
+
+loadEnv();
+console.log(
+  `[mail] transport=${process.env.EMAIL_TRANSPORT} host=${process.env.SMTP_HOST}:${process.env.SMTP_PORT}`
+);
 
 const app = express();
 const PORT = 4000;
@@ -30,6 +41,19 @@ app.use(express.json());
 
 // Cookies
 app.use(cookieParser());
+
+// Email assets
+app.use("/email-assets", express.static(path.join(__dirname, "../public")));
+
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use("/api/payments/paysera", payseraRoutes);
+app.use("/api/payments/mock", mockRoutes);
 
 // Login route
 app.post('/api/login', async (req: Request, res: Response): Promise<void> => {
@@ -307,11 +331,12 @@ app.delete('/api/categories/:id', requireAuth, async (req: AuthedRequest, res: R
 // Add
 app.post('/api/orders', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, delivery, address, items } = req.body as {
+    const { email, delivery, address, items, locale } = req.body as {
       email?: string;
       delivery?: boolean;
       address?: string;
       items?: Array<{ manufacturingID: string; quantity: number }>;
+      locale?: "en" | "lt";
     };
 
     if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
@@ -354,9 +379,12 @@ app.post('/api/orders', async (req: Request, res: Response): Promise<void> => {
       address: delivery ? address : undefined,
       items,
       total,
+      locale: locale === "lt" ? "lt" : "en",
+      status: OrderStatus.PendingPayment,
     });
 
     res.status(201).json(created);
+    //sendOrderCreatedEmails(created as any).catch(() => {});
   } catch (err) {
     console.error('Error creating order:', err);
     res.status(500).json({ message: 'Failed to create order' });
@@ -449,6 +477,8 @@ app.patch('/api/orders/:id', requireAuth, async (req: AuthedRequest, res: Respon
       res.status(404).json({ message: 'Order not found' });
       return;
     }
+
+    sendOrderStatusEmails(updated as any).catch(() => {});
 
     res.json(updated);
   } catch (err) {
