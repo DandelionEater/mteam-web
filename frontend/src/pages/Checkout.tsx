@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 export default function Checkout() {
   const { t, i18n } = useTranslation();
   const { showToast } = useToast();
-  const { cartItems, clearCart } = useCart();
+  const { cartItems } = useCart();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
 
@@ -43,9 +43,8 @@ export default function Checkout() {
         });
 
         showToast({ type: "success", message: t("checkout.success") || "Order created successfully" });
+        sessionStorage.setItem("checkoutInfo", JSON.stringify({ email, delivery, address }));
         await startMock(created._id, created.total);
-
-        clearCart();
 
         showToast({ type: "success", message: t("checkout.success") || "Order created successfully" });
         navigate("/");

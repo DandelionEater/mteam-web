@@ -107,7 +107,7 @@ router.post("/decide", async (req: Request, res: Response) => {
       session.status = PaymentStatus.Succeeded;
       await session.save();
 
-      // Mark order "paid" by moving it into Packing (you already use this status)
+      // Mark order "paid" by moving it into Created
       const updated = await OrderModel.findByIdAndUpdate(
         session.orderId,
         { status: OrderStatus.Created },
@@ -124,7 +124,6 @@ router.post("/decide", async (req: Request, res: Response) => {
       session.status = PaymentStatus.Cancelled;
       await session.save();
 
-      // also update the order itself
       await OrderModel.findByIdAndUpdate(
         session.orderId,
         { status: OrderStatus.Cancelled }
@@ -135,7 +134,6 @@ router.post("/decide", async (req: Request, res: Response) => {
       session.status = PaymentStatus.Failed;
       await session.save();
 
-      // also update the order itself
       await OrderModel.findByIdAndUpdate(
         session.orderId,
         { status: OrderStatus.Cancelled }
