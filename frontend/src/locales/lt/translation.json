@@ -89,7 +89,7 @@
     },
 
     "about": {
-        "heroTitle": "Sukurta ilgam. Sukurta žavėti.",
+        "heroTitle": "Sutverta ilgaamžiškumui. Suprojektuota sužavėti.",
         "heroText": {
             "part1": "Įmonėje",
             "part2": "mes specializuojamės aukštos kokybės metalinių baldų gamyboje, kur susilieja tvirtumas ir modernus dizainas."
@@ -206,6 +206,7 @@
         "status_packing": "Pakuojama",
         "status_sent": "Išsiųsta",
         "status_completed": "Užbaigta",
+        "pending_payment": "Laukiama apmokėjimo",
         "cancelled": "Atšaukta",
         "thisMonth": "Šis mėnuo",
         "lastMonth": "Praeitas mėnuo",
@@ -231,7 +232,7 @@
     },
 
     "checkout": {
-        "title": "Apmokėjimas",
+        "title": "Užsakymo patvirtinimas",
         "email": "El. paštas",
         "delivery": "Pristatymas",
         "address": "Adresas",

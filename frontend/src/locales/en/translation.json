@@ -207,6 +207,7 @@
         "status_packing": "Packing",
         "status_sent": "Sent",
         "status_completed": "Completed",
+        "pending_payment": "Payment is pending",
         "cancelled": "Cancelled",
         "thisMonth": "This month",
         "lastMonth": "Last month",
@@ -232,7 +233,7 @@
     },
 
     "checkout": {
-        "title": "Checkout",
+        "title": "Order Confirmation",
         "email": "Email",
         "delivery": "Delivery",
         "address": "Address",
