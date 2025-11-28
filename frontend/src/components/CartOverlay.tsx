@@ -182,7 +182,7 @@ export default function CartOverlay({
             <button
               onClick={() => {
                 onClose();
-                navigate('/checkout');
+                navigate('/mock-bank');
               }}
               className="w-full px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
             >

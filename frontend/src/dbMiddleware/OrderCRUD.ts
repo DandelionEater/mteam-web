@@ -13,12 +13,21 @@ export interface OrderItem {
   quantity: number;
 }
 
+export interface Address {
+  street: string;
+  houseNumber: string;
+  apartment?: string;
+  city: string;
+  postalCode: string;
+  country: string;
+}
+
 export interface Order {
   _id: string;
   orderNumber: string;
   enteredEmail: string;
   delivery: boolean;
-  address?: string;
+  address?: Address;
   items: OrderItem[];
   total: number;
   status: OrderStatus;
@@ -29,14 +38,15 @@ export interface Order {
 export interface CreateOrderPayload {
   email: string;
   delivery: boolean;
-  address?: string;
+  address?: Address;
   items: { manufacturingID: string; quantity: number }[];
   locale?: "en" | "lt";
 }
 
-export const createOrder = async (payload: CreateOrderPayload) => {
+export const createOrder = async (payload: CreateOrderPayload): Promise<Order> => {
   const res = await fetch(BASE_URL, {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });

@@ -22,6 +22,17 @@ function formatDateTime(iso: string, locale: string) {
   }
 }
 
+function formatAddress(address: Order["address"]): string {
+  if (!address) return "";
+
+  const line1 = [address.street, address.houseNumber].filter(Boolean).join(" ");
+  const line2 = address.apartment;
+  const line3 = [address.postalCode, address.city].filter(Boolean).join(" ");
+  const line4 = address.country;
+
+  return [line1, line2, line3, line4].filter(Boolean).join(", ");
+}
+
 function monthBounds(y: number, m: number) {
   const from = `${y}-${String(m).padStart(2, "0")}`;
   const nextM = m === 12 ? 1 : m + 1;
@@ -220,20 +231,20 @@ export default function OrdersPanel() {
       "items",
     ];
     const rows = orders.map((o) => {
-      const items = o.items
-        .map((it) => `id:${it.manufacturingID};qty:${it.quantity}`)
-        .join(" | ");
-      return [
-        o.orderNumber,
-        o.enteredEmail,
-        o.createdAt,
-        o.status,
-        o.delivery ? "true" : "false",
-        o.delivery ? o.address ?? "" : "",
-        String(o.total),
-        items,
-      ];
-    });
+    const items = o.items
+      .map((it) => `id:${it.manufacturingID};qty:${it.quantity}`)
+      .join(" | ");
+    return [
+      o.orderNumber,
+      o.enteredEmail,
+      o.createdAt,
+      o.status,
+      o.delivery ? "true" : "false",
+      o.delivery ? formatAddress(o.address) : "",
+      String(o.total),
+      items,
+    ];
+  });
     const csv = [headers.join(","), ...rows.map((r) => r.map(escapeCsvCell).join(","))].join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -246,7 +257,7 @@ export default function OrdersPanel() {
     URL.revokeObjectURL(url);
   };
 
-  function escapeCsvCell(s: string) {
+  function escapeCsvCell(s: string | null | undefined) {
     if (s == null) return "";
     if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
     return s;
@@ -436,7 +447,7 @@ export default function OrdersPanel() {
                     </select>
                   </td>
                   <td className="px-3 py-2">{o.delivery ? (t("common.yes") || "Yes") : (t("common.no") || "No")}</td>
-                  <td className="px-3 py-2">{o.delivery ? o.address || "—" : "—"}</td>
+                  <td className="px-3 py-2">{o.delivery ? formatAddress(o.address) || "—" : "—"}</td>
                   <td className="px-3 py-2">
                     <button
                       type="button"
@@ -512,7 +523,10 @@ export default function OrdersPanel() {
               <div><strong>{t("orders.total") || "Total"}:</strong> {formatPrice(selected.total)}</div>
               <div><strong>{t("orders.delivery") || "Delivery"}:</strong> {selected.delivery ? (t("common.yes") || "Yes") : (t("common.no") || "No")}</div>
               {selected.delivery && (
-                <div><strong>{t("orders.address") || "Address"}:</strong> {selected.address || "—"}</div>
+                <div>
+                  <strong>{t("orders.address") || "Address"}:</strong>{" "}
+                  {formatAddress(selected.address) || "—"}
+                </div>
               )}
             </div>
 

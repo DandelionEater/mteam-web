@@ -334,7 +334,14 @@ app.post('/api/orders', async (req: Request, res: Response): Promise<void> => {
     const { email, delivery, address, items, locale } = req.body as {
       email?: string;
       delivery?: boolean;
-      address?: string;
+      address?: {
+        street?: string;
+        houseNumber?: string;
+        apartment?: string;
+        city?: string;
+        postalCode?: string;
+        country?: string;
+      };
       items?: Array<{ manufacturingID: string; quantity: number }>;
       locale?: "en" | "lt";
     };
@@ -342,6 +349,20 @@ app.post('/api/orders', async (req: Request, res: Response): Promise<void> => {
     if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
       res.status(400).json({ message: 'Valid email is required' });
       return;
+    }
+    if (delivery) {
+      if (!address) {
+        res.status(400).json({ message: "Address is required when delivery is selected" });
+        return;
+      }
+
+      const { street, houseNumber, city, postalCode, country } = address;
+      if (!street || !houseNumber || !city || !postalCode || !country) {
+        res.status(400).json({
+          message: "Full address (street, house number, city, postal code, country) is required",
+        });
+        return;
+      }
     }
     if (!Array.isArray(items) || items.length === 0) {
       res.status(400).json({ message: 'Items are required' });

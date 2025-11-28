@@ -232,20 +232,6 @@
         "no":"No"
     },
 
-    "checkout": {
-        "title": "Order Confirmation",
-        "email": "Email",
-        "delivery": "Delivery",
-        "address": "Address",
-        "addressPlaceholder": "Street, city, ZIP",
-        "placeOrder": "Place order",
-        "success": "Order created successfully",
-        "fail": "Failed to create order",
-        "addressRequired": "Address is required for delivery",
-        "noItems": "Your cart is empty",
-        "debugItems": "Items to submit:"
-    },
-
     "mockbank": {
         "title": "Online banking",
         "merchant": "Merchant",
@@ -279,6 +265,47 @@
         "success": "Item added successfully.",
         "error": "Something went wrong.",
         "info": "Changes saved successfully"
+    },
+
+    "checkout": {
+        "...": "...",
+        "street": "Street",
+        "streetPlaceholder": "Street name",
+        "houseNumber": "House number",
+        "houseNumberPlaceholder": "12A",
+        "apartment": "Apartment (optional)",
+        "apartmentPlaceholder": "Flat, room, etc.",
+        "city": "City",
+        "postalCode": "Postal code",
+        "country": "Country",
+        "addressRequiredFull": "Full address is required for delivery",
+        "title": "Order Confirmation",
+        "email": "Email",
+        "delivery": "Delivery",
+        "address": "Address",
+        "addressPlaceholder": "Street, city, ZIP",
+        "placeOrder": "Place order",
+        "success": "Order created successfully",
+        "fail": "Failed to create order",
+        "addressRequired": "Address is required for delivery",
+        "noItems": "Your cart is empty",
+        "debugItems": "Items to submit:"
+    },
+
+    "mockBank": {
+        "title": "Checkout",
+        "stepDetails": "Contact & delivery",
+        "stepPayment": "Payment method",
+        "sessionExpires": "Session expires in {{minutes}}:{{seconds}}",
+        "cartTitle": "Your cart",
+        "quantityLabel": "Qty",
+        "unit": "unit",
+        "cartMissing": "Cart not available — using total from payment session.",
+        "yes": "Yes",
+        "no": "No",
+        "totalLabel": "Total",
+        "ltBanks": "Banks in Lithuania",
+        "intBanks": "International"
     }
 }
   

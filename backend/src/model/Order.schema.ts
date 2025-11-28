@@ -8,6 +8,26 @@ class OrderItem {
   quantity!: number;
 }
 
+class Address {
+  @prop({ required: true })
+  street!: string;
+
+  @prop({ required: true })
+  houseNumber!: string;
+
+  @prop()
+  apartment?: string;
+
+  @prop({ required: true })
+  city!: string;
+
+  @prop({ required: true })
+  postalCode!: string;
+
+  @prop({ required: true })
+  country!: string;
+}
+
 export enum OrderStatus {
   PendingPayment = 'pending_payment',
   Created = 'created',
@@ -25,6 +45,7 @@ function generateOrderNumber(): string {
 }
 
 @modelOptions({ schemaOptions: { timestamps: true } })
+@index({ createdAt: -1 })
 export class Order {
   @prop({ required: true, unique: true, default: generateOrderNumber })
   orderNumber!: string;
@@ -35,8 +56,8 @@ export class Order {
   @prop({ required: true })
   delivery!: boolean;
 
-  @prop()
-  address?: string;
+  @prop({ _id: false })
+  address?: Address;
 
   @prop({ type: () => [OrderItem], _id: false })
   items!: OrderItem[];

@@ -231,20 +231,6 @@
         "no":"Ne"
     },
 
-    "checkout": {
-        "title": "Užsakymo patvirtinimas",
-        "email": "El. paštas",
-        "delivery": "Pristatymas",
-        "address": "Adresas",
-        "addressPlaceholder": "Gatvė, miestas, pašto kodas",
-        "placeOrder": "Patvirtinti užsakymą",
-        "success": "Užsakymas sėkmingai sukurtas",
-        "fail": "Nepavyko sukurti užsakymo",
-        "addressRequired": "Naudojant pristatymą reikia nurodyti adresą",
-        "noItems": "Krepšelis tuščias",
-        "debugItems": "Išsiunčiami krepšelio elementai:"
-    },
-
     "mockbank": {
         "title": "Elektroninė bankininkystė",
         "merchant": "Pardavėjas",
@@ -278,6 +264,47 @@
         "success": "Operacija sėkminga.",
         "error": "Operacija nepavyko.",
         "info": "Pakeitimai išsaugoti."
+    },
+
+    "checkout": {
+        "...": "...",
+        "street": "Gatvė",
+        "streetPlaceholder": "Gatvės pavadinimas",
+        "houseNumber": "Namo numeris",
+        "houseNumberPlaceholder": "12A",
+        "apartment": "Butas (nebūtina)",
+        "apartmentPlaceholder": "Butas, kabinetas ir pan.",
+        "city": "Miestas",
+        "postalCode": "Pašto kodas",
+        "country": "Šalis",
+        "addressRequiredFull": "Naudojant pristatymą reikia nurodyti pilną adresą",
+        "title": "Užsakymo patvirtinimas",
+        "email": "El. paštas",
+        "delivery": "Pristatymas",
+        "address": "Adresas",
+        "addressPlaceholder": "Gatvė, miestas, pašto kodas",
+        "placeOrder": "Patvirtinti užsakymą",
+        "success": "Užsakymas sėkmingai sukurtas",
+        "fail": "Nepavyko sukurti užsakymo",
+        "addressRequired": "Naudojant pristatymą reikia nurodyti adresą",
+        "noItems": "Krepšelis tuščias",
+        "debugItems": "Išsiunčiami krepšelio elementai:"
+    },
+
+    "mockBank": {
+        "title": "Apmokėjimas",
+        "stepDetails": "Kontaktai ir pristatymas",
+        "stepPayment": "Mokėjimo būdas",
+        "sessionExpires": "Sesija baigsis po {{minutes}}:{{seconds}}",
+        "cartTitle": "Jūsų krepšelis",
+        "quantityLabel": "Kiekis",
+        "unit": "vnt.",
+        "cartMissing": "Krepšelis nerastas — naudojama suma iš mokėjimo sesijos.",
+        "yes": "Taip",
+        "no": "Ne",
+        "totalLabel": "Suma",
+        "ltBanks": "Bankai Lietuvoje",
+        "intBanks": "Tarptautiniai"
     }
 }
   
