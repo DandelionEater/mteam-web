@@ -93,39 +93,43 @@ const EditCategory = () => {
   if (error) return <div className="text-red-600">{error}</div>;
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 pt-32">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 pt-16">
+      <div className="bg-white p-6 md:p-8 rounded-lg shadow-md w-full max-w-7xl">
         <h2 className="text-2xl font-semibold mb-6">{t("categories.editCategory")}</h2>
         <form onSubmit={handleSubmit} className="space-y-4 text-left">
-          {/* Name EN */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              {t("categories.name")} ({t("languages.en")})
-            </label>
-            <input
-              type="text"
-              value={form.name.en}
-              onChange={(e) => handleLocalizedChange(e, "en")}
-              placeholder={t("categories.namePlaceholder") || ""}
-              className="mt-1 w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+          <section className="border rounded-lg p-4 md:p-5 bg-gray-50">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
+              {/* Name EN */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  {t("categories.name")} ({t("languages.en")})
+                </label>
+                <input
+                  type="text"
+                  value={form.name.en}
+                  onChange={(e) => handleLocalizedChange(e, "en")}
+                  placeholder={t("categories.namePlaceholder") || ""}
+                  className="mt-1 w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
 
-          {/* Name LT */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              {t("categories.name")} ({t("languages.lt")})
-            </label>
-            <input
-              type="text"
-              value={form.name.lt}
-              onChange={(e) => handleLocalizedChange(e, "lt")}
-              placeholder={t("categories.namePlaceholder") || ""}
-              className="mt-1 w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+              {/* Name LT */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  {t("categories.name")} ({t("languages.lt")})
+                </label>
+                <input
+                  type="text"
+                  value={form.name.lt}
+                  onChange={(e) => handleLocalizedChange(e, "lt")}
+                  placeholder={t("categories.namePlaceholder") || ""}
+                  className="mt-1 w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+            </div>
+          </section>
 
           {/* Buttons */}
           <div className="flex justify-between pt-4 gap-4">

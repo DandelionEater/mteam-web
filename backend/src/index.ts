@@ -55,6 +55,40 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/payments/paysera", payseraRoutes);
 app.use("/api/payments/mock", mockRoutes);
 
+// Information duplication check
+function normalizeName(value?: string): string {
+  if (!value) return "";
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+async function categoryExistsByName(
+  name: { en?: string; lt?: string },
+  excludeId?: string
+): Promise<boolean> {
+  const targetEn = normalizeName(name.en);
+  const targetLt = normalizeName(name.lt);
+
+  if (!targetEn && !targetLt) return false;
+
+  const all = await CategoryModel.find().lean();
+
+  return all.some((cat: any) => {
+    if (excludeId && String(cat._id) === excludeId) return false;
+
+    const existingEn = normalizeName(cat.name?.en);
+    const existingLt = normalizeName(cat.name?.lt);
+
+    return (
+      (targetEn && existingEn === targetEn) ||
+      (targetLt && existingLt === targetLt)
+    );
+  });
+}
+
 // Login route
 app.post('/api/login', async (req: Request, res: Response): Promise<void> => {
   console.log('Login request body:', req.body);
@@ -253,23 +287,31 @@ app.delete('/api/gallery/:id', requireAuth, async (req: AuthedRequest, res: Resp
 
 // Category CRUD
 // Add
-app.post('/api/categories', requireAuth, async (req: AuthedRequest, res: Response) => {
-  try {
-    const { name } = req.body;
+app.post("/api/categories", async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { name } = req.body;
 
-    if (!name || (!name.en && !name.lt)) {
-      res.status(400).json({ message: "Name must have at least one language entry" });
-      return;
+      if (!name || (!name.en && !name.lt)) {
+        res.status(400).json({ message: "Category name is required" });
+        return;
+      }
+
+      const duplicate = await categoryExistsByName(name);
+      if (duplicate) {
+        res
+          .status(409)
+          .json({ message: "Category with this name already exists." });
+        return;
+      }
+
+      const newCategory = await CategoryModel.create({ name });
+      res.status(201).json(newCategory);
+    } catch (error) {
+      console.error("Error creating category:", error);
+      res.status(500).json({ message: "Failed to create category" });
     }
-
-    const result = await CategoryModel.create({ name });
-
-    res.status(201).json({ message: "Category added successfully", entry: result });
-  } catch (error) {
-    console.error("Error adding category:", error);
-    res.status(500).json({ message: "Internal server error" });
   }
-});
+);
 
 // Get
 app.get('/api/categories', async (req: Request, res: Response) => {
@@ -283,31 +325,42 @@ app.get('/api/categories', async (req: Request, res: Response) => {
 });
 
 // Put
-app.put('/api/categories/:id', requireAuth, async (req: AuthedRequest, res: Response) => {
-  try {
-    const id = req.params.id;
-    const { name } = req.body;
+app.put( "/api/categories/:id", async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const { name } = req.body;
 
-    if (!name || (!name.en && !name.lt)) {
-      res.status(400).json({ message: "Name must have at least one language entry" });
-      return;
+      if (!name || (!name.en && !name.lt)) {
+        res.status(400).json({ message: "Category name is required" });
+        return;
+      }
+
+      const duplicate = await categoryExistsByName(name, id);
+      if (duplicate) {
+        res
+          .status(409)
+          .json({ message: "Category with this name already exists." });
+        return;
+      }
+
+      const updated = await CategoryModel.findByIdAndUpdate(
+        id,
+        { name },
+        { new: true }
+      );
+
+      if (!updated) {
+        res.status(404).json({ message: "Category not found" });
+        return;
+      }
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating category:", error);
+      res.status(500).json({ message: "Failed to update category" });
     }
-
-    const entry = await CategoryModel.findById(id);
-    if (!entry) {
-      res.status(404).json({ message: "Category not found" });
-      return;
-    }
-
-    entry.name = name;
-    const result = await entry.save();
-
-    res.json(result);
-  } catch (error) {
-    console.error("Error updating category:", error);
-    res.status(500).json({ message: "Internal server error" });
   }
-});
+);
 
 // Delete
 app.delete('/api/categories/:id', requireAuth, async (req: AuthedRequest, res: Response) => {

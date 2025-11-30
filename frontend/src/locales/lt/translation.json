@@ -59,7 +59,12 @@
             "description": "Stilinga, moderni virtuvė su išmania saugojimo sistema."
         },
         "addNewGallery": "Pridėti naują nuotrauką į galeriją.",
-        "empty": "Sąrašas tusčias."
+        "empty": "Sąrašas tusčias.",
+
+        "searchLabel": "Paieška",
+        "searchPlaceholder": "Ieškoti pagal pavadinimą arba aprašymą",
+        "noSearchResults": "Pagal paiešką galerijoje rezultatų nėra.",
+        "clearSearch": "Išvalyti paiešką"
     },
 
     "categories": {
@@ -70,12 +75,18 @@
         "table": "Stalas",
         "bench": "Suolas",
         "addNewCategory": "Pridėti naują kategoriją",
+        "editCategory": "Atnaujinti kategoriją",
         "empty": "Sąrašas tusčias.",
         "admin": "Kategorijos",
         "name": "Pavadinimas",
         "namePlaceholder": "Įveskite kategorijos pavadinimą",
         "back": "Atgal",
-        "submit": "Išsaugoti"
+        "submit": "Išsaugoti",
+
+        "searchLabel": "Paieška",
+        "searchPlaceholder": "Ieškoti pagal pavadinimą",
+        "noSearchResults": "Pagal paiešką kategorijų nėra.",
+        "clearSearch": "Išvalyti paiešką"
     },
 
     "designInfo": {
@@ -138,11 +149,19 @@
         "confirmMessage": "Šis veiksmas ištrins pasirinktą prekę iš jūsų krepšelio."
     },
 
+    "admin": {
+        "selectSection": "Pasirinkite skyrių"
+    },
+
     "designManager": {
         "title": "Administratoriaus Panelė",
         "addNewDesign": "Pridėti naują dizainą",
         "empty": "Sąrašas tusčias.",
-        "orders": "Užsakymai"
+        "orders": "Užsakymai",
+        "searchLabel": "Paieška",
+        "searchPlaceholder": "Ieškoti pagal pavadinimą arba aprašymą",
+        "noSearchResults": "Pagal paiešką rezultatų nėra.",
+        "clearSearch": "Išvalyti paiešką"
     },
 
     "designForm": {
@@ -199,6 +218,7 @@
         "apply": "Pritaikyti",
         "clear": "Išvalyti",
         "validationToRequired": "Abu datos įvėdimai yra būtini norint naudoti šį filtrą",
+        "validationFromRequired": "“Abu datos įvėdimai yra būtini norint naudoti šį filtrą",
         "email": "El. paštas",
         "status": "Užsakymo būsena",
         "allStatuses": "Visos būsenos",
@@ -208,8 +228,12 @@
         "status_completed": "Užbaigta",
         "pending_payment": "Laukiama apmokėjimo",
         "cancelled": "Atšaukta",
-        "thisMonth": "Šis mėnuo",
+        "thisMonth": "Esamas mėnuo",
         "lastMonth": "Praeitas mėnuo",
+        "filtersTitle": "Filtrai",
+        "dateRange": "Datų diapazonas",
+        "currentRange": "Esamas diapazonas",
+        "activeFilters": "Aktyvių filtrų kiekis: {{count}}",
         "results": "Rezultatas",
         "exportCsv": "CSV failo eksportacija",
         "prev": "Atgal",

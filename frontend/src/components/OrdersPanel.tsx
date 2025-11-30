@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { Order, fetchOrders, updateOrderStatus, OrderStatus } from "../dbMiddleware/OrderCRUD";
 import { useToast } from "./ToastContext";
 import { XMarkIcon } from "@heroicons/react/24/solid";
+import { FunnelIcon } from "@heroicons/react/24/outline";
 
 const STATUS_OPTIONS: OrderStatus[] = ["pending_payment", "created", "packing", "sent", "completed", "cancelled"];
 
@@ -22,6 +23,13 @@ function formatDateTime(iso: string, locale: string) {
   }
 }
 
+function formatDateForInput(d: Date): string {
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 function formatAddress(address: Order["address"]): string {
   if (!address) return "";
 
@@ -31,14 +39,6 @@ function formatAddress(address: Order["address"]): string {
   const line4 = address.country;
 
   return [line1, line2, line3, line4].filter(Boolean).join(", ");
-}
-
-function monthBounds(y: number, m: number) {
-  const from = `${y}-${String(m).padStart(2, "0")}`;
-  const nextM = m === 12 ? 1 : m + 1;
-  const nextY = m === 12 ? y + 1 : y;
-  const to = `${nextY}-${String(nextM).padStart(2, "0")}`;
-  return { from, to };
 }
 
 export default function OrdersPanel() {
@@ -82,6 +82,11 @@ export default function OrdersPanel() {
   const hasFrom = !!filterFrom;
   const hasTo = !!filterTo;
   const hasStatusF = !!filterStatus;
+  const hasDateRange = hasFrom && hasTo;
+  const activeFilterCount =
+  (hasEmail ? 1 : 0) +
+  (hasStatusF ? 1 : 0) +
+  (hasDateRange ? 1 : 0);
 
   const statusLabel = (s: OrderStatus) => {
     const keyMap = {
@@ -137,7 +142,7 @@ export default function OrdersPanel() {
       showToast({
         type: "error",
         message:
-          t("orders.validationToRequired") || "Please select an end month (To) when using From.",
+          t("orders.validationToRequired") || "Please select an end date (To) when using From.",
       });
       return;
     }
@@ -169,25 +174,35 @@ export default function OrdersPanel() {
     next.delete("status");
     next.set("page", "1");
     setSearchParams(next, { replace: true });
+
+    setFilterEmail("");
+    setFilterFrom("");
+    setFilterTo("");
+    setFilterStatus("");
   };
 
   const thisMonth = () => {
     const now = new Date();
-    const { from, to } = monthBounds(now.getUTCFullYear(), now.getUTCMonth() + 1);
-    setFilterFrom(from);
-    setFilterTo(to);
+    const year = now.getUTCFullYear();
+    const monthIndex = now.getUTCMonth();
+    const fromDate = new Date(Date.UTC(year, monthIndex, 1));
+    const toDate = now;
+    setFilterFrom(formatDateForInput(fromDate));
+    setFilterTo(formatDateForInput(toDate));
     setFilterEmail("");
     setFilterStatus("");
   };
+
   const lastMonth = () => {
     const now = new Date();
-    const m = now.getUTCMonth() + 1;
-    const y = now.getUTCFullYear();
-    const prevM = m === 1 ? 12 : m - 1;
-    const prevY = m === 1 ? y - 1 : y;
-    const { from, to } = monthBounds(prevY, prevM);
-    setFilterFrom(from);
-    setFilterTo(to);
+    const year = now.getUTCFullYear();
+    const monthIndex = now.getUTCMonth();
+    const prevMonthIndex = monthIndex === 0 ? 11 : monthIndex - 1;
+    const prevYear = monthIndex === 0 ? year - 1 : year;
+    const fromDate = new Date(Date.UTC(prevYear, prevMonthIndex, 1));
+    const lastDayPrevMonth = new Date(Date.UTC(prevYear, prevMonthIndex + 1, 0));
+    setFilterFrom(formatDateForInput(fromDate));
+    setFilterTo(formatDateForInput(lastDayPrevMonth));
     setFilterEmail("");
     setFilterStatus("");
   };
@@ -278,31 +293,48 @@ export default function OrdersPanel() {
   return (
     <div className="bg-white shadow-md rounded-lg p-4">
       {/* Filters */}
-      <div className="bg-white shadow-md rounded-lg p-4 mb-4">
-        {/* Quick presets */}
-        <div className="md:col-span-4 mb-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div className="bg-gray-50 shadow-md rounded-lg p-4 mt-1 ml-1 mr-1 mb-4">
+        {/* Header + quick presets */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+          <div>
+            <h3 className="text-sm font-semibold flex items-center gap-2">
+              <FunnelIcon className="w-4 h-4 text-gray-500" />
+              {t("orders.filtersTitle") || "Filters"}
+            </h3>
+            {activeFilterCount > 0 && (
+              <p className="text-xs text-gray-500">
+                {t("orders.activeFilters", { count: activeFilterCount }) ||
+                  `Active filters: ${activeFilterCount}`}
+              </p>
+            )}
+          </div>
+
+          {/* Quick presets */}
+          <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={thisMonth}
-              className="w-full px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              className="inline-flex items-center px-3 py-1 rounded-full border text-xs md:text-sm bg-black hover:bg-gray-700 text-white"
             >
               {t("orders.thisMonth") || "This month"}
             </button>
             <button
               type="button"
               onClick={lastMonth}
-              className="w-full px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              className="inline-flex items-center px-3 py-1 rounded-full border text-xs md:text-sm bg-black hover:bg-gray-700 text-white"
             >
               {t("orders.lastMonth") || "Last month"}
             </button>
           </div>
         </div>
 
-        {/* Inputs row */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+        {/* Inputs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* Email */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">{t("orders.email") || "Email"}</label>
+            <label className="block text-xs text-gray-600 mb-1">
+              {t("orders.email") || "Email"}
+            </label>
             <input
               type="text"
               className="w-full border rounded px-2 py-1"
@@ -311,32 +343,22 @@ export default function OrdersPanel() {
               onChange={(e) => setFilterEmail(e.target.value)}
             />
           </div>
+
+          {/* Status */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">{t("orders.from") || "From"}</label>
-            <input
-              type="month"
-              className="w-full border rounded px-2 py-1"
-              value={filterFrom}
-              onChange={(e) => setFilterFrom(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">{t("orders.to") || "To"}</label>
-            <input
-              type="month"
-              className="w-full border rounded px-2 py-1"
-              value={filterTo}
-              onChange={(e) => setFilterTo(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">{t("orders.status") || "Status"}</label>
+            <label className="block text-xs text-gray-600 mb-1">
+              {t("orders.status") || "Status"}
+            </label>
             <select
               className="w-full border rounded px-2 py-1 bg-white"
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value as "" | OrderStatus)}
+              onChange={(e) =>
+                setFilterStatus(e.target.value as "" | OrderStatus)
+              }
             >
-              <option value="">{t("orders.allStatuses") || "All statuses"}</option>
+              <option value="">
+                {t("orders.allStatuses") || "All statuses"}
+              </option>
               {STATUS_OPTIONS.map((s) => (
                 <option key={s} value={s}>
                   {statusLabel(s)}
@@ -345,32 +367,79 @@ export default function OrdersPanel() {
             </select>
           </div>
 
-          {/* Buttons row */}
-          <div className="md:col-span-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <button
-                onClick={applyFilters}
-                className="w-full px-4 py-2 bg-black text-white rounded hover:bg-gray-800 disabled:opacity-60"
-                disabled={filtering || (hasFrom && !hasTo)}
-              >
-                {t("orders.apply") || "Apply"}
-              </button>
-              <button
-                onClick={clearFilters}
-                className="w-full px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-60"
-                disabled={filtering}
-              >
-                {t("orders.clear") || "Clear"}
-              </button>
+          {/* Date range */}
+          <div className="md:col-span-2">
+            <label className="block text-xs text-gray-600 mb-1">
+              {t("orders.dateRange") || "Date range"}
+            </label>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex-1">
+                <span className="block text-[11px] text-gray-500 mb-0.5">
+                  {t("orders.from") || "From"}
+                </span>
+                <input
+                  type={filterFrom ? "date" : "text"}
+                  placeholder="YYYY-MM-DD"
+                  className="w-full border rounded px-2 py-1"
+                  value={filterFrom}
+                  onFocus={(e) => (e.target.type = "date")}
+                  onBlur={(e) => {
+                    if (!filterFrom) e.target.type = "text";
+                  }}
+                  onChange={(e) => setFilterFrom(e.target.value)}
+                />
+              </div>
+              <div className="flex-1">
+                <span className="block text-[11px] text-gray-500 mb-0.5">
+                  {t("orders.to") || "To"}
+                </span>
+                <input
+                  type={filterTo ? "date" : "text"}
+                  placeholder="YYYY-MM-DD"
+                  className="w-full border rounded px-2 py-1"
+                  value={filterTo}
+                  onFocus={(e) => (e.target.type = "date")}
+                  onBlur={(e) => {
+                    if (!filterTo) e.target.type = "text";
+                  }}
+                  onChange={(e) => setFilterTo(e.target.value)}
+                />
+              </div>
             </div>
-            {(hasFrom && !hasTo) && (
-              <p className="text-xs text-red-600 mt-2">
-                {t("orders.validationToRequired") || "“To” is required when “From” is set."}
+            {hasFrom && !hasTo && (
+              <p className="text-xs text-red-600 mt-1">
+                {t("orders.validationToRequired") ||
+                  "“To” is required when “From” is set."}
+              </p>
+            )}
+            {hasTo && !hasFrom && (
+              <p className="text-xs text-red-600 mt-1">
+                {t("orders.validationFromRequired") ||
+                  "“From” is required when “To” is set."}
               </p>
             )}
           </div>
         </div>
+
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row justify-end gap-2 mt-4">
+          <button
+            onClick={clearFilters}
+            className="w-full sm:w-auto px-4 py-2 border rounded-md text-sm bg-white hover:bg-gray-200 disabled:opacity-60"
+            disabled={filtering}
+          >
+            {t("orders.clear") || "Clear"}
+          </button>
+          <button
+            onClick={applyFilters}
+            className="w-full sm:w-auto px-4 py-2 bg-black text-white rounded-md text-sm hover:bg-gray-700 disabled:opacity-60"
+            disabled={filtering || (hasFrom && !hasTo)}
+          >
+            {t("orders.apply") || "Apply"}
+          </button>
+        </div>
       </div>
+
 
       {/* Header actions: count + export */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-3">

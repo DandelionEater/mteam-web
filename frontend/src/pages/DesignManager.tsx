@@ -9,7 +9,8 @@ import { fetchItems, deleteItem } from "../dbMiddleware/ItemCRUD";
 import { fetchGalleryItems, deleteGalleryItem } from "../dbMiddleware/GalleryCRUD";
 import { fetchCategories, deleteCategory } from "../dbMiddleware/CategoryCRUD";
 import ConfirmDialog from '../components/ConfirmDialog';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PencilSquareIcon, TrashIcon, MagnifyingGlassIcon, XMarkIcon, } from '@heroicons/react/24/outline';
+import { PlusIcon } from '@heroicons/react/24/solid';
 import { useToast } from '../components/ToastContext';
 import OrdersPanel from '../components/OrdersPanel';
 
@@ -23,6 +24,10 @@ const DesignManager = () => {
     type: 'design' | 'gallery' | 'category';
   } | null>(null);
   const { showToast } = useToast();
+
+  const [designSearch, setDesignSearch] = useState("");
+  const [gallerySearch, setGallerySearch] = useState("");
+  const [categorySearch, setCategorySearch] = useState("");
   
   const params = new URLSearchParams(location.search);
   const tabParam = params.get('tab') as 'designs' | 'gallery' | 'categories' | 'orders' | null;
@@ -53,6 +58,51 @@ const DesignManager = () => {
   const formatPrice = (price: number): string => {
     return priceFormatter.format(price).replace(/\u20AC|\$/g, currencySymbol);
   };
+
+  const normalizedDesignSearch = designSearch.trim().toLowerCase();
+  const normalizedGallerySearch = gallerySearch.trim().toLowerCase();
+  const normalizedCategorySearch = categorySearch.trim().toLowerCase();
+
+  const filteredDesigns = useMemo(() => {
+    if (!normalizedDesignSearch) return designList;
+
+    return designList.filter((design) => {
+      const nameText = getLocalizedString(design.name).toLowerCase();
+      const descText = getLocalizedString(
+        (design.description as any) ?? { en: "", lt: "" }
+      ).toLowerCase();
+
+      return (
+        nameText.includes(normalizedDesignSearch) ||
+        descText.includes(normalizedDesignSearch)
+      );
+    });
+  }, [designList, normalizedDesignSearch, i18n.language]);
+
+  const filteredGallery = useMemo(() => {
+    if (!normalizedGallerySearch) return galleryList;
+
+    return galleryList.filter((item) => {
+      const nameText = getLocalizedString(item.name).toLowerCase();
+      const descText = getLocalizedString(
+        item.description ?? { en: "", lt: "" }
+      ).toLowerCase();
+
+      return (
+        nameText.includes(normalizedGallerySearch) ||
+        descText.includes(normalizedGallerySearch)
+      );
+    });
+  }, [galleryList, normalizedGallerySearch, i18n.language]);
+
+  const filteredCategories = useMemo(() => {
+    if (!normalizedCategorySearch) return categoryList;
+
+    return categoryList.filter((cat) => {
+      const nameText = getLocalizedString(cat.name).toLowerCase();
+      return nameText.includes(normalizedCategorySearch);
+    });
+  }, [categoryList, normalizedCategorySearch, i18n.language]);
 
   // Sub-page loader
   useEffect(() => {
@@ -129,6 +179,36 @@ const DesignManager = () => {
     loadCategories();
   }, []);
 
+  const highlightMatch = (text: string, query: string) => {
+    if (!query) return text;
+
+    const lowerText = text.toLowerCase();
+    const lowerQuery = query.toLowerCase();
+    const parts: React.ReactNode[] = [];
+
+    let start = 0;
+    let index: number;
+    let key = 0;
+
+    while ((index = lowerText.indexOf(lowerQuery, start)) !== -1) {
+      if (index > start) {
+        parts.push(text.slice(start, index));
+      }
+      parts.push(
+        <mark key={key++} className="bg-yellow-200 rounded-sm px-0.5">
+          {text.slice(index, index + query.length)}
+        </mark>
+      );
+      start = index + query.length;
+    }
+
+    if (start < text.length) {
+      parts.push(text.slice(start));
+    }
+
+    return <>{parts}</>;
+  };
+
   // Designs handlers
   const handleAddDesign = () => {
     navigate('/admin-manager/add');
@@ -198,68 +278,176 @@ const DesignManager = () => {
   const cancelDelete = () => setConfirm(null);
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
+    <div className="min-h-screen bg-gray-100 py-8 overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
         <h1 className="text-center text-3xl font-semibold mb-6">{t('designManager.title')}</h1>
 
-        {/* Toggle between Designs, Gallery and Categories */}
-        <div className="flex justify-center mb-6">
-          <button
-            onClick={() => onChangeTab('designs')}
-            className={`px-4 py-2 ${activePage === 'designs' ? 'bg-black text-white' : 'bg-gray-200'} rounded-l`}
-          >
-            {t('nav.designs')}
-          </button>
-          <button
-            onClick={() => onChangeTab('gallery')}
-            className={`px-4 py-2 ${activePage === 'gallery' ? 'bg-black text-white' : 'bg-gray-200'}`}
-          >
-            {t('nav.gallery')}
-          </button>
-          <button
-            onClick={() => onChangeTab('categories')}
-            className={`px-4 py-2 ${activePage === 'categories' ? 'bg-black text-white' : 'bg-gray-200'}`}
-          >
-            {t('categories.admin')}
-          </button>
-          <button
-            onClick={() => onChangeTab('orders')}
-            className={`px-4 py-2 ${activePage === 'orders' ? 'bg-black text-white' : 'bg-gray-200'} rounded-r`}
-          >
-            {t('designManager.orders') || 'Orders'}
-          </button>
+        {/* Toggle between Designs, Gallery, Categories and Orders */}
+        <div className="mb-6">
+          {/* Mobile: dropdown */}
+          <div className="md:hidden mb-3">
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              {t("admin.selectSection") || "Select section"}
+            </label>
+            <select
+              value={activePage}
+              onChange={(e) =>
+                onChangeTab(e.target.value as "designs" | "gallery" | "categories" | "orders")
+              }
+              className="w-full max-w-full border rounded-md px-3 py-2 bg-white"
+            >
+              <option value="designs">{t("nav.designs")}</option>
+              <option value="gallery">{t("nav.gallery")}</option>
+              <option value="categories">{t("categories.admin")}</option>
+              <option value="orders">{t("designManager.orders") || "Orders"}</option>
+            </select>
+          </div>
+
+          {/* Desktop / tablet: horizontal buttons */}
+          <div className="hidden md:flex justify-center">
+            <div className="inline-flex rounded overflow-hidden shadow-sm">
+              <button
+                onClick={() => onChangeTab("designs")}
+                className={`px-4 py-2 text-sm ${
+                  activePage === "designs"
+                    ? "bg-black text-white"
+                    : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                }`}
+              >
+                {t("nav.designs")}
+              </button>
+              <button
+                onClick={() => onChangeTab("gallery")}
+                className={`px-4 py-2 text-sm ${
+                  activePage === "gallery"
+                    ? "bg-black text-white"
+                    : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                }`}
+              >
+                {t("nav.gallery")}
+              </button>
+              <button
+                onClick={() => onChangeTab("categories")}
+                className={`px-4 py-2 text-sm ${
+                  activePage === "categories"
+                    ? "bg-black text-white"
+                    : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                }`}
+              >
+                {t("categories.admin")}
+              </button>
+              <button
+                onClick={() => onChangeTab("orders")}
+                className={`px-4 py-2 text-sm ${
+                  activePage === "orders"
+                    ? "bg-black text-white"
+                    : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                }`}
+              >
+                {t("designManager.orders") || "Orders"}
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Conditionally render Designs, Gallery or Categories */}
         {activePage === 'designs' && (
           <>
-            <div className="mb-8 bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
-              <button
-                onClick={handleAddDesign}
-                className="w-full px-4 py-2 bg-black text-white rounded hover:bg-gray-800 text-center"
-              >
-                {t('designManager.addNewDesign')}
-              </button>
+            <div className="mb-6 bg-white p-4 rounded-lg shadow-md flex flex-col gap-3 md:flex-row md:items-center">
+              {/* Search bar */}
+              <div className="flex-1">
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  {t("designManager.searchLabel") || "Search designs"}
+                </label>
+
+                <div className="relative">
+                  {/* Search icon (inside input) */}
+                  <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                    <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
+                  </span>
+
+                  <input
+                    type="text"
+                    value={designSearch}
+                    onChange={(e) => setDesignSearch(e.target.value)}
+                    placeholder={
+                      t("designManager.searchPlaceholder") ||
+                      "Search by name or description"
+                    }
+                    className="w-full border rounded-md pl-9 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/70"
+                  />
+
+                  {designSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setDesignSearch("")}
+                      className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600"
+                      aria-label={t("designManager.clearSearch") || "Clear search"}
+                    >
+                      <XMarkIcon className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Add-design button */}
+              <div className="flex justify-end">
+                <button
+                  onClick={handleAddDesign}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition"
+                >
+                  <PlusIcon className="w-5 h-5" />
+                  {t("designManager.addNewDesign")}
+                </button>
+              </div>
             </div>
 
             {designList.length === 0 ? (
-              <p className="text-center text-lg text-gray-500 pt-6">{t('designManager.empty') || 'No designs available.'}</p>
+              <p className="text-center text-lg text-gray-500 pt-6">
+                {t("designManager.empty") || "No designs available."}
+              </p>
+            ) : filteredDesigns.length === 0 ? (
+              <p className="text-center text-lg text-gray-500 pt-6">
+                {t("designManager.noSearchResults") || "No designs match your search."}
+              </p>
             ) : (
               <div className="space-y-6">
-                {designList.map((design) => (
-                  <div key={design.id} className="flex items-center justify-between bg-white shadow-md rounded-lg p-4">
+                {filteredDesigns.map((design) => (
+                  <div
+                    key={design.id}
+                    className="flex items-center justify-between bg-white shadow-md rounded-lg p-4 min-w-0"
+                  >
                     <div className="flex items-center">
                       <img
-                        src={design.images[0] || 'https://placehold.co/100x100?text=No+Image'}
+                        src={design.images[0] || "https://placehold.co/100x100?text=No+Image"}
                         alt={getLocalizedString(design.name)}
                         className="h-16 w-16 object-cover rounded-md mr-4"
                       />
                       <div>
-                        <p className="text-lg font-medium">{getLocalizedString(design.name)}</p>
-                        <p className="text-sm text-gray-500">{getLocalizedString(design.description ?? { en: '', lt: '' })}</p>
-                        <p className="text-sm text-gray-500">{t('designs.catName')}: {getLocalizedString((design.category as any)?.name ?? { en: '', lt: '' })}</p>
-                        <p className="text-sm text-gray-500">{t('designs.stockName')}: {design.stock}</p>
-                        <p className="text-sm text-gray-500">{t('designs.priceName')}: {formatPrice(design.price)}</p>
+                        <p className="text-lg font-medium">
+                          {highlightMatch(
+                            getLocalizedString(design.name),
+                            normalizedDesignSearch
+                          )}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {highlightMatch(
+                            getLocalizedString(
+                              (design.description as any) ?? { en: "", lt: "" }
+                            ),
+                            normalizedDesignSearch
+                          )}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {t("designs.catName")}:{" "}
+                          {getLocalizedString((design.category as any)?.name ?? { en: "", lt: "" })}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {t("designs.stockName")}: {design.stock}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {t("designs.priceName")}: {formatPrice(design.price)}
+                        </p>
                       </div>
                     </div>
 
@@ -271,7 +459,7 @@ const DesignManager = () => {
                         <PencilSquareIcon className="h-5 w-5 text-blue-500 hover:text-blue-700" />
                       </button>
                       <button
-                        onClick={() => askDelete(design.id, 'design')}
+                        onClick={() => askDelete(design.id, "design")}
                         className="text-red-500 hover:text-red-700"
                       >
                         <TrashIcon className="h-5 w-5 text-red-500 hover:text-red-700" />
@@ -286,30 +474,89 @@ const DesignManager = () => {
 
         {activePage === 'gallery' && (
           <>
-            <div className="mb-8 bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
-              <button
-                onClick={handleAddGallery}
-                className="w-full px-4 py-2 bg-black text-white rounded hover:bg-gray-800 text-center"
-              >
-                {t('gallery.addNewGallery') || 'Add a new gallery item'}
-              </button>
+            <div className="mb-6 bg-white p-4 rounded-lg shadow-md flex flex-col gap-3 md:flex-row md:items-center">
+              {/* Search bar – fills remaining width */}
+              <div className="flex-1">
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  {t("gallery.searchLabel") || "Search gallery"}
+                </label>
+
+                <div className="relative">
+                  <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                    <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
+                  </span>
+
+                  <input
+                    type="text"
+                    value={gallerySearch}
+                    onChange={(e) => setGallerySearch(e.target.value)}
+                    placeholder={
+                      t("gallery.searchPlaceholder") || "Search by name or description"
+                    }
+                    className="w-full border rounded-md pl-9 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/70"
+                  />
+
+                  {gallerySearch && (
+                    <button
+                      type="button"
+                      onClick={() => setGallerySearch("")}
+                      className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600"
+                      aria-label={t("gallery.clearSearch") || "Clear search"}
+                    >
+                      <XMarkIcon className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Add-gallery button */}
+              <div className="flex justify-end">
+                <button
+                  onClick={handleAddGallery}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition"
+                >
+                  <PlusIcon className="w-5 h-5" />
+                  {t("gallery.addNewGallery") || "Add a new gallery item"}
+                </button>
+              </div>
             </div>
 
             {galleryList.length === 0 ? (
-              <p className="text-center text-lg text-gray-500 pt-6">{t('gallery.empty') || 'No gallery items available.'}</p>
+              <p className="text-center text-lg text-gray-500 pt-6">
+                {t("gallery.empty") || "No gallery items available."}
+              </p>
+            ) : filteredGallery.length === 0 ? (
+              <p className="text-center text-lg text-gray-500 pt-6">
+                {t("gallery.noSearchResults") || "No gallery items match your search."}
+              </p>
             ) : (
               <div className="space-y-6">
-                {galleryList.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between bg-white shadow-md rounded-lg p-4">
+                {filteredGallery.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between bg-white shadow-md rounded-lg p-4 min-w-0"
+                  >
                     <div className="flex items-center">
                       <img
-                        src={item.images[0] || 'https://placehold.co/100x100?text=No+Image'}
+                        src={item.images[0] || "https://placehold.co/100x100?text=No+Image"}
                         alt={getLocalizedString(item.name)}
                         className="h-16 w-16 object-cover rounded-md mr-4"
                       />
                       <div>
-                        <p className="text-lg font-medium">{getLocalizedString(item.name)}</p>
-                        <p className="text-sm text-gray-500">{getLocalizedString(item.description)}</p>
+                        <p className="text-lg font-medium">
+                          {highlightMatch(
+                            getLocalizedString(item.name),
+                            normalizedGallerySearch
+                          )}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {highlightMatch(
+                            getLocalizedString(
+                              item.description ?? { en: "", lt: "" }
+                            ),
+                            normalizedGallerySearch
+                          )}
+                        </p>
                       </div>
                     </div>
 
@@ -321,7 +568,7 @@ const DesignManager = () => {
                         <PencilSquareIcon className="h-5 w-5 text-blue-500 hover:text-blue-700" />
                       </button>
                       <button
-                        onClick={() => askDelete(item.id, 'gallery')}
+                        onClick={() => askDelete(item.id, "gallery")}
                         className="text-red-500 hover:text-red-700"
                       >
                         <TrashIcon className="h-5 w-5 text-red-500 hover:text-red-700" />
@@ -336,23 +583,75 @@ const DesignManager = () => {
 
         {activePage === 'categories' && (
           <>
-            <div className="mb-8 bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
-              <button
-                onClick={handleAddCategory}
-                className="w-full px-4 py-2 bg-black text-white rounded hover:bg-gray-800 text-center"
-              >
-                {t('categories.addNewCategory') || 'Add a new category'}
-              </button>
+            <div className="mb-6 bg-white p-4 rounded-lg shadow-md flex flex-col gap-3 md:flex-row md:items-center">
+              {/* Search bar – fills remaining width */}
+              <div className="flex-1">
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  {t("categories.searchLabel") || "Search categories"}
+                </label>
+
+                <div className="relative">
+                  <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                    <MagnifyingGlassIcon className="w-4 h-4 text-gray-400" />
+                  </span>
+
+                  <input
+                    type="text"
+                    value={categorySearch}
+                    onChange={(e) => setCategorySearch(e.target.value)}
+                    placeholder={
+                      t("categories.searchPlaceholder") || "Search by name"
+                    }
+                    className="w-full border rounded-md pl-9 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/70"
+                  />
+
+                  {categorySearch && (
+                    <button
+                      type="button"
+                      onClick={() => setCategorySearch("")}
+                      className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600"
+                      aria-label={t("categories.clearSearch") || "Clear search"}
+                    >
+                      <XMarkIcon className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Add-category button */}
+              <div className="flex justify-end">
+                <button
+                  onClick={handleAddCategory}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition"
+                >
+                  <PlusIcon className="w-5 h-5" />
+                  {t("categories.addNewCategory") || "Add a new category"}
+                </button>
+              </div>
             </div>
 
             {categoryList.length === 0 ? (
-              <p className="text-center text-lg text-gray-500 pt-6">{t('categories.empty') || 'No categories available.'}</p>
+              <p className="text-center text-lg text-gray-500 pt-6">
+                {t("categories.empty") || "No categories available."}
+              </p>
+            ) : filteredCategories.length === 0 ? (
+              <p className="text-center text-lg text-gray-500 pt-6">
+                {t("categories.noSearchResults") || "No categories match your search."}
+              </p>
             ) : (
               <div className="space-y-6">
-                {categoryList.map((cat) => (
-                  <div key={cat.id || cat.id} className="flex items-center justify-between bg-white shadow-md rounded-lg p-4">
+                {filteredCategories.map((cat) => (
+                  <div
+                    key={cat.id}
+                    className="flex items-center justify-between bg-white shadow-md rounded-lg p-4 min-w-0"
+                  >
                     <div>
-                      <p className="text-lg font-medium">{getLocalizedString(cat.name)}</p>
+                      <p className="text-lg font-medium">
+                        {highlightMatch(
+                          getLocalizedString(cat.name),
+                          normalizedCategorySearch
+                        )}
+                      </p>
                     </div>
 
                     <div className="flex gap-4">
@@ -363,7 +662,7 @@ const DesignManager = () => {
                         <PencilSquareIcon className="h-5 w-5 text-blue-500 hover:text-blue-700" />
                       </button>
                       <button
-                        onClick={() => askDelete(cat.id, 'category')}
+                        onClick={() => askDelete(cat.id, "category")}
                         className="text-red-500 hover:text-red-700"
                       >
                         <TrashIcon className="h-5 w-5 text-red-500 hover:text-red-700" />

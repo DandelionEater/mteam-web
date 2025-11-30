@@ -60,7 +60,12 @@
             "description": "Sleek and stylish kitchen with a modern touch and smart storage."
         },
         "addNewGallery": "Add a new gallery item",
-        "empty": "No gallery items available."
+        "empty": "No gallery items available.",
+
+        "searchLabel": "Search gallery",
+        "searchPlaceholder": "Search by name or description",
+        "noSearchResults": "No gallery items match your search.",
+        "clearSearch": "Clear search"
     },
 
     "categories": {
@@ -71,12 +76,18 @@
         "table": "Table",
         "bench": "Bench",
         "addNewCategory": "Add a new category",
+        "editCategory": "Edit an existing category",
         "empty": "No categories available.",
         "admin": "Categories",
         "name": "Name",
         "namePlaceholder": "Enter category name",
         "back": "Back",
-        "submit": "Submit"
+        "submit": "Submit",
+
+        "searchLabel": "Search categories",
+        "searchPlaceholder": "Search by name",
+        "noSearchResults": "No categories match your search.",
+        "clearSearch": "Clear search"
     },
 
     "designInfo": {
@@ -139,11 +150,19 @@
         "confirmMessage": "This action will delete the selected item from your cart permanently."
     },
 
+    "admin": {
+        "selectSection": "Select section"
+    },
+
     "designManager": {
         "title": "Admin Panel",
         "addNewDesign": "Add a new design",
         "empty": "No designs available.",
-        "orders": "Orders"
+        "orders": "Orders",
+        "searchLabel": "Search designs",
+        "searchPlaceholder": "Search by name or description",
+        "noSearchResults": "No designs match your search.",
+        "clearSearch": "Clear search"
     },
 
     "designForm": {
@@ -200,6 +219,7 @@
         "apply": "Apply",
         "clear": "Clear",
         "validationToRequired": "“To” is required when “From” is set.",
+        "validationFromRequired": "“From” is required when “To” is set.",
         "email": "E-mail",
         "status": "Status",
         "allStatuses": "All statuses",
@@ -211,6 +231,9 @@
         "cancelled": "Cancelled",
         "thisMonth": "This month",
         "lastMonth": "Last month",
+        "filtersTitle": "Filters",
+        "dateRange": "Date range",
+        "activeFilters": "Active filters: {{count}}",
         "results": "Results",
         "exportCsv": "Export CSV",
         "prev": "Prev",
