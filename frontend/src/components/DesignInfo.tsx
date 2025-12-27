@@ -21,7 +21,7 @@ const DesignInfo: React.FC<DesignInfoProps> = ({ isOpen, onClose, designId }) =>
   const lang = i18n.language === "lt" ? "lt" : "en";
   const navigate = useNavigate();
   const modalRef = useRef<HTMLDivElement>(null);
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
 
   const [design, setDesign] = useState<Item | null>(null);
   const [loading, setLoading] = useState(false);
@@ -30,6 +30,16 @@ const DesignInfo: React.FC<DesignInfoProps> = ({ isOpen, onClose, designId }) =>
   const [categories, setCategories] = useState<Category[]>([]);
 
   const { showToast } = useToast();
+
+  const cartQty = useMemo(() => {
+    if (!design) return 0;
+    const line = cartItems.find((x) => x._id === design._id);
+    return line?.quantity ?? 0;
+  }, [cartItems, design]);
+  const stock = design?.stock ?? 0;
+  const outOfStock = stock <= 0;
+  const reachedLimit = design ? cartQty >= stock : false;
+  const canAdd = design && !outOfStock && !reachedLimit;
 
   useEffect(() => {
     if (!isOpen || !designId) {
@@ -66,10 +76,12 @@ const DesignInfo: React.FC<DesignInfoProps> = ({ isOpen, onClose, designId }) =>
 
   const addToCartHandler = () => {
     if (!design) return;
-    addToCart(design);
+
+    const ok = addToCart(design);
+
     showToast({
-      type: "success",
-      message: t("designInfo.floatingMessage"),
+      type: ok ? "success" : "error",
+      message: ok ? t("designInfo.floatingMessage") : t("designInfo.stockLimitReached"),
     });
   };
 
@@ -77,7 +89,6 @@ const DesignInfo: React.FC<DesignInfoProps> = ({ isOpen, onClose, designId }) =>
     categories.find((c) => c._id === design?.category)?.name[lang] ??
     t("designInfo.noCategory");
 
-  // Price formatter & currency symbol like in Designs.tsx
   const currencySymbol = lang === "lt" ? "€" : "$";
   const priceFormatter = useMemo(
     () =>
@@ -171,9 +182,11 @@ const DesignInfo: React.FC<DesignInfoProps> = ({ isOpen, onClose, designId }) =>
                   </button>
                   <button
                     onClick={addToCartHandler}
-                    className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition w-1/2"
+                    disabled={!canAdd}
+                    className={`text-white py-2 px-4 rounded-lg transition w-1/2
+                      ${canAdd ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"}`}
                   >
-                    {t("designInfo.addToCart")}
+                    {stock <= 0 ? t("designInfo.soldOut") : t("designInfo.addToCart")}
                   </button>
                 </div>
               </>

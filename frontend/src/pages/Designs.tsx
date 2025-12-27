@@ -1,4 +1,3 @@
-// src/pages/Designs.tsx
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import DesignInfo from "../components/DesignInfo";
@@ -83,6 +82,15 @@ const Designs: React.FC = () => {
   );
   const formatPrice = (p: number) =>
     priceFormatter.format(p).replace(/\u20AC|\$/g, currencySymbol);
+
+  /* ------------------------------------------------------------------ */
+  /* DESCRIPTION TRUNCATING                                             */
+  /* ------------------------------------------------------------------ */
+  function truncate(text: string, max = 140) {
+    const s = (text ?? "").trim();
+    if (s.length <= max) return s;
+    return s.slice(0, max).replace(/\s+\S*$/, "") + "…";
+  }
 
   /* ------------------------------------------------------------------ */
   /* MODAL SELECTION HANDLING                                           */
@@ -213,8 +221,8 @@ const Designs: React.FC = () => {
                     className="w-full h-56 object-cover transition-all duration-300 group-hover:scale-105 group-hover:blur-sm"
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-white opacity-0 transition-opacity group-hover:opacity-100">
-                    <h3 className="text-xl font-bold">{d.name}</h3>
-                    <p className="text-sm mt-2 px-4 text-center">{d.description}</p>
+                    <h3 className="text-xl font-bold text-center p-2">{d.name}</h3>
+                    <p className="text-sm mt-2 px-4 text-center break-words">{truncate(d.description, 80)}</p>
                     <p className="text-lg font-semibold mt-2">{formatPrice(d.price)}</p>
                   </div>
                 </div>

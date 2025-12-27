@@ -277,6 +277,22 @@ const DesignManager = () => {
 
   const cancelDelete = () => setConfirm(null);
 
+  const categoryUsageCount = useMemo(() => {
+    const map: Record<string, number> = {};
+
+    for (const d of designList) {
+      const catId =
+        typeof (d as any).category === "string"
+          ? (d as any).category
+          : (d as any).category?._id || (d as any).category?.id;
+
+      if (!catId) continue;
+      map[catId] = (map[catId] ?? 0) + 1;
+    }
+
+    return map;
+  }, [designList]);
+
   return (
     <div className="min-h-screen bg-gray-100 py-8 overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
@@ -640,36 +656,45 @@ const DesignManager = () => {
               </p>
             ) : (
               <div className="space-y-6">
-                {filteredCategories.map((cat) => (
-                  <div
-                    key={cat.id}
-                    className="flex items-center justify-between bg-white shadow-md rounded-lg p-4 min-w-0"
-                  >
-                    <div>
-                      <p className="text-lg font-medium">
-                        {highlightMatch(
-                          getLocalizedString(cat.name),
-                          normalizedCategorySearch
-                        )}
-                      </p>
-                    </div>
+                {filteredCategories.map((cat) => {
+                  const count = categoryUsageCount[cat.id] ?? 0;
 
-                    <div className="flex gap-4">
-                      <button
-                        onClick={() => handleEditCategory(cat.id)}
-                        className="text-blue-500 hover:text-blue-700"
-                      >
-                        <PencilSquareIcon className="h-5 w-5 text-blue-500 hover:text-blue-700" />
-                      </button>
-                      <button
-                        onClick={() => askDelete(cat.id, "category")}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <TrashIcon className="h-5 w-5 text-red-500 hover:text-red-700" />
-                      </button>
+                  return (
+                    <div
+                      key={cat.id}
+                      className="flex items-center justify-between bg-white shadow-md rounded-lg p-4 min-w-0"
+                    >
+                      <div>
+                        <p className="text-lg font-medium">
+                          {highlightMatch(
+                            getLocalizedString(cat.name),
+                            normalizedCategorySearch
+                          )}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">
+                          {t("designManager.items", { count })}
+                        </span>
+
+                        <button
+                          onClick={() => handleEditCategory(cat.id)}
+                          className="text-blue-500 hover:text-blue-700"
+                        >
+                          <PencilSquareIcon className="h-5 w-5" />
+                        </button>
+
+                        <button
+                          onClick={() => askDelete(cat.id, "category")}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <TrashIcon className="h-5 w-5" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </>

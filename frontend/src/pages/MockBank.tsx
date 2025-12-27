@@ -156,6 +156,18 @@ export default function MockBank() {
 
   const expired = secsLeft !== null && secsLeft <= 0;
 
+  useEffect(() => {
+  if (!expired) return;
+
+  showToast({ type: "error", message: t("mockBank.sessionExpired") });
+
+  const id = window.setTimeout(() => {
+    navigate("/checkout/expired", { replace: true });
+  }, 5000);
+
+  return () => window.clearTimeout(id);
+}, [expired, navigate, showToast, t]);
+
   const handleDetailsSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (creating) return;
@@ -269,6 +281,7 @@ export default function MockBank() {
     if (!session || deciding) return;
     setDeciding(true);
     setError(null);
+
     try {
       const res = await fetch(`${backend}/api/payments/mock/decide`, {
         method: "POST",
@@ -278,13 +291,31 @@ export default function MockBank() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.message || "Failed to finalize payment");
+        const msg = data?.message || "Failed to finalize payment";
+
+        if (res.status === 409) {
+          showToast({ type: "error", message: t("mockBank.stockNotEnough") });
+          navigate("/cart", { replace: true });
+          setDeciding(false);
+          return;
+        }
+
+        if (res.status === 400 && /expired/i.test(msg)) {
+          showToast({ type: "error", message: t("mockBank.sessionExpired") });
+          navigate("/cart", { replace: true });
+          setDeciding(false);
+          return;
+        }
+
+        throw new Error(msg);
       }
       const { redirectUrl } = await res.json();
       sessionStorage.removeItem("checkoutInfo");
       window.location.assign(redirectUrl);
     } catch (e) {
-      setError((e as Error)?.message || "Failed to finalize payment");
+      const msg = (e as Error)?.message || "Failed to finalize payment";
+      setError(msg);
+      showToast({ type: "error", message: msg });
       setDeciding(false);
     }
   }
