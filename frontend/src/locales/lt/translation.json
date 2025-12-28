@@ -64,7 +64,8 @@
         "searchLabel": "Paieška",
         "searchPlaceholder": "Ieškoti pagal pavadinimą arba aprašymą",
         "noSearchResults": "Pagal paiešką galerijoje rezultatų nėra.",
-        "clearSearch": "Išvalyti paiešką"
+        "clearSearch": "Išvalyti paiešką",
+        "imagesCount": "Nuotraukų skaičius"
     },
 
     "categories": {
@@ -320,7 +321,9 @@
         "fail": "Nepavyko sukurti užsakymo",
         "addressRequired": "Naudojant pristatymą reikia nurodyti adresą",
         "noItems": "Krepšelis tuščias",
-        "debugItems": "Išsiunčiami krepšelio elementai:"
+        "debugItems": "Išsiunčiami krepšelio elementai:",
+        "deliveryInfoTitle": "Jūsų pristatymo informacija",
+        "selectCity": "Pasirinkite miestą"
     },
 
     "mockBank": {

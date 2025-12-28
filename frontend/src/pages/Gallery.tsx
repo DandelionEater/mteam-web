@@ -42,6 +42,12 @@ const Gallery = () => {
   const paginatedItems = items.slice(startIndex, startIndex + itemsPerPage);
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
+  function truncate(text?: string, max = 140) {
+    const s = (text ?? "").trim();
+    if (s.length <= max) return s;
+    return s.slice(0, max).replace(/\s+\S*$/, "") + "…";
+  }
+
   if (loading)
     return (
       <section className="min-h-screen flex items-center justify-center">
@@ -90,11 +96,11 @@ const Gallery = () => {
               className="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 className="text-xl font-bold text-center">
+              <h3 className="text-xl font-bold text-center p-4">
                 {item.name[lang]}
               </h3>
               <p className="text-sm mt-2 px-4 text-center">
-                {item.description?.[lang]}
+                {truncate(item.description?.[lang], 120)}
               </p>
             </div>
           </div>

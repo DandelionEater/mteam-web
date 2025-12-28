@@ -65,7 +65,8 @@
         "searchLabel": "Search gallery",
         "searchPlaceholder": "Search by name or description",
         "noSearchResults": "No gallery items match your search.",
-        "clearSearch": "Clear search"
+        "clearSearch": "Clear search",
+        "imagesCount": "Image count"
     },
 
     "categories": {
@@ -318,7 +319,9 @@
         "fail": "Failed to create order",
         "addressRequired": "Address is required for delivery",
         "noItems": "Your cart is empty",
-        "debugItems": "Items to submit:"
+        "debugItems": "Items to submit:",
+        "deliveryInfoTitle": "Your delivery information",
+        "selectCity": "Select a city"
     },
 
     "mockBank": {

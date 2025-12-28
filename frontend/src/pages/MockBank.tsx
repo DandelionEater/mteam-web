@@ -4,6 +4,9 @@ import { useTranslation } from "react-i18next";
 import { useCart } from "../context/CartContext";
 import { createOrder } from "../dbMiddleware/OrderCRUD";
 import { useToast } from "../components/ToastContext";
+import { COUNTRIES, CITIES_BY_COUNTRY, type CountryCode } from "../data/locations";
+import { validateZip } from "../data/zipValidation";
+
 
 const bankLogos = import.meta.glob("../assets/banks/*.svg", {
   eager: true,
@@ -28,7 +31,7 @@ type CheckoutAddress = {
   apartment?: string;
   city: string;
   postalCode: string;
-  country: string;
+  country: CountryCode;
 };
 
 type CheckoutInfo = {
@@ -81,7 +84,10 @@ export default function MockBank() {
   const [apartment, setApartment] = useState(checkoutInfo?.address?.apartment || "");
   const [city, setCity] = useState(checkoutInfo?.address?.city || "");
   const [postalCode, setPostalCode] = useState(checkoutInfo?.address?.postalCode || "");
-  const [country, setCountry] = useState(checkoutInfo?.address?.country || "");
+  const [country, setCountry] = useState<CountryCode | "">(
+    (checkoutInfo?.address?.country as CountryCode) || "LT"
+  );
+  const [zipTouched, setZipTouched] = useState(false);
   const [creating, setCreating] = useState(false);
 
   const [step, setStep] = useState<"details" | "payment">("details");
@@ -102,6 +108,30 @@ export default function MockBank() {
     const cents = typeof session?.amountCents === "number" ? session.amountCents : Math.round(cartTotal * 100);
     return new Intl.NumberFormat(locale, { style: "currency", currency: (currency || "EUR") as any }).format(cents / 100);
   }, [session?.amountCents, cartTotal, locale, currency]);
+
+  const availableCities = useMemo(() => {
+    if (!country) return [];
+    return CITIES_BY_COUNTRY[country] ?? [];
+  }, [country]);
+
+  const zipCheck = useMemo(() => {
+    if (!delivery) return { ok: true, message: "" };
+    if (!zipTouched) return { ok: true, message: "" };
+    return validateZip(country, postalCode);
+  }, [country, postalCode, zipTouched, delivery]);
+
+  const canSubmitDetails = useMemo(() => {
+    if (!email.trim()) return false;
+    if (!cartItems?.length) return false;
+
+    if (!delivery) return true;
+
+    if (!street.trim() || !houseNumber.trim() || !city.trim() || !postalCode.trim() || !country) {
+      return false;
+    }
+
+    return validateZip(country, postalCode).ok;
+  }, [email, cartItems, delivery, street, houseNumber, city, postalCode, country]);
 
   useEffect(() => {
     let cancelled = false;
@@ -196,7 +226,7 @@ export default function MockBank() {
         !houseNumber.trim() ||
         !city.trim() ||
         !postalCode.trim() ||
-        !country.trim()
+        !country
       ) {
         showToast({
           type: "error",
@@ -208,13 +238,26 @@ export default function MockBank() {
         return;
       }
 
+      const zipRes = validateZip(country, postalCode.trim());
+      if (!zipRes.ok) {
+        setZipTouched(true);
+        showToast({
+          type: "error",
+          message:
+            zipRes.message ||
+            (t("checkout.invalidPostalCode") as string) ||
+            "Invalid postal code",
+        });
+        return;
+      }
+
       addressPayload = {
         street: street.trim(),
         houseNumber: houseNumber.trim(),
         apartment: apartment.trim() || undefined,
         city: city.trim(),
         postalCode: postalCode.trim(),
-        country: country.trim(),
+        country: country as CountryCode,
       };
     }
 
@@ -331,7 +374,7 @@ export default function MockBank() {
   return (
     <div className="mx-auto max-w-6xl mt-24 p-4 md:p-6">
       <div className="rounded-2xl shadow-lg border bg-white">
-        <div className="grid gap-6 md:grid-cols-3 p-4 md:p-6">
+        <div className={`grid gap-6 p-4 md:p-6 ${step === "payment" ? "md:grid-cols-3" : "md:grid-cols-1"}`}>
           <section className="md:col-span-2">
             <header className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
@@ -439,11 +482,23 @@ export default function MockBank() {
                       <label className="block text-sm mb-1">
                         {t("checkout.city") || "City"}
                       </label>
-                      <input
-                        className="w-full border rounded px-3 py-2"
+                      <select
+                        className="w-full border rounded px-3 py-2 disabled:bg-gray-100"
                         value={city}
+                        disabled={!country}
                         onChange={(e) => setCity(e.target.value)}
-                      />
+                      >
+                        <option value="">
+                          {!country
+                            ? (t("checkout.selectCountryFirst") || "Select country first")
+                            : (t("checkout.selectCity") || "Select city")}
+                        </option>
+                        {availableCities.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     <div>
@@ -451,28 +506,51 @@ export default function MockBank() {
                         {t("checkout.postalCode") || "Postal code"}
                       </label>
                       <input
-                        className="w-full border rounded px-3 py-2"
+                        className={`w-full border rounded px-3 py-2 ${zipTouched && !zipCheck.ok ? "border-red-500" : ""}`}
                         value={postalCode}
                         onChange={(e) => setPostalCode(e.target.value)}
+                        onBlur={() => setZipTouched(true)}
+                        placeholder={
+                          country === "LT" ? "12345" :
+                          country === "PL" ? "12-345" :
+                          country === "NL" ? "1234 AB" :
+                          country === "PT" ? "1234-567" :
+                          ""
+                        }
                       />
+                      {zipTouched && !zipCheck.ok && (
+                        <p className="mt-1 text-sm text-red-600">{zipCheck.message}</p>
+                      )}
                     </div>
 
                     <div className="sm:col-span-2">
                       <label className="block text-sm mb-1">
                         {t("checkout.country") || "Country"}
                       </label>
-                      <input
+                      <select
                         className="w-full border rounded px-3 py-2"
                         value={country}
-                        onChange={(e) => setCountry(e.target.value)}
-                      />
+                        onChange={(e) => {
+                          const next = e.target.value as CountryCode | "";
+                          setCountry(next);
+                          setCity("");
+                          setZipTouched(false);
+                        }}
+                      >
+                        <option value="">{t("checkout.selectCountry") || "Select country"}</option>
+                        {COUNTRIES.map((c) => (
+                          <option key={c.code} value={c.code}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                 )}
 
                 <button
                   type="submit"
-                  disabled={creating}
+                  disabled={creating || !canSubmitDetails}
                   className="w-full px-4 py-2 bg-black text-white rounded hover:bg-gray-800 disabled:opacity-60"
                 >
                   {creating
@@ -482,28 +560,27 @@ export default function MockBank() {
               </form>
             ) : (
               <div className="space-y-6 mt-4">
-                {/* Cart summary – use existing code but swap LT/EN text for t() */}
+                {/* 1) Jūsų krepšelis */}
                 <div>
                   <h2 className="font-medium mb-3">
-                    {t("mockBank.cartTitle") || "Your cart"}
+                    {t("mockBank.cartTitle") || (i18n.language === "lt" ? "Jūsų krepšelis" : "Your cart")}
                   </h2>
+
                   <div className="divide-y rounded-xl border">
                     {(cartItems?.length ? cartItems : []).map((it) => (
-                      <div
-                        key={it._id}
-                        className="p-3 flex items-center justify-between gap-4"
-                      >
+                      <div key={it._id} className="p-3 flex items-center justify-between gap-4">
                         <div className="flex-1">
                           <div className="font-medium">
                             {typeof it.name === "object"
-                              ? (i18n.language === "lt" ? it.name.lt : it.name.en) ||
-                                it.manufacturingID
+                              ? (i18n.language === "lt" ? it.name.lt : it.name.en) || it.manufacturingID
                               : (it as any).name}
                           </div>
                           <div className="text-sm opacity-70">
-                            {t("mockBank.quantityLabel") || "Qty"}: {it.quantity}
+                            {t("mockBank.quantityLabel") || (i18n.language === "lt" ? "Kiekis" : "Qty")}:{" "}
+                            {it.quantity}
                           </div>
                         </div>
+
                         <div className="text-right">
                           <div className="font-medium">
                             {new Intl.NumberFormat(locale, {
@@ -516,55 +593,73 @@ export default function MockBank() {
                               style: "currency",
                               currency: (currency || "EUR") as any,
                             }).format(it.price || 0)}{" "}
-                            / {t("mockBank.unit") || "unit"}
+                            / {t("mockBank.unit") || (i18n.language === "lt" ? "vnt." : "unit")}
                           </div>
                         </div>
                       </div>
                     ))}
+
                     {!cartItems?.length && (
                       <div className="p-4 text-sm opacity-70">
                         {t("mockBank.cartMissing") ||
-                          "Cart not available — using total from payment session."}
+                          (i18n.language === "lt"
+                            ? "Krepšelis nepasiekiamas — naudojama suma iš apmokėjimo sesijos."
+                            : "Cart not available — using total from payment session.")}
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Customer info */}
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-xl border p-3">
-                    <div className="text-sm opacity-70 mb-1">
-                      {t("checkout.email") || "Email"}
-                    </div>
-                    <div className="font-medium">{checkoutInfo?.email || "—"}</div>
+                {/* 2) SUMA (perkelta po krepšeliu) */}
+                <div className="rounded-xl border p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">
+                      {t("mockBank.totalLabel") || (i18n.language === "lt" ? "Suma" : "Total")}
+                    </span>
+                    <span className="text-xl font-semibold">{displayTotal}</span>
                   </div>
+                </div>
 
-                  <div className="rounded-xl border p-3">
-                    <div className="text-sm opacity-70 mb-1">
-                      {t("checkout.delivery") || "Delivery"}
-                    </div>
-                    <div className="font-medium">
-                      {checkoutInfo?.delivery
-                        ? t("mockBank.yes") || "Yes"
-                        : t("mockBank.no") || "No"}
-                    </div>
-                  </div>
+                {/* 3) Jūsų pristatymo informacija (po suma) */}
+                <div className="rounded-xl border p-4">
+                  <h3 className="font-medium mb-3">
+                    {t("checkout.deliveryInfoTitle") ||
+                      (i18n.language === "lt" ? "Jūsų pristatymo informacija" : "Your delivery details")}
+                  </h3>
 
-                  {checkoutInfo?.delivery && checkoutInfo.address && (
-                    <div className="sm:col-span-2 rounded-xl border p-3">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-xl border p-3">
                       <div className="text-sm opacity-70 mb-1">
-                        {t("checkout.address") || "Delivery address"}
+                        {t("checkout.email") || (i18n.language === "lt" ? "El. paštas" : "Email")}
                       </div>
-                      <div className="font-medium whitespace-pre-line">
-                        {checkoutInfo.address.street} {checkoutInfo.address.houseNumber}
-                        {checkoutInfo.address.apartment
-                          ? `, ${checkoutInfo.address.apartment}`
-                          : ""}
-                        {`\n${checkoutInfo.address.postalCode} ${checkoutInfo.address.city}`}
-                        {`\n${checkoutInfo.address.country}`}
+                      <div className="font-medium">{checkoutInfo?.email || "—"}</div>
+                    </div>
+
+                    <div className="rounded-xl border p-3">
+                      <div className="text-sm opacity-70 mb-1">
+                        {t("checkout.delivery") || (i18n.language === "lt" ? "Pristatymas" : "Delivery")}
+                      </div>
+                      <div className="font-medium">
+                        {checkoutInfo?.delivery
+                          ? t("mockBank.yes") || (i18n.language === "lt" ? "Taip" : "Yes")
+                          : t("mockBank.no") || (i18n.language === "lt" ? "Ne" : "No")}
                       </div>
                     </div>
-                  )}
+
+                    {checkoutInfo?.delivery && checkoutInfo.address && (
+                      <div className="sm:col-span-2 rounded-xl border p-3">
+                        <div className="text-sm opacity-70 mb-1">
+                          {t("checkout.address") || (i18n.language === "lt" ? "Adresas" : "Address")}
+                        </div>
+                        <div className="font-medium whitespace-pre-line">
+                          {checkoutInfo.address.street} {checkoutInfo.address.houseNumber}
+                          {checkoutInfo.address.apartment ? `, ${checkoutInfo.address.apartment}` : ""}
+                          {`\n${checkoutInfo.address.postalCode} ${checkoutInfo.address.city}`}
+                          {`\n${checkoutInfo.address.country}`}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -572,18 +667,9 @@ export default function MockBank() {
 
           {/* RIGHT — 1/3 */}
           <aside className="space-y-6">
-            {/* Total */}
-            <div className="rounded-xl border p-4">
-              <div className="flex items-center justify-between">
-                <span className="font-medium">
-                  {t("mockBank.totalLabel") || "Total"}
-                </span>
-                <span className="text-xl font-semibold">{displayTotal}</span>
-              </div>
-            </div>
-
             {step === "payment" && (
               <>
+                
                 {/* Lithuanian banks */}
                 <div>
                   <div className="mb-2 text-sm font-medium opacity-80">
@@ -629,7 +715,7 @@ export default function MockBank() {
                           key={id}
                           disabled={deciding || expired}
                           onClick={() => decide("success", id)}
-                          className={`group rounded-xl border px-3 py-3 text-left font-medium transition
+                          className={`group rounded-xl border px-3 py-3 text-center font-medium transition
                                       hover:bg-gray-100 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-black/10
                                       active:scale-[0.99] ${
                                         deciding || expired
@@ -637,7 +723,10 @@ export default function MockBank() {
                                           : "cursor-pointer"
                                       }`}
                         >
-                          {src ? <img src={src} alt={label} className="h-6 w-auto" /> : label}
+                          <div className="flex items-center gap-3 justify-center">
+                            {src && <img src={src} alt={label} className="h-6 w-auto" />}
+                            <span className="font-medium">{label}</span>
+                          </div>
                         </button>
                       );
                     })}
