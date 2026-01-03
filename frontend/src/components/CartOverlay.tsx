@@ -114,7 +114,7 @@ export default function CartOverlay({
 
       <div
         ref={modalRef}
-        className="fixed w-80 bg-white shadow-xl rounded-2xl z-50 p-4 border"
+        className="fixed w-96 sm:w-full md:w-96 bg-white shadow-xl rounded-2xl z-50 p-4 border"
         style={{
           top: position?.top ?? -9999,
           right: position?.right ?? -9999,
@@ -134,6 +134,7 @@ export default function CartOverlay({
                   <p className="font-medium leading-tight">{item.name[lang]}</p>
                   <p className="text-sm text-gray-600">{formatPrice(item.price)}</p>
 
+<<<<<<< HEAD
                   <div className="flex items-center gap-2 mt-1">
                     <button
                       className="px-2 py-1 border rounded"
@@ -150,6 +151,88 @@ export default function CartOverlay({
                     >
                       <PlusIcon className="w-4 h-4" />
                     </button>
+=======
+              const img =
+                (item as any).images?.[0] ||
+                "https://placehold.co/96x96?text=%20";
+
+              return (
+                <div
+                  key={item._id}
+                  className="flex gap-3 rounded-xl border bg-white p-3 shadow-sm"
+                >
+                  {/* thumbnail */}
+                  <img
+                    src={img}
+                    alt={item.name?.[lang] ?? "Item"}
+                    className="h-14 w-14 rounded-lg object-cover flex-shrink-0"
+                    loading="lazy"
+                  />
+
+                  {/* content */}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-medium leading-tight truncate">
+                          {item.name[lang]}
+                        </p>
+                        <p className="text-sm text-gray-500">{formatPrice(item.price)}</p>
+                      </div>
+
+                      <button
+                        onClick={() => handleRemoveClick(item._id)}
+                        className="text-gray-400 hover:text-red-600 transition"
+                        aria-label={t("cartPage.removeItem") ?? "Remove"}
+                        title={t("cartPage.removeItem") ?? "Remove"}
+                      >
+                        <XMarkIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    {/* quantity */}
+                    <div className="mt-2 flex items-center justify-between">
+                      <div className="inline-flex items-center rounded-lg border bg-gray-50">
+                        <button
+                          className="px-2 py-1 hover:bg-gray-100 rounded-l-lg"
+                          onClick={() => onUpdateQuantity(item._id, Math.max(item.quantity - 1, 1))}
+                          aria-label="Decrease"
+                        >
+                          <MinusIcon className="w-4 h-4" />
+                        </button>
+
+                        <span className="px-3 text-sm font-medium tabular-nums">
+                          {item.quantity}
+                        </span>
+
+                        <button
+                          className={`px-2 py-1 hover:bg-gray-100 rounded-r-lg ${
+                            !canIncrease ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
+                          onClick={() => {
+                            if (!canIncrease) {
+                              showToast({ type: "error", message: t("designInfo.stockLimitReached") });
+                              return;
+                            }
+                            onUpdateQuantity(item._id, item.quantity + 1);
+                          }}
+                          aria-label="Increase"
+                          disabled={!canIncrease}
+                        >
+                          <PlusIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      {/* pricing */}
+                      <div className="text-right tabular-nums">
+                        <p className="text-xs text-gray-500">
+                          {item.quantity} × {formatPrice(item.price)}
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {formatPrice(item.price * item.quantity)}
+                        </p>
+                      </div>
+                    </div>
+>>>>>>> c49daa3 (Fixed designs category filter height sizing, changed the design of cart overlay and cart page and addedd new translations)
                   </div>
                 </div>
 

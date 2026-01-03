@@ -147,7 +147,8 @@
         "goToCart": "Go to cart",
 
         "confirmTitle": "Are you sure?",
-        "confirmMessage": "This action will delete the selected item from your cart permanently."
+        "confirmMessage": "This action will delete the selected item from your cart permanently.",
+        "continueShopping": "Continue shopping"
     },
 
     "admin": {
@@ -312,7 +313,14 @@
         "fail": "Failed to create order",
         "addressRequired": "Address is required for delivery",
         "noItems": "Your cart is empty",
+<<<<<<< HEAD
         "debugItems": "Items to submit:"
+=======
+        "debugItems": "Items to submit:",
+        "deliveryInfoTitle": "Your delivery information",
+        "selectCity": "Select a city",
+        "selectCountry": "Select a country"
+>>>>>>> c49daa3 (Fixed designs category filter height sizing, changed the design of cart overlay and cart page and addedd new translations)
     },
 
     "mockBank": {

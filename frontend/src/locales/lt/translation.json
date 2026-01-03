@@ -146,7 +146,8 @@
         "goToCart": "Eiti į krepšelį",
 
         "confirmTitle": "Ar tikrai norite ištrinti?",
-        "confirmMessage": "Šis veiksmas ištrins pasirinktą prekę iš jūsų krepšelio."
+        "confirmMessage": "Šis veiksmas ištrins pasirinktą prekę iš jūsų krepšelio.",
+        "continueShopping": "Tęsti apsipirkimą"
     },
 
     "admin": {
@@ -312,7 +313,14 @@
         "fail": "Nepavyko sukurti užsakymo",
         "addressRequired": "Naudojant pristatymą reikia nurodyti adresą",
         "noItems": "Krepšelis tuščias",
+<<<<<<< HEAD
         "debugItems": "Išsiunčiami krepšelio elementai:"
+=======
+        "debugItems": "Išsiunčiami krepšelio elementai:",
+        "deliveryInfoTitle": "Jūsų pristatymo informacija",
+        "selectCity": "Pasirinkite miestą",
+        "selectCountry": "Pasirinkite šalį"
+>>>>>>> c49daa3 (Fixed designs category filter height sizing, changed the design of cart overlay and cart page and addedd new translations)
     },
 
     "mockBank": {
