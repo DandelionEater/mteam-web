@@ -153,7 +153,7 @@ const Designs: React.FC = () => {
         </button>
       </div>
 
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-6">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-start gap-6">
         {/* Category filter */}
         <div
           ref={filterRef}

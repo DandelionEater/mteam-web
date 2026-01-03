@@ -55,112 +55,205 @@ const CartPage = () => {
   const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
-        <h1 className="text-center text-3xl font-semibold mb-8">
+    <div className="min-h-screen bg-gray-50">
+      <div className="mx-auto max-w-3xl px-4 pt-24 pb-28 sm:pb-10">
+        <h1 className="text-center text-2xl sm:text-3xl font-semibold mb-6">
           {t("cartPage.title")}
         </h1>
 
         {cartItems.length === 0 ? (
-          <p className="text-center text-lg text-gray-500 pt-6">
-            {t("cartPage.emptyCart")}
-          </p>
+          <div className="bg-white border rounded-2xl p-6 text-center">
+            <p className="text-gray-600">{t("cartPage.emptyCart")}</p>
+
+            <button
+              type="button"
+              onClick={() => navigate("/designs")}
+              className="mt-4 inline-flex items-center justify-center px-4 py-2 rounded-lg bg-black text-white hover:bg-gray-900"
+            >
+              {t("cartPage.continueShopping") ?? "Continue shopping"}
+            </button>
+          </div>
         ) : (
-          <div className="space-y-6">
-            {cartItems.map((item) => {
-              const stock = item.stock ?? Infinity;
-              const canIncrease = item.quantity < stock;
+          <>
+            <div className="space-y-4">
+              {cartItems.map((item) => {
+                const stock = item.stock ?? Infinity;
+                const canIncrease = item.quantity < stock;
 
-              return (
-                <div
-                  key={item._id}
-                  className="flex items-center justify-between bg-white shadow-md rounded-lg p-4"
-                >
-                  <div className="flex items-center">
-                    <img
-                      src={item.images[0]}
-                      alt={item.name[lang]}
-                      className="h-16 w-16 object-cover rounded-md mr-4"
-                    />
-                    <div>
-                      <p className="text-lg font-medium">{item.name[lang]}</p>
-                      <p className="text-sm text-gray-500">{formatPrice(item.price)}</p>
+                const img =
+                  item.images?.[0] || "https://placehold.co/96x96?text=%20";
 
-                      <div className="flex items-center mt-2 gap-2">
-                        <button
-                          onClick={() => updateQuantity(item._id, Math.max(item.quantity - 1, 1))}
-                          className="px-2 py-1 border rounded"
-                        >
-                          <MinusIcon className="w-4 h-4" />
-                        </button>
+                const lineTotal = item.price * item.quantity;
 
-                        <span>{item.quantity}</span>
+                return (
+                  <div
+                    key={item._id}
+                    className="bg-white border rounded-2xl shadow-sm p-4"
+                  >
+                    <div className="flex gap-3">
+                      <img
+                        src={img}
+                        alt={item.name[lang]}
+                        className="h-16 w-16 rounded-xl object-cover flex-shrink-0"
+                        loading="lazy"
+                      />
 
-                        <button
-                          onClick={() => {
-                            if (!canIncrease) {
-                              showToast({ type: "error", message: t("designInfo.stockLimitReached") });
-                              return;
-                            }
-                            updateQuantity(item._id, item.quantity + 1);
-                          }}
-                          className={`px-2 py-1 border rounded ${
-                            !canIncrease ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
-                        >
-                          <PlusIcon className="w-4 h-4" />
-                        </button>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-semibold text-gray-900 break-words">
+                              {item.name[lang]}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {formatPrice(item.price)}
+                            </p>
+                          </div>
+
+                          <button
+                            onClick={() => handleRemoveClick(item._id)}
+                            className="text-gray-400 hover:text-red-600 transition"
+                            aria-label={t("cartPage.removeItem") ?? "Remove"}
+                            title={t("cartPage.removeItem") ?? "Remove"}
+                          >
+                            <XMarkIcon className="w-5 h-5" />
+                          </button>
+                        </div>
+
+                        <div className="mt-3 flex items-center justify-between gap-3">
+                          {/* quantity stepper */}
+                          <div className="inline-flex items-center rounded-xl border bg-gray-50 overflow-hidden">
+                            <button
+                              onClick={() =>
+                                updateQuantity(item._id, Math.max(item.quantity - 1, 1))
+                              }
+                              className="px-3 py-2 hover:bg-gray-100"
+                              aria-label="Decrease"
+                            >
+                              <MinusIcon className="w-4 h-4" />
+                            </button>
+
+                            <span className="px-3 text-sm font-semibold tabular-nums">
+                              {item.quantity}
+                            </span>
+
+                            <button
+                              onClick={() => {
+                                if (!canIncrease) {
+                                  showToast({
+                                    type: "error",
+                                    message: t("designInfo.stockLimitReached"),
+                                  });
+                                  return;
+                                }
+                                updateQuantity(item._id, item.quantity + 1);
+                              }}
+                              disabled={!canIncrease}
+                              className={`px-3 py-2 hover:bg-gray-100 ${
+                                !canIncrease ? "opacity-50 cursor-not-allowed" : ""
+                              }`}
+                              aria-label="Increase"
+                            >
+                              <PlusIcon className="w-4 h-4" />
+                            </button>
+                          </div>
+
+                          {/* qty × unit + line total */}
+                          <div className="text-right tabular-nums">
+                            <p className="text-xs text-gray-500">
+                              {item.quantity} × {formatPrice(item.price)}
+                            </p>
+                            <p className="text-base font-semibold text-gray-900">
+                              {formatPrice(lineTotal)}
+                            </p>
+                          </div>
+                        </div>
+
+                        {Number.isFinite(stock) && stock <= 0 && (
+                          <p className="text-xs text-red-600 mt-2">
+                            {t("designInfo.soldOut")}
+                          </p>
+                        )}
                       </div>
-
-                      {Number.isFinite(stock) && stock <= 0 && (
-                        <p className="text-xs text-red-600 mt-1">{t("designInfo.soldOut")}</p>
-                      )}
                     </div>
                   </div>
+                );
+              })}
+            </div>
 
-                  <button
-                    onClick={() => handleRemoveClick(item._id)}
-                    className="text-red-500 hover:text-red-700 pr-4"
-                  >
-                    <XMarkIcon className="w-5 h-5" />
-                  </button>
+            {/* desktop summary */}
+            <div className="mt-6 bg-white border rounded-2xl shadow-sm p-4 hidden sm:flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">{t("cartPage.total")}</p>
+                <p className="text-xl font-semibold tabular-nums">
+                  {formatPrice(total)}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (cartItems.length === 0) {
+                    showToast({ type: "error", message: t("mockbank.noItems") });
+                    return;
+                  }
+                  navigate("/mock-bank");
+                }}
+                disabled={cartItems.length === 0}
+                className={`px-5 py-3 rounded-xl text-white font-medium
+                  ${cartItems.length === 0
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-black hover:bg-gray-900"
+                  }`}
+              >
+                {t("cartPage.checkout")}
+              </button>
+            </div>
+
+            {/* mobile bottom bar */}
+            <div className="sm:hidden fixed left-0 right-0 bottom-0 bg-white border-t">
+              <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-500">{t("cartPage.total")}</p>
+                  <p className="text-lg font-semibold tabular-nums truncate">
+                    {formatPrice(total)}
+                  </p>
                 </div>
-              );
-            })}
-          </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (cartItems.length === 0) {
+                      showToast({ type: "error", message: t("mockbank.noItems") });
+                      return;
+                    }
+                    navigate("/mock-bank");
+                  }}
+                  disabled={cartItems.length === 0}
+                  className={`px-5 py-3 rounded-xl text-white font-medium whitespace-nowrap
+                    ${cartItems.length === 0
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-black hover:bg-gray-900"
+                    }`}
+                >
+                  {t("cartPage.checkout")}
+                </button>
+              </div>
+            </div>
+          </>
         )}
 
-        <div className="mt-8 bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
-          <p className="text-xl font-semibold">
-            {t("cartPage.total")}: {formatPrice(total)}
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              if (cartItems.length === 0) {
-                showToast({ type: "error", message: t("mockbank.noItems") });
-                return;
-              }
-              navigate("/mock-bank");
-            }}
-            disabled={cartItems.length === 0}
-            className={`px-4 py-2 rounded text-white
-              ${cartItems.length === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-black hover:bg-gray-800"}`}
-          >
-            {t("cartPage.checkout")}
-          </button>
-        </div>
+        {/* Confirmation dialog */}
+        <ConfirmDialog
+          isOpen={confirmOpen}
+          title={t("cartPage.confirmTitle")}
+          message={t("cartPage.confirmMessage")}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
       </div>
-      {/* Confirmation dialog */}
-      <ConfirmDialog
-        isOpen={confirmOpen}
-        title={t("cartPage.confirmTitle")}
-        message={t("cartPage.confirmMessage")}
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-      />
     </div>
   );
+
 };
 
 export default CartPage;

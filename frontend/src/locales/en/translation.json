@@ -150,7 +150,8 @@
         "goToCart": "Go to cart",
 
         "confirmTitle": "Are you sure?",
-        "confirmMessage": "This action will delete the selected item from your cart permanently."
+        "confirmMessage": "This action will delete the selected item from your cart permanently.",
+        "continueShopping": "Continue shopping"
     },
 
     "admin": {
@@ -321,7 +322,8 @@
         "noItems": "Your cart is empty",
         "debugItems": "Items to submit:",
         "deliveryInfoTitle": "Your delivery information",
-        "selectCity": "Select a city"
+        "selectCity": "Select a city",
+        "selectCountry": "Select a country"
     },
 
     "mockBank": {
