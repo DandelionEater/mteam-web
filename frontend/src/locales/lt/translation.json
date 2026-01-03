@@ -322,20 +322,10 @@
         "fail": "Nepavyko sukurti užsakymo",
         "addressRequired": "Naudojant pristatymą reikia nurodyti adresą",
         "noItems": "Krepšelis tuščias",
-<<<<<<< HEAD
-<<<<<<< HEAD
-        "debugItems": "Išsiunčiami krepšelio elementai:"
-=======
-=======
->>>>>>> c49daa3612ee9157cd15bbdadf74a4cdad32650a
         "debugItems": "Išsiunčiami krepšelio elementai:",
         "deliveryInfoTitle": "Jūsų pristatymo informacija",
         "selectCity": "Pasirinkite miestą",
         "selectCountry": "Pasirinkite šalį"
-<<<<<<< HEAD
->>>>>>> c49daa3 (Fixed designs category filter height sizing, changed the design of cart overlay and cart page and addedd new translations)
-=======
->>>>>>> c49daa3612ee9157cd15bbdadf74a4cdad32650a
     },
 
     "mockBank": {
