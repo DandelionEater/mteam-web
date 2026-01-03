@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCart } from "../context/CartContext";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useToast } from "../components/ToastContext";
 import { MinusIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -10,6 +10,8 @@ const CartPage = () => {
   const { cartItems, updateQuantity, removeFromCart } = useCart();
   const { t, i18n } = useTranslation();
   const lang = i18n.language === "lt" ? "lt" : "en";
+
+  const navigate = useNavigate();
 
   const formatPrice = (price: number): string => {
     const locale = lang === "lt" ? "lt-LT" : "en-US";
@@ -73,6 +75,7 @@ const CartPage = () => {
           </div>
         ) : (
 <<<<<<< HEAD
+<<<<<<< HEAD
           <div className="space-y-6">
             {cartItems.map((item) => (
               <div
@@ -106,20 +109,177 @@ const CartPage = () => {
                       >
                         <PlusIcon className="w-4 h-4" />
                       </button>
+=======
+          <>
+            <div className="space-y-4">
+              {cartItems.map((item) => {
+                const stock = item.stock ?? Infinity;
+                const canIncrease = item.quantity < stock;
+
+                const img =
+                  item.images?.[0] || "https://placehold.co/96x96?text=%20";
+
+                const lineTotal = item.price * item.quantity;
+
+                return (
+                  <div
+                    key={item._id}
+                    className="bg-white border rounded-2xl shadow-sm p-4"
+                  >
+                    <div className="flex gap-3">
+                      <img
+                        src={img}
+                        alt={item.name[lang]}
+                        className="h-16 w-16 rounded-xl object-cover flex-shrink-0"
+                        loading="lazy"
+                      />
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-semibold text-gray-900 break-words">
+                              {item.name[lang]}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {formatPrice(item.price)}
+                            </p>
+                          </div>
+
+                          <button
+                            onClick={() => handleRemoveClick(item._id)}
+                            className="text-gray-400 hover:text-red-600 transition"
+                            aria-label={t("cartPage.removeItem") ?? "Remove"}
+                            title={t("cartPage.removeItem") ?? "Remove"}
+                          >
+                            <XMarkIcon className="w-5 h-5" />
+                          </button>
+                        </div>
+
+                        <div className="mt-3 flex items-center justify-between gap-3">
+                          {/* quantity stepper */}
+                          <div className="inline-flex items-center rounded-xl border bg-gray-50 overflow-hidden">
+                            <button
+                              onClick={() =>
+                                updateQuantity(item._id, Math.max(item.quantity - 1, 1))
+                              }
+                              className="px-3 py-2 hover:bg-gray-100"
+                              aria-label="Decrease"
+                            >
+                              <MinusIcon className="w-4 h-4" />
+                            </button>
+
+                            <span className="px-3 text-sm font-semibold tabular-nums">
+                              {item.quantity}
+                            </span>
+
+                            <button
+                              onClick={() => {
+                                if (!canIncrease) {
+                                  showToast({
+                                    type: "error",
+                                    message: t("designInfo.stockLimitReached"),
+                                  });
+                                  return;
+                                }
+                                updateQuantity(item._id, item.quantity + 1);
+                              }}
+                              disabled={!canIncrease}
+                              className={`px-3 py-2 hover:bg-gray-100 ${
+                                !canIncrease ? "opacity-50 cursor-not-allowed" : ""
+                              }`}
+                              aria-label="Increase"
+                            >
+                              <PlusIcon className="w-4 h-4" />
+                            </button>
+                          </div>
+
+                          {/* qty × unit + line total */}
+                          <div className="text-right tabular-nums">
+                            <p className="text-xs text-gray-500">
+                              {item.quantity} × {formatPrice(item.price)}
+                            </p>
+                            <p className="text-base font-semibold text-gray-900">
+                              {formatPrice(lineTotal)}
+                            </p>
+                          </div>
+                        </div>
+
+                        {Number.isFinite(stock) && stock <= 0 && (
+                          <p className="text-xs text-red-600 mt-2">
+                            {t("designInfo.soldOut")}
+                          </p>
+                        )}
+                      </div>
+>>>>>>> c49daa3612ee9157cd15bbdadf74a4cdad32650a
                     </div>
                   </div>
+                );
+              })}
+            </div>
+
+            {/* desktop summary */}
+            <div className="mt-6 bg-white border rounded-2xl shadow-sm p-4 hidden sm:flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">{t("cartPage.total")}</p>
+                <p className="text-xl font-semibold tabular-nums">
+                  {formatPrice(total)}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (cartItems.length === 0) {
+                    showToast({ type: "error", message: t("mockbank.noItems") });
+                    return;
+                  }
+                  navigate("/mock-bank");
+                }}
+                disabled={cartItems.length === 0}
+                className={`px-5 py-3 rounded-xl text-white font-medium
+                  ${cartItems.length === 0
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-black hover:bg-gray-900"
+                  }`}
+              >
+                {t("cartPage.checkout")}
+              </button>
+            </div>
+
+            {/* mobile bottom bar */}
+            <div className="sm:hidden fixed left-0 right-0 bottom-0 bg-white border-t">
+              <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-500">{t("cartPage.total")}</p>
+                  <p className="text-lg font-semibold tabular-nums truncate">
+                    {formatPrice(total)}
+                  </p>
                 </div>
+
                 <button
-                  onClick={() => handleRemoveClick(item._id)}
-                  className="text-red-500 hover:text-red-700 pr-4"
+                  type="button"
+                  onClick={() => {
+                    if (cartItems.length === 0) {
+                      showToast({ type: "error", message: t("mockbank.noItems") });
+                      return;
+                    }
+                    navigate("/mock-bank");
+                  }}
+                  disabled={cartItems.length === 0}
+                  className={`px-5 py-3 rounded-xl text-white font-medium whitespace-nowrap
+                    ${cartItems.length === 0
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-black hover:bg-gray-900"
+                    }`}
                 >
-                  <XMarkIcon className="w-5 h-5" />
+                  {t("cartPage.checkout")}
                 </button>
               </div>
-            ))}
-          </div>
+            </div>
+          </>
         )}
 
+<<<<<<< HEAD
         <div className="mt-8 bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
           <p className="text-xl font-semibold">
             {t("cartPage.total")}: {formatPrice(total)}
@@ -300,6 +460,8 @@ const CartPage = () => {
           </>
         )}
 
+=======
+>>>>>>> c49daa3612ee9157cd15bbdadf74a4cdad32650a
         {/* Confirmation dialog */}
         <ConfirmDialog
           isOpen={confirmOpen}
@@ -308,7 +470,10 @@ const CartPage = () => {
           onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}
         />
+<<<<<<< HEAD
 >>>>>>> c49daa3 (Fixed designs category filter height sizing, changed the design of cart overlay and cart page and addedd new translations)
+=======
+>>>>>>> c49daa3612ee9157cd15bbdadf74a4cdad32650a
       </div>
     </div>
   );

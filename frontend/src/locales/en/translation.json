@@ -65,7 +65,8 @@
         "searchLabel": "Search gallery",
         "searchPlaceholder": "Search by name or description",
         "noSearchResults": "No gallery items match your search.",
-        "clearSearch": "Clear search"
+        "clearSearch": "Clear search",
+        "imagesCount": "Image count"
     },
 
     "categories": {
@@ -97,7 +98,9 @@
         "floatingMessage": "Successfully added to cart",
         "stock": "Left in stock",
         "stockExtra": "units",
-        "category": "Category"
+        "category": "Category",
+        "stockLimitReached": "Stock limit reached. You cannot add more.",
+        "soldOut": "Sold out"
     },
 
     "about": {
@@ -163,7 +166,10 @@
         "searchLabel": "Search designs",
         "searchPlaceholder": "Search by name or description",
         "noSearchResults": "No designs match your search.",
-        "clearSearch": "Clear search"
+        "clearSearch": "Clear search",
+        "items_zero": "0 items",
+        "items_one": "{{count}} item",
+        "items_other": "{{count}} items"
     },
 
     "designForm": {
@@ -265,7 +271,8 @@
         "otp": "One-time code",
         "confirm": "Confirm payment",
         "cancel": "Cancel",
-        "secure": "This is a secure simulation for demo purposes."
+        "secure": "This is a secure simulation for demo purposes.",
+        "noItems": "Your cart is empty"
     },
 
     "languages": {
@@ -314,13 +321,19 @@
         "addressRequired": "Address is required for delivery",
         "noItems": "Your cart is empty",
 <<<<<<< HEAD
+<<<<<<< HEAD
         "debugItems": "Items to submit:"
 =======
+=======
+>>>>>>> c49daa3612ee9157cd15bbdadf74a4cdad32650a
         "debugItems": "Items to submit:",
         "deliveryInfoTitle": "Your delivery information",
         "selectCity": "Select a city",
         "selectCountry": "Select a country"
+<<<<<<< HEAD
 >>>>>>> c49daa3 (Fixed designs category filter height sizing, changed the design of cart overlay and cart page and addedd new translations)
+=======
+>>>>>>> c49daa3612ee9157cd15bbdadf74a4cdad32650a
     },
 
     "mockBank": {
@@ -328,6 +341,7 @@
         "stepDetails": "Contact & delivery",
         "stepPayment": "Payment method",
         "sessionExpires": "Session expires in {{minutes}}:{{seconds}}",
+        "sessionExpired": "Your session has expired",
         "cartTitle": "Your cart",
         "quantityLabel": "Qty",
         "unit": "unit",
@@ -337,6 +351,13 @@
         "totalLabel": "Total",
         "ltBanks": "Banks in Lithuania",
         "intBanks": "International"
+    },
+
+    "checkoutExpired": {
+        "title": "Session expired",
+        "message": "Your payment session has expired. Please try again from the cart.",
+        "redirecting": "Redirecting to the main page in {{seconds}}s…",
+        "goNow": "Go back now ({{seconds}}s)"
     }
 }
   

@@ -1,47 +1,47 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useCart } from "../context/CartContext";
 
-export default function CheckoutSuccess() {
-  const { i18n } = useTranslation();
-  const { clearCart } = useCart();
+export default function CheckoutExpired() {
+  const { t } = useTranslation();
   const [left, setLeft] = useState(5);
 
   useEffect(() => {
-    clearCart();
     sessionStorage.removeItem("checkoutInfo");
-  }, [clearCart]);
+  }, []);
 
   useEffect(() => {
     const deadline = Date.now() + 5000;
-    const id = setInterval(() => {
+    const id = window.setInterval(() => {
       const remain = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
       setLeft(remain);
       if (remain === 0) {
-        clearInterval(id);
-        window.location.replace("/");
+        window.clearInterval(id);
+        window.location.replace("/cart");
       }
     }, 200);
-    return () => clearInterval(id);
+
+    return () => window.clearInterval(id);
   }, []);
 
-  const goNow = () => window.location.assign("/");
+  const goNow = () => window.location.assign("/cart");
 
   return (
     <div className="mx-auto max-w-xl p-6 pt-28">
       <div className="rounded-2xl border bg-white p-6 shadow">
-        <h1 className="text-2xl font-semibold">
-          {i18n.language === "lt" ? "Apmokėjimas pavyko" : "Payment successful"}
-        </h1>
-        <p className="mt-2 opacity-70">
-          {i18n.language === "lt" ? "Ačiū! Jūsų užsakymas priimtas." : "Thanks! Your order has been received."}
+        <h1 className="text-2xl font-semibold">{t("checkoutExpired.title")}</h1>
+
+        <p className="mt-2 opacity-70">{t("checkoutExpired.message")}</p>
+
+        <p className="mt-2 text-sm opacity-60">
+          {t("checkoutExpired.redirecting", { seconds: left })}
         </p>
+
         <div className="mt-6">
           <button
             onClick={goNow}
             className="w-full rounded-xl border px-4 py-3 font-medium hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-black/10"
           >
-            {i18n.language === "lt" ? `Grįžti (${left}s)` : `Go back (${left}s)`}
+            {t("checkoutExpired.goNow", { seconds: left })}
           </button>
         </div>
       </div>

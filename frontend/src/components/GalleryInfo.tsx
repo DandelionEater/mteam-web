@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
-import { useTranslation } from 'react-i18next';
-import { Gallery } from '../model/Item.schema';
+import { useTranslation } from "react-i18next";
+import { Gallery } from "../model/Item.schema";
 import { fetchGalleryItemById } from "../dbMiddleware/GalleryCRUD";
 
 interface GalleryInfoProps {
@@ -11,14 +11,13 @@ interface GalleryInfoProps {
 }
 
 const GalleryInfo: React.FC<GalleryInfoProps> = ({ isOpen, onClose, itemId }) => {
-  const { i18n } = useTranslation();
-  const lang = i18n.language as 'en' | 'lt';
+  const { i18n, t } = useTranslation();
+  const lang = (i18n.language === "lt" ? "lt" : "en") as "en" | "lt";
 
   const modalRef = useRef<HTMLDivElement>(null);
   const [item, setItem] = useState<Gallery | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
 
   useEffect(() => {
     if (!isOpen || !itemId) return;
@@ -48,88 +47,119 @@ const GalleryInfo: React.FC<GalleryInfoProps> = ({ isOpen, onClose, itemId }) =>
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        onClose();
-      }
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) onClose();
     };
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    if (isOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, onClose]);
 
+  const images = item?.images ?? [];
+
   const handlePrev = () => {
-    setCurrentImageIndex(prev =>
-      prev === 0 ? (item?.images.length ?? 1) - 1 : prev - 1
-    );
+    setCurrentImageIndex((prev) => (prev === 0 ? Math.max(images.length - 1, 0) : prev - 1));
   };
 
   const handleNext = () => {
-    setCurrentImageIndex(prev =>
-      prev === (item?.images.length ?? 1) - 1 ? 0 : prev + 1
+    setCurrentImageIndex((prev) =>
+      prev === Math.max(images.length - 1, 0) ? 0 : prev + 1
     );
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 items-center px-4 overflow-y-auto py-8">
-      <div className="flex justify-center">
-        <div
-          ref={modalRef}
-          className="bg-white p-6 rounded-xl max-w-xl w-full shadow-lg relative"
-        >
-          {loading ? (
-            <div className="text-center text-gray-600 py-12">Loading...</div>
-          ) : item ? (
-            <>
-              {/* Image carousel */}
-              <div className="relative mb-4">
-                <img
-                  src={item.images[currentImageIndex]}
-                  alt={`${item.name[lang]} ${currentImageIndex + 1}`}
-                  onError={(e) =>
-                    (e.currentTarget.src = 'https://via.placeholder.com/400x250')
-                  }
-                  className="w-full h-auto rounded-lg object-contain"
-                />
-                {item.images.length > 1 && (
-                  <>
-                    <button
-                      onClick={handlePrev}
-                      className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white bg-opacity-70 hover:bg-opacity-90 p-2 rounded-full shadow"
-                    >
-                      <ChevronLeftIcon className="w-5 h-5 text-gray-800" />
-                    </button>
-                    <button
-                      onClick={handleNext}
-                      className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white bg-opacity-70 hover:bg-opacity-90 p-2 rounded-full shadow"
-                    >
-                      <ChevronRightIcon className="w-5 h-5 text-gray-800" />
-                    </button>
-                  </>
-                )}
-              </div>
-
-              <h2 className="text-2xl font-bold mb-2">{item.name[lang]}</h2>
-              <p className="text-gray-700">{item.description?.[lang]}</p>
-            </>
-          ) : (
-            <div className="text-center text-red-500">Failed to load item</div>
-          )}
-        </div>
-      </div>
-
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center px-4 overflow-y-auto py-8">
+      {/* close */}
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition"
+        className="fixed top-6 right-6 z-60 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition"
+        aria-label={t("common.close") || "Close"}
       >
         <XMarkIcon className="w-5 h-5 text-gray-700" />
       </button>
+
+      <div
+        ref={modalRef}
+        className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border overflow-hidden"
+        style={{ maxHeight: "calc(100vh - 4rem)" }}   // 4rem ~ py-8 (viršus+apačia)
+      >
+        {loading ? (
+          <div className="p-10 text-center text-gray-600">Loading...</div>
+        ) : item ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 items-stretch">
+            {/* LEFT: image */}
+            <div
+              className="
+                relative bg-gray-50 overflow-hidden
+                h-64 md:h-full
+                max-h-screen
+                flex items-center justify-center
+                rounded-t-2xl md:rounded-t-none md:rounded-l-2xl
+              "
+            >
+              {images.length > 0 ? (
+                <>
+                  <img
+                    src={images[currentImageIndex]}
+                    alt={`${item.name?.[lang] ?? "Image"} ${currentImageIndex + 1}`}
+                    onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/900x675?text=No+Image")}
+                    className="h-full w-full object-cover"
+                  />
+
+                  {images.length > 1 && (
+                    <>
+                      <button
+                        onClick={handlePrev}
+                        className="absolute top-1/2 left-3 -translate-y-1/2 bg-white bg-opacity-90 p-2 rounded-full shadow hover:bg-white transition"
+                        aria-label={t("common.prev") || "Previous"}
+                      >
+                        <ChevronLeftIcon className="w-5 h-5 text-gray-800" />
+                      </button>
+                      <button
+                        onClick={handleNext}
+                        className="absolute top-1/2 right-3 -translate-y-1/2 bg-white bg-opacity-90 p-2 rounded-full shadow hover:bg-white transition"
+                        aria-label={t("common.next") || "Next"}
+                      >
+                        <ChevronRightIcon className="w-5 h-5 text-gray-800" />
+                      </button>
+                    </>
+                  )}
+                </>
+              ) : (
+                <div className="p-10 text-center text-gray-600">
+                  {t("gallery.noImages") || "No images"}
+                </div>
+              )}
+            </div>
+
+            {/* RIGHT: content */}
+            <div className="p-6 md:p-8 flex flex-col">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">
+                  {item.name?.[lang] ?? ""}
+                </h2>
+
+                {item.description?.[lang] && (
+                  <p className="mt-3 text-gray-600 leading-relaxed">
+                    {item.description[lang]}
+                  </p>
+                )}
+              </div>
+
+              {/* optional: little info box (nice polish) */}
+              <div className="mt-6 border-t pt-4">
+                <div className="text-sm text-gray-500">
+                  {t("gallery.imagesCount") || "Images"}:{" "}
+                  <span className="font-medium text-gray-900">{images.length}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="p-10 text-center text-red-600">Failed to load item</div>
+        )}
+      </div>
     </div>
   );
 };

@@ -64,7 +64,8 @@
         "searchLabel": "Paieška",
         "searchPlaceholder": "Ieškoti pagal pavadinimą arba aprašymą",
         "noSearchResults": "Pagal paiešką galerijoje rezultatų nėra.",
-        "clearSearch": "Išvalyti paiešką"
+        "clearSearch": "Išvalyti paiešką",
+        "imagesCount": "Nuotraukų skaičius"
     },
 
     "categories": {
@@ -96,7 +97,9 @@
         "floatingMessage": "Sėkmingai pridėta į krepšelį",
         "stock": "Likutis",
         "stockExtra": "vnt.",
-        "category": "Kategorija"
+        "category": "Kategorija",
+        "stockLimitReached": "Prekių limitas pasiektas, daugiau pridėti nebegalite",
+        "soldOut": "Išpadruota"
     },
 
     "about": {
@@ -162,7 +165,12 @@
         "searchLabel": "Paieška",
         "searchPlaceholder": "Ieškoti pagal pavadinimą arba aprašymą",
         "noSearchResults": "Pagal paiešką rezultatų nėra.",
-        "clearSearch": "Išvalyti paiešką"
+        "clearSearch": "Išvalyti paiešką",
+        "items_zero": "0 prekių",
+        "items_one": "{{count}} prekė",
+        "items_few": "{{count}} prekės",
+        "items_many": "{{count}} prekių",
+        "items_other": "{{count}} prekės"
     },
 
     "designForm": {
@@ -265,7 +273,8 @@
         "otp": "Vienkartinis kodas",
         "confirm": "Patvirtinti mokėjimą",
         "cancel": "Atšaukti",
-        "secure": "Tai saugus demonstracinis atsiskaitymo imitavimas."
+        "secure": "Tai saugus demonstracinis atsiskaitymo imitavimas.",
+        "noItems": "Jūsų krepšelis tusčias"
     },
 
     "languages": {
@@ -314,13 +323,19 @@
         "addressRequired": "Naudojant pristatymą reikia nurodyti adresą",
         "noItems": "Krepšelis tuščias",
 <<<<<<< HEAD
+<<<<<<< HEAD
         "debugItems": "Išsiunčiami krepšelio elementai:"
 =======
+=======
+>>>>>>> c49daa3612ee9157cd15bbdadf74a4cdad32650a
         "debugItems": "Išsiunčiami krepšelio elementai:",
         "deliveryInfoTitle": "Jūsų pristatymo informacija",
         "selectCity": "Pasirinkite miestą",
         "selectCountry": "Pasirinkite šalį"
+<<<<<<< HEAD
 >>>>>>> c49daa3 (Fixed designs category filter height sizing, changed the design of cart overlay and cart page and addedd new translations)
+=======
+>>>>>>> c49daa3612ee9157cd15bbdadf74a4cdad32650a
     },
 
     "mockBank": {
@@ -328,6 +343,7 @@
         "stepDetails": "Kontaktai ir pristatymas",
         "stepPayment": "Mokėjimo būdas",
         "sessionExpires": "Sesija baigsis po {{minutes}}:{{seconds}}",
+        "sessionExpired": "Jūsų sesijos laikas baigėsi",
         "cartTitle": "Jūsų krepšelis",
         "quantityLabel": "Kiekis",
         "unit": "vnt.",
@@ -337,6 +353,13 @@
         "totalLabel": "Suma",
         "ltBanks": "Bankai Lietuvoje",
         "intBanks": "Tarptautiniai"
+    },
+
+    "checkoutExpired": {
+        "title": "Sesijos laikas baigėsi",
+        "message": "Mokėjimo sesija nebegalioja. Bandykite dar kartą iš krepšelio.",
+        "redirecting": "Po {{seconds}} s būsite nukreiptas į pagrindinį puslapį…",
+        "goNow": "Grįžti dabar ({{seconds}}s)"
     }
 }
   

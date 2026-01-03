@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import lineClamp from "@tailwindcss/line-clamp";
 
 const config: Config = {
   content: [
@@ -13,7 +14,7 @@ const config: Config = {
       md: "1060px",
     },
   },
-  plugins: [],
+  plugins: [lineClamp],
 };
 
 export default config;

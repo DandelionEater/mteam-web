@@ -25,6 +25,7 @@ import OrdersPanel from './components/OrdersPanel';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import CheckoutCancel from './pages/CheckoutCancel';
 import MockBank from './pages/MockBank';
+import CheckoutExpired from './pages/CheckoutExpired';
 
 interface LayoutProps {
   children: ReactNode;
@@ -56,6 +57,7 @@ function App() {
               <Route path="/cart" element={<Layout><CartPage /></Layout>} />
               <Route path="/checkout/success" element={<Layout><CheckoutSuccess /></Layout>} />
               <Route path="/checkout/cancel" element={<Layout><CheckoutCancel /></Layout>} />
+              <Route path="/checkout/expired" element={<Layout><CheckoutExpired /></Layout>} />
               <Route path="/mock-bank" element={<Layout><MockBank /></Layout>} />
               <Route path="/admin-login" element={<Layout><AdminLogin /></Layout>} />
               <Route path="/admin-manager" element={<ProtectedRoute><Layout><AdminManager /></Layout></ProtectedRoute>} />

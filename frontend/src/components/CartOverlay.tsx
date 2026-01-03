@@ -128,12 +128,11 @@ export default function CartOverlay({
           <p className="text-sm text-gray-500">{t("cartPage.emptyCart")}</p>
         ) : (
           <div className="space-y-4 max-h-64 overflow-y-auto pr-1">
-            {items.map((item) => (
-              <div key={item._id} className="flex items-start justify-between">
-                <div>
-                  <p className="font-medium leading-tight">{item.name[lang]}</p>
-                  <p className="text-sm text-gray-600">{formatPrice(item.price)}</p>
+            {items.map((item) => {
+              const stock = item.stock ?? Infinity;
+              const canIncrease = item.quantity < stock;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
                   <div className="flex items-center gap-2 mt-1">
                     <button
@@ -152,6 +151,8 @@ export default function CartOverlay({
                       <PlusIcon className="w-4 h-4" />
                     </button>
 =======
+=======
+>>>>>>> c49daa3612ee9157cd15bbdadf74a4cdad32650a
               const img =
                 (item as any).images?.[0] ||
                 "https://placehold.co/96x96?text=%20";
@@ -232,18 +233,14 @@ export default function CartOverlay({
                         </p>
                       </div>
                     </div>
+<<<<<<< HEAD
 >>>>>>> c49daa3 (Fixed designs category filter height sizing, changed the design of cart overlay and cart page and addedd new translations)
+=======
+>>>>>>> c49daa3612ee9157cd15bbdadf74a4cdad32650a
                   </div>
                 </div>
-
-                <button
-                  onClick={() => handleRemoveClick(item._id)}
-                  className="text-red-500 hover:text-red-700 pl-3"
-                >
-                  <XMarkIcon className="w-5 h-5" />
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
@@ -262,15 +259,21 @@ export default function CartOverlay({
               {t("cartPage.goToCart")}
             </Link>
 
-            <button
-              onClick={() => {
-                onClose();
-                navigate('/mock-bank');
-              }}
-              className="w-full px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
-            >
-              {t("cartPage.checkout")}
-            </button>
+           <button
+            disabled={items.length === 0}
+            onClick={() => {
+              if (items.length === 0) {
+                showToast({ type: "error", message: t("mockbank.noItems") });
+                return;
+              }
+              onClose();
+              navigate("/mock-bank");
+            }}
+            className={`w-full px-4 py-2 rounded
+              ${items.length === 0 ? "bg-gray-400 cursor-not-allowed text-white" : "bg-black text-white hover:bg-gray-800"}`}
+          >
+            {t("cartPage.checkout")}
+          </button>
           </div>
         </div>
         <ConfirmDialog
