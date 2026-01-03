@@ -91,7 +91,6 @@ async function categoryExistsByName(
 
 // Login route
 app.post('/api/login', async (req: Request, res: Response): Promise<void> => {
-  console.log('Login request body:', req.body);
   const { email, password } = req.body;
 
   if (!email || !password) {

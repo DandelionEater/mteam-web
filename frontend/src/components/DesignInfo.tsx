@@ -136,31 +136,33 @@ const DesignInfo: React.FC<DesignInfoProps> = ({ isOpen, onClose, designId }) =>
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 backdrop-blur-sm px-4 py-8 overflow-y-auto">
-      {/* close */}
-      <button
-        onClick={onClose}
-        className="fixed top-6 right-6 z-60 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition"
-        aria-label={t("common.close") || "Close"}
-      >
-        <XMarkIcon className="w-5 h-5 text-gray-700" />
-      </button>
+    <div className="fixed inset-0 z-50">
+      {/* Backdrop + centering */}
+      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4">
+        {/* close */}
+        <button
+          onClick={onClose}
+          className="fixed top-6 right-6 z-50 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition"
+          aria-label={t("common.close") || "Close"}
+        >
+          <XMarkIcon className="w-5 h-5 text-gray-700" />
+        </button>
 
-      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center px-4 overflow-y-auto">
         <div
           ref={modalRef}
-          className="w-full max-w-5xl rounded-2xl bg-white shadow-2xl border"
+          className="w-full max-w-4xl rounded-2xl bg-white shadow-2xl border overflow-hidden"
+          style={{ maxHeight: "90vh" }}
         >
           {loading && <p className="p-8 text-center">{t("designInfo.loading")}</p>}
           {error && <p className="p-8 text-center text-red-600">{error}</p>}
 
           {!loading && design && (
-            <div className="grid grid-cols-1 md:grid-cols-2 items-stretch">
+            <div className="grid grid-cols-1 md:grid-cols-2">
               {/* LEFT: image */}
               <div
                 className="
                   relative bg-gray-50 overflow-hidden
-                  h-64 md:h-full
+                  h-64 md:h-auto
                   rounded-t-2xl md:rounded-t-none md:rounded-l-2xl
                 "
               >
@@ -217,7 +219,7 @@ const DesignInfo: React.FC<DesignInfoProps> = ({ isOpen, onClose, designId }) =>
               </div>
 
               {/* RIGHT: content */}
-              <div className="p-6 md:p-8 flex flex-col">
+              <div className="p-6 md:p-8 flex flex-col overflow-y-auto">
                 {/* Title + desc */}
                 <div>
                   <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">
